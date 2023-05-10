@@ -1,0 +1,96 @@
+p{
+    font-size: 16px;
+    margin: 0;
+}
+.card{
+    width: 100%;
+}
+.container-fluid{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+.content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.box{
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+    box-shadow: 0px 10px 10px -6px black;
+}
+
+.object{
+    width: 100%;
+    border: solid 0.02rem black;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    min-height: 500px;
+}
+.box-header{
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 40%;
+}
+.box-content{
+    width: 90%;
+    height: 60%;
+    margin-top: 30px;
+}
+a>i{
+    font-size: 30px;
+}
+.box-header .title{
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+}
+.encabezado4{
+    font-weight: bold;
+}
+
+.box-header-check{
+    width: 100%;
+    height: 60%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: end;
+}
+
+.iconos{
+    width: 50%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    
+}
+.img{
+    width: 70%;
+}.td-img{
+    width: 20%;
+}
+.td-buttons{
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-evenly;
+    width: 30%;
+}
+.td-descript{
+    width: 50%;
+}
+tr{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
