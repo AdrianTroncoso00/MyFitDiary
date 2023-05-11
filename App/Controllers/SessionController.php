@@ -31,7 +31,6 @@ class SessionController extends \App\Core\BaseController {
                 'rgb(255, 99, 132)',
                 'rgb(54, 162, 235)',
                 'rgb(255, 205, 86)'];
-            //return view('left-menu.view.php') . view('meal-plan.view.php', $data);
             return redirect()->to('/meal-plan');
         } else {
             $data['input'] = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
