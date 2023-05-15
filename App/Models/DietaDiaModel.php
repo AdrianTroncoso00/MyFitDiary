@@ -4,6 +4,11 @@ namespace App\Models;
 
 class DietaDiaModel extends \App\Core\BaseModel {
     
+    function getAllDietas(){
+        $statement = $this->pdo->query('SELECT nombre_dieta FROM dietas');
+        return $statement->fetchAll();
+    }
+    
     function addDietaDia(int $id, array $datos):bool{
         $brunch = isset($datos['brunch']) ? $datos['brunch'] : null;
         $merienda = isset($datos['merienda']) ? $datos['merienda'] : null;
