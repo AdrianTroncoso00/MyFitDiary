@@ -1,10 +1,11 @@
 
 .box{
-    width: 80%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-top: 20px;
+    border-bottom: 1px solid black;
     box-shadow: 0px 10px 10px -6px black;
 }
 
@@ -58,9 +59,9 @@ a>i{
     
 }
 .img{
-    width: 70%;
+    width: 100%;
 }.td-img{
-    width: 20%;
+    width: 30%;
 }
 .td-buttons{
     display: flex;
@@ -69,11 +70,12 @@ a>i{
     width: 30%;
 }
 .td-descript{
-    width: 50%;
+    width: 40%;
 }
-tr{
+.tr-general{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     width: 100%;
 }
+

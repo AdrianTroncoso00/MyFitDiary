@@ -26,9 +26,9 @@
             <?php foreach ($recetas as $receta) { ?>
 
                 <!-- Cards -->
-                <div type="button" class="position-relative border-0 card col-3" style="width: 13rem;" data-bs-toggle="modal" data-bs-target="#recipe<?php echo $receta['position'] ?>">
+                <div class="position-relative border-0 card col-3" style="width: 13rem;">
                     <!-- Card Image -->
-                    <p><?php echo $receta['position'] ?></p>
+                    
                     <img class="card-img-top" src="<?php echo $receta['image'] ?>" alt="<?php echo $receta['label'] ?>">
                     <!-- Card Body -->
                     <div class="card-body" style="text-align: left!important;">
@@ -46,10 +46,11 @@
                             <?php } ?>
                         </small>
                     </div>
+                    <button type="button" data-toggle="modal" data-target="<?php echo '#recipe'.$receta['position']?>">Abrir Receta</button>
                 </div>
                 <!-- Modal -->
-                <div class="modal" id="recipe<?php echo $receta['position'] ?>">
-                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal" id="<?php echo 'recipe'.$receta['position']?>" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                         <div class="modal-content">
                             <!-- Modal body -->
                             <div class="modal-body p-5">
@@ -170,15 +171,17 @@
         </div>
     <?php } ?>
 </div>
+<div>
+    <button type="button" class="btn btn-primary justify-content-center align-self-center">
+    Mostrar Mas
+</button>
+</div>
 
 <!-- To top -->
-<button type="button" class="btn btn-danger btn-floating btn-lg" id="btn-back-to-top">
-    <p>To Top</p>
-</button>
+
 
 
 <script>
-    $('#myModal').on('shown.bs.modal', function () {
-        $('#myInput').trigger('focus')
-    });
+    <script src="assets/js/toggle.js"></script>
+    <script src="assets/js/toTop.js"></script>
 </script>

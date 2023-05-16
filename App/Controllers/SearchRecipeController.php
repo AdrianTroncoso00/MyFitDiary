@@ -12,11 +12,11 @@ class SearchRecipeController extends \App\Core\BaseController {
     
     const MAX_RECETAS = 10;
     
-    function getRequestCurlArray(string $parametros) {
+    function getRequestCurlArray(string $parametros='', string $urlCompleta='') {
         $curl = curl_init();
 
         $options = array(
-            CURLOPT_URL => self::URL_CONSULTA_BUSCADOR .'&'.$parametros,
+            CURLOPT_URL => empty($urlCompleta) ? self::URL_CONSULTA_BUSCADOR .'&'.$parametros : $urlCompleta,
             CURLOPT_RETURNTRANSFER => true, //Sin esta línea se haría un echo de la respuesta en vez de guardarse en una variable del tipo string
             CURLOPT_MAXREDIRS => 10,
             CURLOPT_TIMEOUT => 15,
@@ -60,9 +60,9 @@ class SearchRecipeController extends \App\Core\BaseController {
     function showRecipes(){
         $cadenaParametros = $this->generarStringBuscadorRecetas($_GET);
         $recetas = $this->getRequestCurlArray($cadenaParametros);
-        $linkNextPage = $recetas['_links']['next']['href'];
         $recetasBuenas = $this->getAllNecesary($recetas);
         $data['recetas']= $recetasBuenas;
+        $linkNextPage = $recetas['_links']['next']['href'];
         $this->view->showViews(array('left-menu.view.php', 'recipe-search-results.view.php'), $data);
     }
     

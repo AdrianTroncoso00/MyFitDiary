@@ -10,12 +10,18 @@ class UsuarioController extends \App\Core\BaseController {
         $data['pesos'] = $modelo->getPesosUsuario($_SESSION['usuario']['id']);
         $fechas = [];
         $pesos = [];
-        foreach ($data['pesos'] as $p) {
-            array_push($fechas, $p['fecha']);
-            array_push($pesos, $p['peso']);
+        if($data['pesos']!= null){
+            foreach ($data['pesos'] as $p) {
+                array_push($fechas, $p['fecha']);
+                array_push($pesos, $p['peso']);
+            }
+            $data['fechas'] = $fechas;
+            $data['pesos_chart'] = $pesos;
+            
+        }else{
+            $data['fechas']=$fechas;
+            $data['pesos_chart']=$pesos;
         }
-        $data['fechas'] = $fechas;
-        $data['pesos_chart'] = $pesos;
         return $data;
     }
     function showMealPlan(){
@@ -24,7 +30,7 @@ class UsuarioController extends \App\Core\BaseController {
     
     function showAccount() {
         $data = $this->showData();
-        return view('left-menu.view.php') . view('account-details.view.php', $data);
+        $this->view->showViews(array('left-menu.view.php', 'account-details.view.php'), $data);
     }
 
     function addPeso() {

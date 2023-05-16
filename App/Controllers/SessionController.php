@@ -25,12 +25,6 @@ class SessionController extends \App\Core\BaseController {
             $_SESSION['usuario'] = $usuario;
             var_dump($_SESSION['usuario']);
             $modelo->updateLastDate($_SESSION['usuario']['id']);
-            $data['etiquetas'] = ['Proteinas', 'Grasas', 'Carbohidratos'];
-            $data['valores_etiquetas'] = [200, 10, 70];
-            $data['chart_colors'] = [
-                'rgb(255, 99, 132)',
-                'rgb(54, 162, 235)',
-                'rgb(255, 205, 86)'];
             return redirect()->to('/meal-plan');
         } else {
             $data['input'] = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);

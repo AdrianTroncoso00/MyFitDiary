@@ -73,7 +73,7 @@
 
                 </div>
               </div>
-
+                 <?php if($pesos!=null){?>
               <div class='card bg-secondary mb-3'>
                 <div class='card-header'>
                   <h4>Registros de Pesos</h4>
@@ -119,9 +119,9 @@
                       ?>
                 </div>
               </div>
-
+                 <?php } ?>
             </div>
-
+            
             <div class='col-md-6 mt-4'>
               <div class='card bg-secondary mb-3'>
                 <div class='card-header'>
@@ -134,7 +134,7 @@
                 </div>
               </div>
             </div>
-
+           
           </div>
         </div>
       </div>
