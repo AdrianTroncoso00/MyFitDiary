@@ -57,6 +57,16 @@ class SearchRecipeController extends \App\Core\BaseController {
         
     }
     
+    function addBookmark(){
+        $modelo = new \App\Models\RecetasFavoritasModel();  
+        if($modelo->addRecetaFavorita($_SESSION['usuario']['id'], $_POST)){
+            return redirect()->to($_SERVER['HTTP_REFERER']);
+        }else{
+            $data['errorGuardar']='Ha ocurrido un error indeterminado al guardar, vuelve a intentarlo mas tarde';
+            $this->view->showViews(array('left-menu.view.php', 'recipe-search-results.view.php'), $data);
+        }
+    }
+    
     function showRecipes(){
         $cadenaParametros = $this->generarStringBuscadorRecetas($_GET);
         $recetas = $this->getRequestCurlArray($cadenaParametros);
@@ -96,7 +106,7 @@ class SearchRecipeController extends \App\Core\BaseController {
             $array[$key]['yield'] =$value['recipe']['yield'];
             $array[$key]['dietLabels'] =$value['recipe']['dietLabels'];
             $array[$key]['ingredientLines'] =$value['recipe']['ingredientLines'];
-            $array[$key]['calories'] =round($value['recipe']['calories'], 2);
+            $array[$key]['calories'] =round($value['recipe']['calories'], 0);
             $array[$key]['totalTime'] =round($value['recipe']['totalTime'], 0);
             $array[$key]['cuisineType'] =$value['recipe']['cuisineType'];
             $array[$key]['position'] =$key;

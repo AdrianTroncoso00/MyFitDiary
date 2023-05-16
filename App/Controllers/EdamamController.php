@@ -71,7 +71,7 @@ class EdamamController extends \App\Core\BaseController {
         $nutrientesTotales = $this->getAllNutrientes($mealPlan);
         $data['nutrientesTotales'] = $nutrientesTotales;
         $data['etiquetas'] = ['Proteinas', 'Grasas', 'Carbohidratos'];
-        $data['valores_etiquetas'] = [round($nutrientesTotales['Protein']['cantidadTotal'], 2), round($nutrientesTotales['Fat']['cantidadTotal'], 2), round($nutrientesTotales['Carbs']['cantidadTotal'], 2)];
+        $data['valores_etiquetas'] = [round($nutrientesTotales['Protein']['cantidadTotal'],0), round($nutrientesTotales['Fat']['cantidadTotal'], 0), round($nutrientesTotales['Carbs']['cantidadTotal'], 0)];
         $data['chart_colors'] = [
             'rgb(255, 99, 132)',
             'rgb(54, 162, 235)',
@@ -104,12 +104,12 @@ class EdamamController extends \App\Core\BaseController {
     function modifyReceta(array $receta, float $calorias): array {
         $receta['recipe']['caloriasComida'] = $calorias;
         $caloriasRacion = $receta['recipe']['calories'] / $receta['recipe']['yield'];
-        $receta['recipe']['caloriasRacion'] = round($caloriasRacion, 2);
+        $receta['recipe']['caloriasRacion'] = round($caloriasRacion, 0);
         $receta['recipe']['yield2'] = round(($calorias / $caloriasRacion), 0);
-        $receta['recipe']['calories'] = round(($caloriasRacion * $receta['recipe']['yield2']), 2);
+        $receta['recipe']['calories'] = round(($caloriasRacion * $receta['recipe']['yield2']), 0);
         if ($receta['recipe']['yield'] !== $receta['recipe']['yield2']) {
             foreach ($receta['recipe']['totalNutrients'] as $key => $nutriente) {
-                $nutriente['quantity'] = round(($nutriente['quantity'] / $receta['recipe']['yield']) * $receta['recipe']['yield2'], 2);
+                $nutriente['quantity'] = round(($nutriente['quantity'] / $receta['recipe']['yield']) * $receta['recipe']['yield2'], 0);
                 $receta['recipe']['totalNutrients'][$key] = $nutriente;
             }
             foreach ($receta['recipe']['ingredients'] as $key => $ingrediente) {

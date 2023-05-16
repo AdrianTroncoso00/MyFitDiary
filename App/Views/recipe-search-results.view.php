@@ -1,15 +1,11 @@
-<!--{% if recipes_list %}
-<div class="my-3 text-left">
-    <h5>
-        Recipes 
-        {% if readable_ingredients %}
-        containing {{ readable_ingredients }}
-        {% endif %}
-        that match your requirements:
-    </h5>
-</div>
-{% endif %}-->
 
+<?php if(isset($errorGuardar)){?>
+    <div class="card bg-danger">
+        <div class="card-body">
+            <p><?php echo $errorGuardar ?></p>
+        </div>
+  </div>
+<?php } ?>
 <!-- Result -->
 <div class="form col-12">
     <!-- Handle error -->
@@ -28,7 +24,7 @@
                 <!-- Cards -->
                 <div class="position-relative border-0 card col-3" style="width: 13rem;">
                     <!-- Card Image -->
-                    
+
                     <img class="card-img-top" src="<?php echo $receta['image'] ?>" alt="<?php echo $receta['label'] ?>">
                     <!-- Card Body -->
                     <div class="card-body" style="text-align: left!important;">
@@ -46,10 +42,10 @@
                             <?php } ?>
                         </small>
                     </div>
-                    <button type="button" data-toggle="modal" data-target="<?php echo '#recipe'.$receta['position']?>">Abrir Receta</button>
+                    <button type="button" data-toggle="modal" data-target="<?php echo '#recipe' . $receta['position'] ?>">Abrir Receta</button>
                 </div>
                 <!-- Modal -->
-                <div class="modal" id="<?php echo 'recipe'.$receta['position']?>" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal" id="<?php echo 'recipe' . $receta['position'] ?>" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                         <div class="modal-content">
                             <!-- Modal body -->
@@ -61,6 +57,7 @@
                                         <!-- Image -->
                                         <div class="mb-3">
                                             <img src="<?php echo $receta['image'] ?>" alt="<?php echo $receta['label'] ?>">
+                                            <p><?php echo strlen($receta['image'])?></p>
                                         </div>
                                         <!-- Total Time and Calories -->
                                         <div class="small mb-4 lh-lg d-flex flex-wrap justify-content-between">
@@ -137,32 +134,25 @@
                                     </div>
                                 </div>
                                 <!-- Bookmark -->
-                                <!--                                <form action="/add" method="POST">
-                                                                    <div class="row center">
-                                                                        <div>
-                                                                            <input type="hidden" name="link" value="{{ recipe['link'] }}">
-                                                                            <input type="hidden" name="label" value="{{ recipe['label'] }}">
-                                                                            <input type="hidden" name="image" value="{{ recipe['image'] }}">
-                                                                            <input type="hidden" name="source" value="{{ recipe['source'] }}">
-                                                                            <input type="hidden" name="url" value="{{ recipe['url'] }}">
-                                                                            <input type="hidden" name="dietLabels" value="{{ recipe['dietLabels'] }}">
-                                                                            <input type="hidden" name="healthLabels" value="{{ recipe['healthLabels'] }}">
-                                                                            <input type="hidden" name="ingredientLines" value="{{ recipe['ingredientLines'] }}">
-                                                                            <input type="hidden" name="calories" value="{{ recipe['calories'] }}">
-                                                                            <input type="hidden" name="totalTime" value="{{ recipe['totalTime'] }}">
-                                                                            <input type="hidden" name="cuisineType" value="{{ recipe['cuisineType'] }}">
-                                                                            <input type="hidden" name="dishType" value="{{ recipe['dishType'] }}">
-                                                                        </div>
-                                                                        <div class="col text-center">
-                                                                            <input type="submit" name="bookmark" id="bookmark" value="Bookmark" class="px-5 btn btn-primary"
-                                                                                   {% if recipe['link'] not in saved_recipes_list %}
-                                                                                   onClick="this.form.submit(); this.disabled = true;this.value = 'Bookmarked';" 
-                                                                                   {% else %}
-                                                                                   disabled="disabled" 
-                                                                                   {%endif %}/>
-                                                                        </div>
-                                                                    </div>
-                                                                </form>-->
+                                <form action="/add" method="POST">
+                                    <div class="row center">
+                                        <div>
+                                            <input type="hidden" name="image" value="<?php echo $receta['image']?>">
+                                            <input type="hidden" name="label" value="<?php echo $receta['label'] ?>">
+                                            <input type="hidden" name="url" value="<?php echo $receta['url'] ?>">
+                                            <input type="hidden" name="dietLabels" value="<?php echo implode(',',$receta['dietLabels']) ?>">
+                                            <input type="hidden" name="ingredientLines" value="<?php echo implode(',',$receta['ingredientLines'])?>">
+                                            <input type="hidden" name="calories" value="<?php echo $receta['calories'] ?>">
+                                            <input type="hidden" name="totalTime" value="<?php echo $receta['totalTime'] ?>">
+                                            <input type="hidden" name="cuisineType" value="<?php echo implode(',',$receta['cuisineType']) ?>">
+    
+                                        </div>
+                                        <div class="col text-center">
+                                            <input type="submit" name="bookmark" id="bookmark" value="Bookmark" class="px-5 btn btn-primary">
+                                                   
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -173,8 +163,8 @@
 </div>
 <div>
     <button type="button" class="btn btn-primary justify-content-center align-self-center">
-    Mostrar Mas
-</button>
+        Mostrar Mas
+    </button>
 </div>
 
 <!-- To top -->
@@ -183,5 +173,5 @@
 
 <script>
     <script src="assets/js/toggle.js"></script>
-    <script src="assets/js/toTop.js"></script>
+<script src="assets/js/toTop.js"></script>
 </script>

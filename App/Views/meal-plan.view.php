@@ -13,7 +13,7 @@
                                 <h4 class="encabezado4"><?php echo strtoupper($nombre) ?></h4>
                             </div>
                             <div class="box-header-check">
-                                <p>calorias</p>
+
                                 <div class="iconos">
                                     <div class="input-icono">    
                                         <input class="completado" type="checkbox" value="completado"
