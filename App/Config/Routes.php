@@ -40,8 +40,11 @@ $routes->post('signup', 'SessionController::SignUp');
 $routes->get('imc', 'ImcController::showFormIMC');
 $routes->post('imc', 'ImcController::mostrarResForm');
 $routes->get('prueba', 'EdamamController::firstConsulta');
-$routes->get('meal-plan', 'EdamamController::getMealPlan');
+$routes->get('meal-plan', 'EdamamController::getMealPlanDiario');
 $routes->get('meal-prueba', 'EdamamController::pruebaView');
+$routes->get('recipe-search', 'SearchRecipeController::showForm');
+$routes->get('recipes', 'SearchRecipeController::showRecipes');
+$routes->post('add', 'SearchRecipeController::addBookmark');
 
 $routes->get('prueba', 'SessionController::pruebaVista');
 $routes->get('logout', 'SessionController::logOut');

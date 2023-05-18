@@ -7,7 +7,7 @@ class EdamamController extends \App\Core\BaseController {
     const API_EDAMAM_BUSCADOR_ID = '9cb2882a';
     const API_EDAMAM_BUSCADOR_KEY = '6caa45757c49df89e96822d45d4a517d';
     const URL_CONSULTA_BUSCADOR = 'https://api.edamam.com/api/recipes/v2?type=public&app_id=9cb2882a&app_key=6caa45757c49df89e96822d45d4a517d';
-    const URL_CONSULTA_FIELD = '&field=label&field=image&field=url&field=yield&field=healthLabels&field=ingredients&field=calories&field=totalWeight&field=totalTime&field=mealType&field=totalNutrients';
+    const URL_CONSULTA_FIELD = '&field=label&field=image&field=url&field=yield&field=healthLabels&field=ingredients&field=calories&field=totalWeight&field=totalTime&field=mealType&field=cuisineType&field=totalNutrients';
     const PORCENAJE_COMIDA1 = 60;
     const PORCENAJE_COMIDA2 = 40;
 
@@ -51,24 +51,60 @@ class EdamamController extends \App\Core\BaseController {
         }
         curl_close($curl);
     }
-
-    function mejorarVista() {
-        $data['etiquetas'] = ['Proteinas', 'Grasas', 'Carbohidratos'];
-        $data['valores_etiquetas'] = [100, 50, 200];
-        $data['chart_colors'] = [
-            'rgb(255, 99, 132)',
-            'rgb(54, 162, 235)',
-            'rgb(255, 205, 86)'];
-        $this->view->showViews(array('left-menu.view.php', 'meal-plan.view.php'), $data);
+    
+    function transformarArray(array $mealplan):array{
+        $array= [];
+        foreach ($mealplan as $key=> $comida) {
+            $array[$comida['nombre_comida']][$key]= ([
+                'id_receta'=> $comida['id_comida'],
+                'url'=> $comida['url'],
+                'label' => $comida['label'],
+                'calorias'=>$comida['calorias'],
+                'image'=> $comida['image'],
+                'totalTime' => $comida['totaltime'],
+                'cuisineType'=> $comida['cuisinetype'],
+                'ingredients'=> json_decode($comida['ingredients'],true),
+                'nutrientes' => json_decode($comida['nutrientes'], true)
+            ]);
+            
+        }
+        return $array;
     }
-
+    function transformarArraySinRecipe(array $mealplan):array{
+        $array= [];
+        foreach ($mealplan as $key=> $comida) {
+            $array[$comida['recipe']['nombre_comida']][$key]= ([
+                'url'=> $comida['recipe']['url'],
+                'label' => $comida['recipe']['label'],
+                'calorias'=>$comida['recipe']['calorias'],
+                'image'=> $comida['recipe']['image'],
+                'totalTime' => $comida['recipe']['totaltime'],
+                'cuisineType'=> $comida['recipe']['cuisinetype'],
+                'ingredients'=> $comida['recipe']['ingredients'],
+                'nutrientes' => $comida['recipe']['nutrientes']
+            ]);
+            
+        }
+        return $array;
+    }
+    
     function getMealPlanDiario() {
-
-        $modelo = new \App\Models\DietaDiaModel();
-        $caloriasAndMealPlan = $this->getCaloriasAndMealPlan($_SESSION['usuario']['num_comidas'], $_SESSION['usuario']['nombre_dieta']);
-        $mealPlan = $caloriasAndMealPlan['mealPlan'];
-        $data['mealPlan'] = $mealPlan;
-        $nutrientesTotales = $this->getAllNutrientes($mealPlan);
+        $dia = date("j-n-Y");
+        $modelo = new \App\Models\ComidasModel();
+        $mealPlanDia= $modelo->getMealPlanDiaria($_SESSION['usuario']['id'], $dia);
+        if(!is_null($mealPlanDia)){
+            $data['mealPlan'] = $this->transformarArray($mealPlanDia);
+            var_dump($data['mealPlan']);
+            $nutrientesTotales= $this->getAllNutrientes($data['mealPlan']);
+            $data['nutrientesTotales'] = $nutrientesTotales;
+            
+        }else{
+            $caloriasAndMealPlan = $this->getCaloriasAndMealPlan($_SESSION['usuario']['num_comidas'], $_SESSION['usuario']['nombre_dieta']);
+            $mealPlan = $caloriasAndMealPlan['mealPlan'];
+            $data['mealPlan'] = $mealPlan;
+            $nutrientesTotales = $this->getAllNutrientes($mealPlan);
+            
+        }
         $data['nutrientesTotales'] = $nutrientesTotales;
         $data['etiquetas'] = ['Proteinas', 'Grasas', 'Carbohidratos'];
         $data['valores_etiquetas'] = [round($nutrientesTotales['Protein']['cantidadTotal'],0), round($nutrientesTotales['Fat']['cantidadTotal'], 0), round($nutrientesTotales['Carbs']['cantidadTotal'], 0)];
@@ -80,48 +116,57 @@ class EdamamController extends \App\Core\BaseController {
     }
 
     function getComida(string $dieta, string $mealType, float $calorias) {
+        $modelo = new \App\Models\ComidasModel();
+        $dia = date("j-n-Y");
+        var_dump($dia);
         if ($calorias <= 450) {
             $recetas = $this->getRequestCurlArray($dieta, $mealType, ($calorias-75), ($calorias+75));
-            $recetaSinProcesar = $recetas;
-            $recetaProcesada = $this->modifyReceta($recetaSinProcesar, $calorias);
-            return $recetaProcesada;
+            $recetaProcesada = $this->modifyReceta($recetas, $calorias, $mealType);
+            var_dump($recetaProcesada);
+            if($modelo->addComida($_SESSION['usuario']['id'], $recetaProcesada, ($mealType.'1'),$dia)){
+                return $recetaProcesada;
+            }
         } else {
             $caloriasReceta1 = $calorias * (self::PORCENAJE_COMIDA1 / 100);
             $recetas = $this->getRequestCurlArray($dieta, $mealType, ($caloriasReceta1-75), ($caloriasReceta1+75));
-            $recetaSinProcesar = $recetas;
-            $receta = $this->modifyReceta($recetaSinProcesar, $caloriasReceta1);
+            $receta = $this->modifyReceta($recetas, $caloriasReceta1,$mealType);
+            var_dump($receta);
             $caloriasReceta2 = $calorias-$caloriasReceta1;
             $recetas2 = $this->getRequestCurlArray($dieta, $mealType, ($caloriasReceta2-75), ($caloriasReceta2+75));
-            $recetaSinProcesar2 = $recetas2;
-            $receta2 = $this->modifyReceta($recetaSinProcesar2, ($calorias - $caloriasReceta1));
-            return [
-                0 => $receta,
-                1 => $receta2
-            ];
+            $receta2 = $this->modifyReceta($recetas2, ($calorias - $caloriasReceta1), $mealType);
+            if($modelo->addComida($_SESSION['usuario']['id'], $receta, ($mealType.'1'),$dia) && $modelo->addComida($_SESSION['usuario']['id'], $receta2,($mealType.'2'),$dia)){
+                return [
+                    0 => $receta,
+                    1 => $receta2
+                ];
+            }
         }
     }
 
-    function modifyReceta(array $receta, float $calorias): array {
-        $receta['recipe']['caloriasComida'] = $calorias;
-        $caloriasRacion = $receta['recipe']['calories'] / $receta['recipe']['yield'];
-        $receta['recipe']['caloriasRacion'] = round($caloriasRacion, 0);
-        $receta['recipe']['yield2'] = round(($calorias / $caloriasRacion), 0);
-        $receta['recipe']['calories'] = round(($caloriasRacion * $receta['recipe']['yield2']), 0);
-        if ($receta['recipe']['yield'] !== $receta['recipe']['yield2']) {
+    function modifyReceta(array $receta, float $calorias,string $mealtype): array {
+        $nuevaReceta=[];
+        $caloriasRacion = round(($receta['recipe']['calories'] / $receta['recipe']['yield']), 0);
+        $yield2 = round(($calorias / $caloriasRacion), 0);
+        $nuevaReceta[$mealtype]['url'] = $receta['recipe']['url'];
+        $nuevaReceta[$mealtype]['image'] = $receta['recipe']['image'];
+        $nuevaReceta[$mealtype]['label'] = $receta['recipe']['label'];
+        $nuevaReceta[$mealtype]['totalTime'] = $receta['recipe']['totalTime'];
+        $nuevaReceta[$mealtype]['cuisineType'] = $receta['recipe']['cuisineType'];
+        $nuevaReceta[$mealtype]['calorias'] = round(($caloriasRacion * $yield2), 0);
+        if ($receta['recipe']['yield'] !== $yield2) {
             foreach ($receta['recipe']['totalNutrients'] as $key => $nutriente) {
-                $nutriente['quantity'] = round(($nutriente['quantity'] / $receta['recipe']['yield']) * $receta['recipe']['yield2'], 0);
-                $receta['recipe']['totalNutrients'][$key] = $nutriente;
+                $nutriente['quantity'] = round(($nutriente['quantity'] / $receta['recipe']['yield']) * $yield2, 0);
+                $nuevaReceta[$mealtype]['nutrientes'][$key] = $nutriente;
             }
             foreach ($receta['recipe']['ingredients'] as $key => $ingrediente) {
-                $receta['recipe']['ingredientes'][$key]['quantity'] = round(($ingrediente['quantity'] / $receta['recipe']['yield']) * $receta['recipe']['yield2'], 2);
-                $receta['recipe']['ingredientes'][$key]['measure'] = $ingrediente['measure'];
-                $receta['recipe']['ingredientes'][$key]['food'] = $ingrediente['food'];
-                $receta['recipe']['ingredientes'][$key]['image'] = $ingrediente['image'];
-                $receta['recipe']['ingredientes'][$key]['stringIngrediente'] = is_null($receta['recipe']['ingredientes'][$key]['measure']) ? $ingrediente['food'] : $receta['recipe']['ingredientes'][$key]['quantity'] . ' ' . $receta['recipe']['ingredientes'][$key]['measure'] . ' ' . $receta['recipe']['ingredientes'][$key]['food'];
+                $nuevaReceta[$mealtype]['ingredientes'][$key]['quantity'] = round(($ingrediente['quantity'] / $receta['recipe']['yield']) * $yield2, 2);
+                $nuevaReceta[$mealtype]['ingredientes'][$key]['measure'] = $ingrediente['measure'];
+                $nuevaReceta[$mealtype]['ingredientes'][$key]['food'] = $ingrediente['food'];
+                $nuevaReceta[$mealtype]['ingredientes'][$key]['image'] = $ingrediente['image'];
+                $nuevaReceta[$mealtype]['ingredientes'][$key]['stringIngrediente'] = is_null($ingrediente['measure']) ? $ingrediente['food'] : $ingrediente['quantity'] . ' ' . $ingrediente['measure'] . ' ' . $ingrediente['food'];
             }
         }
-        unset($receta['_links']);
-        return $receta;
+        return $nuevaReceta;
     }
 
     function getCaloriasAndMealPlan(int $numComidas, string $dieta): array {
@@ -161,8 +206,8 @@ class EdamamController extends \App\Core\BaseController {
         $nut = [];
         foreach ($mealplan as $comida) {
             if (!is_null($comida)) {
-                foreach ($comida as $key => $elemento) {
-                    array_push($nutrientesTotales, $elemento['recipe']['totalNutrients']);
+                foreach ($comida as $elemento) {
+                    array_push($nutrientesTotales, $elemento['nutrientes']);
                 }
             } else {
                 unset($mealplan[$comida]);
@@ -178,15 +223,4 @@ class EdamamController extends \App\Core\BaseController {
 
         return $nut;
     }
-
-    function getValoresChart(array $nutrientes): array {
-        $data['etiquetas'] = ['Proteinas', 'Grasas', 'Carbohidratos'];
-        $data['valores_etiquetas'] = [$nutrientes['Protein']['cantidadTotal'], $nutrientes['Fat']['cantidadTotal'], $nutrientes['Carbs']['cantidadTotal']];
-        $data['chart_colors'] = [
-            'rgb(255, 99, 132)',
-            'rgb(54, 162, 235)',
-            'rgb(255, 205, 86)'];
-        return $data;
-    }
-
 }

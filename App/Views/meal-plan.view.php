@@ -35,17 +35,17 @@
 
                                             <td class="td-img">
                                                 <img class="img" 
-                                                     src="<?php echo isset($infoComida['recipe']['image']) ? $infoComida['recipe']['image'] : '' ?>">
+                                                     src="<?php echo isset($infoComida['image']) ? $infoComida['image'] : '' ?>">
                                             </td>
                                             <td class="td-descript">
-                                                <p><?php echo isset($infoComida['recipe']['label']) ? $infoComida['recipe']['label'] : '' ?></p>
-                                                <span><?php echo isset($infoComida['recipe']['calories']) ? $infoComida['recipe']['calories'] . ' kcal' : '' ?> </span>
+                                                <p><?php echo isset($infoComida['label']) ? $infoComida['label'] : '' ?></p>
+                                                <span><?php echo isset($infoComida['calorias']) ? $infoComida['calorias'] . ' kcal' : '' ?> </span>
 
                                             </td>
 
                                             <td class="td-buttons">
                                                 <a><i class="fa-solid fa-rotate"></i></a>
-                                                <a href="/regenerar-receta/<?php echo $infoComida['recipe']['calories'] ?>/<?php echo $infoComida['recipe']['mealType'][0] ?>"><i class="fa-regular fa-thumbs-up"></i></a>
+                                                <a href="/regenerar-receta/"><i class="fa-regular fa-thumbs-up"></i></a>
                                                 <i class="fa-solid fa-eye" data-toggle="modal" data-target="<?php echo '#' . $nombre.$key ?>"></i>
                                             </td>
                                         </tr>
