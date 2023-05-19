@@ -7,7 +7,6 @@
                 <?php if (isset($mealPlan)) { ?>
                     <?php foreach ($mealPlan as $nombre => $comida) { ?>
                     <div class="box">
-
                         <div class="box-header">
                             <div class="box-header title">
                                 <h4 class="encabezado4"><?php echo strtoupper($nombre) ?></h4>
@@ -20,7 +19,7 @@
                                                name="completado">
                                         <label for="completado" class="input-text">Completado</label>
                                     </div>
-                                    <a><i class="fa-solid fa-rotate"></i></a>
+                                    <a href="/cambiar-comida/<?php echo $nombre?>"><i class="fa-solid fa-rotate"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -31,8 +30,6 @@
                                 <tbody>
                                     <?php foreach ($comida as $infoComida) { ?>
                                         <tr class="tr-general">
-
-
                                             <td class="td-img">
                                                 <img class="img" 
                                                      src="<?php echo isset($infoComida['image']) ? $infoComida['image'] : '' ?>">
@@ -44,13 +41,11 @@
                                             </td>
 
                                             <td class="td-buttons">
-                                                <a><i class="fa-solid fa-rotate"></i></a>
+                                                <a href="/cambiar-comida-especifica/<?php echo $infoComida['id_receta'];?>/<?php echo $infoComida['nombre_comida'];?>"><i class="fa-solid fa-rotate"></i></a>
                                                 <a href="/regenerar-receta/"><i class="fa-regular fa-thumbs-up"></i></a>
                                                 <i class="fa-solid fa-eye" data-toggle="modal" data-target="<?php echo '#' . $nombre.$key ?>"></i>
                                             </td>
                                         </tr>
-
-
                                     <?php } ?>
                                 </tbody>
 
@@ -63,7 +58,7 @@
 
 
                         </div>
-                    <?php } ?>
+                        <?php } ?>
             <?php } ?>
             </div>
     </div>

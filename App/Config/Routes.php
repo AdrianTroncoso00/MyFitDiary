@@ -45,6 +45,8 @@ $routes->get('meal-prueba', 'EdamamController::pruebaView');
 $routes->get('recipe-search', 'SearchRecipeController::showForm');
 $routes->get('recipes', 'SearchRecipeController::showRecipes');
 $routes->post('add', 'SearchRecipeController::addBookmark');
+$routes->get('cambiar-comida/(:any)', 'EdamamController::regenerarComidaEntera/$1');
+$routes->get('cambiar-comida-especifica/(:any)/(:any)', 'EdamamController::regenerarComidaEspecifica/$1/$2');
 
 $routes->get('prueba', 'SessionController::pruebaVista');
 $routes->get('logout', 'SessionController::logOut');

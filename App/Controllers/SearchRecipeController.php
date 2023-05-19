@@ -14,7 +14,6 @@ class SearchRecipeController extends \App\Core\BaseController {
     
     function getRequestCurlArray(string $parametros='', string $urlCompleta='') {
         $curl = curl_init();
-
         $options = array(
             CURLOPT_URL => empty($urlCompleta) ? self::URL_CONSULTA_BUSCADOR .'&'.$parametros : $urlCompleta,
             CURLOPT_RETURNTRANSFER => true, //Sin esta línea se haría un echo de la respuesta en vez de guardarse en una variable del tipo string
@@ -68,33 +67,111 @@ class SearchRecipeController extends \App\Core\BaseController {
     }
     
     function showRecipes(){
-        $cadenaParametros = $this->generarStringBuscadorRecetas($_GET);
-        $recetas = $this->getRequestCurlArray($cadenaParametros);
-        $recetasBuenas = $this->getAllNecesary($recetas);
-        $data['recetas']= $recetasBuenas;
-        $linkNextPage = $recetas['_links']['next']['href'];
-        $this->view->showViews(array('left-menu.view.php', 'recipe-search-results.view.php'), $data);
+        var_dump($_GET);
+        $resultados  = $this->generarStringBuscadorRecetas($_GET);
+        $cadenaParametros= $resultados['result'];
+        $errores= $resultados['errores'];
+        if(count($errores)==0){
+            var_dump($cadenaParametros);
+            $recetas = $this->getRequestCurlArray($cadenaParametros['cadenaTotal']);
+            $recetasBuenas = $this->getAllNecesary($recetas);
+            $data['recetas']= $recetasBuenas;
+            //$linkNextPage = $recetas['_links']['next']['href'];
+            $this->view->showViews(array('left-menu.view.php', 'recipe-search-results.view.php'), $data);   
+        }else{
+            $data['errores']=$errores;
+            var_dump($errores);
+            var_dump($cadenaParametros);
+            $this->view->showViews(array('left-menu.view.php', 'recipe-search-filtros.view.php'), $data);   
+            
+        }
     }
     
-    function generarStringBuscadorRecetas(array $params):string{
+    function generarStringBuscadorRecetas(array $params):array{
         $result=[];
-        if(isset($params['dishType'])){
-            $result['dishType'] = 'dishType=' .str_replace(' ','%20',implode('&dishType=', $params['dishType']));
+        $errores=[];
+        if(!empty($params)){
+            if(is_array($params['ingredients']) && count($params['ingredients'])==1 && !empty($params['ingredients'][0])){
+                $result['ingredients']= 'q=' .str_replace(' ','%20',implode('&q=', $params['ingredients']));
+            }
+            if(is_array($params['excluded']) && count($params['excluded'])==1 &&!empty($params['excluded'][0])){
+                $result['excluded']= 'excluded=' .str_replace(' ','%20',implode('&excluded=', $params['excluded']));
+            }
+            if(!empty($params['minCalories']) && !empty($params['maxCalories'])) {
+                if((is_numeric($params['minCalories']) && $params['minCalories']>0) && (is_numeric($params['maxCalories']) && $params['maxCalories']>0)){
+                    $result['calories']='calories='. $params['minCalories']. '-'. $params['maxCalories'];
+                }else{
+                    $errores['calories']='Las calorias tienen que ser un numero mayor que 0';
+                }
+
+            }else{
+                if(!empty($params['minCalories'])){
+                    if(is_numeric($params['minCalories']) && $params['minCalories']>0){
+                        $result['calories']='calories='. $params['minCalories'].'%2B';
+                    }else{
+                        $errores['calories']='Las calorias tienen que ser un numero mayor que 0';
+                    }
+                }
+                if(!empty($params['maxCalories'])){
+                    if(is_numeric($params['maxCalories']) && $params['maxCalories']>0){
+                        $result['calories']='calories='. $params['maxCalories'];
+                    }else{
+                        $errores['calories']='Las calorias tienen que ser un numero mayor que 0';
+
+                    }
+                }
+
+            }
+            if(!empty($params['timeMin']) && !empty($params['timeMax'])) {
+                if((is_numeric($params['timeMin']) && $params['timeMin']>0) && (is_numeric($params['timeMax']) && $params['timeMax']>0)){
+                    $result['time']='time='. $params['timeMin']. '-'. $params['timeMax'];
+                }else{
+                    $errores['time']='El tiempo tienen que ser un numero mayor que 0';
+                }
+
+            }else{
+                if(!empty($params['timeMin'])){
+                    if(is_numeric($params['timeMin']) && $params['timeMin']>0){
+                        $result['time']='time='. $params['timeMin'].'%2B';
+                    }else{
+                        $errores['time']='El tiempo tienen que ser un numero mayor que 0';
+                    }
+                }
+                if(!empty($params['timeMax'])){
+                    if(is_numeric($params['timeMax']) && $params['timeMax']>0){
+                        $result['time']='time='. $params['timeMax'];
+                    }else{
+                        $errores['time']='El tiempo tienen que ser un numero mayor que 0';
+
+                    }
+                }
+
+            }
+            if(!empty($params['dishType'])){
+                $result['dishType'] = 'dishType=' .str_replace(' ','%20',implode('&dishType=', $params['dishType']));
+            }
+            if(!empty($params['dietLabels'])){
+                $result['diet'] = 'diet=' .str_replace(' ','%20',implode('&diet=', $params['dietLabels']));
+            }
+            if(!empty($params['healthLabels'])){
+                $result['health'] = 'health=' .str_replace(' ','%20',implode('&health=', $params['healthLabels']));
+            }
+            if(!empty($params['cuisineType'])){
+                $result['cuisineType'] = 'cuisineType=' .str_replace(' ','%20',implode('&cuisineType=', $params['cuisineType']));
+            }
+        }else{
+            $errores['recipeSearch'] = 'Tiene que introducir minimo un parametro de busqueda';
         }
-        if(isset($params['dietLabels'])){
-            $result['diet'] = 'diet=' .str_replace(' ','%20',implode('&diet=', $params['dietLabels']));
-        }
-        if(isset($params['healthLabels'])){
-            $result['health'] = 'health=' .str_replace(' ','%20',implode('&health=', $params['healthLabels']));
-        }
-        if(isset($params['cuisineType'])){
-            $result['cuisineType'] = 'cuisineType=' .str_replace(' ','%20',implode('&cuisineType=', $params['cuisineType']));
-        }
+        
         $result['cadenaTotal']='';
         foreach ($result as $value) {
             $result['cadenaTotal'] .= '&'.$value;
         }
-        return trim($result['cadenaTotal'], '&');
+        $result['cadenaTotal']=trim($result['cadenaTotal'], '&');
+        return ([
+            'result'    =>$result,
+            'errores'   =>$errores
+        ]);
     }
     
     function getAllNecesary(array $recetas): array{
@@ -115,4 +192,5 @@ class SearchRecipeController extends \App\Core\BaseController {
         
         return $array;
     }
+    
 }

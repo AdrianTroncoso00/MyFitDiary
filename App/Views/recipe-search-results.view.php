@@ -14,7 +14,7 @@
             <div class="fs-1 fw-7 text-center mb-3">No result! <span class="noto">🙁</span></div>
             <div class="fs-5">We couldn't find recipes that match all of your requirements.</div>
             <div class="fs-5 mb-5">Please make sure there's no typo in your query.</div>
-            <a href="/" class="fw-6 fs-4">Try Again?</a>
+            <a href="/recipe-search" class="fw-6 fs-4">Try Again?</a>
         </div>
     <?php } else { ?>
         <!-- Show result -->
@@ -22,7 +22,7 @@
             <?php foreach ($recetas as $receta) { ?>
 
                 <!-- Cards -->
-                <div class="position-relative border-0 card col-3" style="width: 13rem;">
+                <div class="receta position-relative border-0 card col-3" style="width: 13rem;">
                     <!-- Card Image -->
 
                     <img class="card-img-top" src="<?php echo $receta['image'] ?>" alt="<?php echo $receta['label'] ?>">
@@ -57,7 +57,6 @@
                                         <!-- Image -->
                                         <div class="mb-3">
                                             <img src="<?php echo $receta['image'] ?>" alt="<?php echo $receta['label'] ?>">
-                                            <p><?php echo strlen($receta['image'])?></p>
                                         </div>
                                         <!-- Total Time and Calories -->
                                         <div class="small mb-4 lh-lg d-flex flex-wrap justify-content-between">
@@ -161,17 +160,17 @@
         </div>
     <?php } ?>
 </div>
-<div>
-    <button type="button" class="btn btn-primary justify-content-center align-self-center">
-        Mostrar Mas
-    </button>
-</div>
-
+<?php if(count($recetas)>19){?>
+    <div class="d-flex d-flex align-items-center justify-content-center">
+        <button type="button" class="btn btn-primary">
+            Mostrar Mas
+        </button>
+    </div>
+<?php } ?>
 <!-- To top -->
 
 
 
-<script>
-    <script src="assets/js/toggle.js"></script>
+
+<script src="assets/js/toggle.js"></script>
 <script src="assets/js/toTop.js"></script>
-</script>

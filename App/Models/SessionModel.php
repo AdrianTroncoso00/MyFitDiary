@@ -7,7 +7,7 @@ use \PDOException;
 class SessionModel extends \App\Core\BaseModel {
     
     const SELECT_USUARIOS_INFO_USUARIOS = 'SELECT usuarios.*, info_usuarios.genero, info_usuarios.objetivo, info_usuarios.edad, info_usuarios.imc, info_usuarios.metabolismo_basal, info_usuarios.calorias_mantenimiento,'
-            . 'info_usuarios.calorias_objetivo, info_usuarios.peso, info_usuarios.estatura, info_usuarios.nombre_completo, info_usuarios.num_comidas, act_fisica.descripcion_actividad, dietas.nombre_dieta, info_usuarios.porcent_desayuno, info_usuarios.porcent_brunch, info_usuarios.porcent_comida, info_usuarios.porcent_merienda, info_usuarios.porcent_cena';
+            . 'info_usuarios.calorias_objetivo, info_usuarios.peso, info_usuarios.estatura, info_usuarios.nombre_completo, info_usuarios.num_comidas, act_fisica.descripcion_actividad, dietas.nombre_dieta, info_usuarios.porcent_breakfast, info_usuarios.porcent_snack, info_usuarios.porcent_lunch, info_usuarios.porcent_merienda, info_usuarios.porcent_dinner';
     
     const LEFT_JOIN =' FROM usuarios LEFT JOIN info_usuarios ON usuarios.id = info_usuarios.id_usuario LEFT JOIN act_fisica ON info_usuarios.actividad_fisica = act_fisica.id_actividad LEFT JOIN dietas ON info_usuarios.dieta = dietas.id_dieta';
     

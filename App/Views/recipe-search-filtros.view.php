@@ -1,18 +1,53 @@
 <div class="my-3 text-left">
-    <h2 class="mb-3 fw-6 text-capitalize">hi,Prueba <span class="wave noto">👋</span></h2>
+    <h2 class="mb-3 fw-6 text-capitalize">hi,<?php echo $_SESSION['usuario']['nombre_completo']?> <span class="wave noto">👋</span></h2>
     <h5>Let's get cooking good looking!</h5>
 </div>
 
 <div class="form p-5">
-    <form action="/recipes" method="GET" autocomplete="off">
+    <form action="/recipes" method="get" autocomplete="off">
         <!-- Ingredients -->
         <div class="mb-5" id="ingredientsWrapper">
-            <p class="fw-normal" style="text-align: left!important;">Enter the first query or ingredient before adding more.</p>
+            <p class="fw-normal" style="text-align: left!important;">Enter the first query or ingredient before adding more.<span class="ms-1 small text-muted">(optional)</span></p>
             <div class="px-5 field mb-3">
-                <input type="text" class="border-0 me-2 form-control form-control-sm" name="ingredients" id="ingredients" 
+                <input type="text" class="border-0 me-2 form-control form-control-sm" name="ingredients[]"
                        placeholder="Enter query or ingredient" autofocus />
+                <span onclick="addField(this, 'ingredients')" class=" btn px-3 btn-primary">+</span>
+               <span onclick="removeField(this)" class=" btn px-3 btn-primary">−</span>
 
             </div>
+        </div>
+        <!-- Excluded element -->
+        <div class="mb-5" id="excludedWrapper">
+            <p class="fw-normal" style="text-align: left!important;">Enter the first query or ingredient before adding more.<span class="ms-1 small text-muted">(optional)</span></p>
+            <div class="px-5 field mb-3">
+                <input type="text" class="border-0 me-2 form-control form-control-sm" name="excluded[]" value=""
+                       placeholder="Enter query or ingredient" autofocus />
+                <span onclick="addField(this, 'excluded')" class=" btn px-3 btn-primary">+</span>
+               <span onclick="removeField(this)" class=" btn px-3 btn-primary">−</span>
+
+            </div>
+        </div>
+        <!-- Calories -->
+        <div class="mb-5" id="caloriesMinWrapper">
+            <label for="minCalories" style="text-align: left!important;">Enter the Min Calories<span class="ms-1 small text-muted">(optional)</span></label>
+            <input type="number" class="border-0 me-2 form-control form-control-sm" name="minCalories" value=" "
+                       placeholder="Enter min calories"/>
+        </div>
+        <div class="mb-5" id="caloriesMaxWrapper">
+            <label for="maxCalories" style="text-align: left!important;">Enter the Max Calories<span class="ms-1 small text-muted">(optional)</span></label>
+            <input type="number" class="border-0 me-2 form-control form-control-sm" name="maxCalories" value=" "
+                       placeholder="Enter max calories" />
+        </div>
+        <!-- Time -->
+        <div class="mb-5" id="timeMinWrapper">
+            <label for="time" style="text-align: left!important;">Enter Min Time cook<span class="ms-1 small text-muted">(optional)</span></label>
+            <input type="number" class="border-0 me-2 form-control form-control-sm" name="timeMin"
+                       placeholder="Enter time"/>
+        </div>
+        <div class="mb-5" id="timeMaxWrapper">
+            <label for="time" style="text-align: left!important;">Enter Max Time cook<span class="ms-1 small text-muted">(optional)</span></label>
+            <input type="number" class="border-0 me-2 form-control form-control-sm" name="timeMax"
+                       placeholder="Enter time"/>
         </div>
         <!-- Dish Type  -->
         <div class="mb-5" id="dishTypeWrapper">
@@ -30,9 +65,7 @@
         </div>
         <!-- Diet Labels  -->
         <div class="mb-5" id="dietLabelsWrapper">
-            <p class="fw-normal" style="text-align: left!important;">Diet Labels<span class="ms-1 small text-muted">(optional)</span>
-                <a href="javascript:void(0)" id="diet" class="toggler small text-muted ms-2 bi bi-chevron-down"></a>
-            </p>
+            <p class="fw-normal" style="text-align: left!important;">Diet Labels<span class="ms-1 small text-muted">(optional)</span></p>
             <div id="dietListWrapper" class="hide">
                 <div class="px-5 small d-flex flex-wrap justify-content-between mb-5">
                     <?php foreach ($dietas as $dieta) { ?>
@@ -46,9 +79,7 @@
         </div>
         <!-- Health Labels  -->
         <div class="mb-5" id="healthLabelsWrapper">
-            <p class="fw-normal" style="text-align: left!important;">Allergies / Restrictions<span class="ms-1 small text-muted">(optional)</span>
-                <a href="javascript:void(0)" id="health" class="toggler small text-muted ms-2 bi bi-chevron-down"></a>
-            </p>
+            <p class="fw-normal" style="text-align: left!important;">Allergies / Restrictions<span class="ms-1 small text-muted">(optional)</span></p>
             <div id="healthListWrapper" class="hide">
                 <div class="px-5 small d-flex flex-wrap justify-content-between mb-5" style="text-align: left!important;">
                    
@@ -66,9 +97,7 @@
         </div>
         <!-- Cuisine Type Labels  -->
         <div class="mb-5" id="cuisineTypeWrapper">
-            <p class="fw-normal" style="text-align: left!important;">Cuisine Type<span class="ms-1 small text-muted">(optional)</span>
-                <a href="javascript:void(0)" id="cuisine" class="toggler small text-muted ms-2 bi bi-chevron-down"></a>
-            </p>
+            <p class="fw-normal" style="text-align: left!important;">Cuisine Type<span class="ms-1 small text-muted">(optional)</span></p>
             <div id="cuisineListWrapper" class="hide">
                 <div class="px-5 small d-flex flex-wrap justify-content-between mb-5" style="text-align: left!important;">
                     
@@ -91,3 +120,4 @@
     </form>
 </div>
 
+ <script src="assets/js/dynamicTextField.js"></script>
