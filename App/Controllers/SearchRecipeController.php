@@ -46,7 +46,6 @@ class SearchRecipeController extends \App\Core\BaseController {
     function showForm(){
         $modeloTipoComida = new \App\Models\TipoComidaModel();
         $modeloTipoCocina = new \App\Models\TipoCocinaModel();
-        $modeloDieta = new \App\Models\DietaDiaModel();
         $modeloAlergenos = new \App\Models\AlergenosModel();
         $data['tipoComida'] = $modeloTipoComida->getAll();
         $data['tipoCocina'] = $modeloTipoCocina->getAll();

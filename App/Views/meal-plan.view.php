@@ -41,8 +41,8 @@
                                             </td>
 
                                             <td class="td-buttons">
-                                                <a href="/cambiar-comida-especifica/<?php echo $infoComida['id_receta'];?>/<?php echo $infoComida['nombre_comida'];?>"><i class="fa-solid fa-rotate"></i></a>
-                                                <a href="/regenerar-receta/"><i class="fa-regular fa-thumbs-up"></i></a>
+                                                <a href="/cambiar-comida-especifica/<?php echo $infoComida['id_receta'];?>/<?php echo $infoComida['nombre_comida']?>/<?php echo $infoComida['calorias_comida']?>"><i class="fa-solid fa-rotate"></i></a>
+                                                <a href="/eliminar-receta/<?php echo $infoComida['id_receta'];?>"><i class='fas fa-trash-alt'></i></a>
                                                 <i class="fa-solid fa-eye" data-toggle="modal" data-target="<?php echo '#' . $nombre.$key ?>"></i>
                                             </td>
                                         </tr>

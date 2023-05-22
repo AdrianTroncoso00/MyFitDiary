@@ -22,9 +22,8 @@ class SessionController extends \App\Core\BaseController {
         $modelo = new \App\Models\SessionModel();
         $usuario = $modelo->login($_POST['email'], $_POST['pass']);
         if (!is_null($usuario)) {
-            $_SESSION['usuario'] = $usuario;
-            var_dump($_SESSION['usuario']);
             $modelo->updateLastDate($_SESSION['usuario']['id']);
+            $_SESSION['usuario'] = $usuario;
             return redirect()->to('/meal-plan');
         } else {
             $data['input'] = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);

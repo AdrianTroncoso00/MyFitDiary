@@ -50,10 +50,12 @@ class ImcController extends \App\Core\BaseController {
 
     function showFormIMC() {
         $modeloDietas = new \App\Models\DietasModel();
-        $data['dietas'] = $modeloDietas->getAllDietas();
         $modeloActFis = new \App\Models\ActFisicaModel();
+        $modeloAlergenos = new \App\Models\AlergenosModel();
+        $data['dietas'] = $modeloDietas->getAllDietas();
         $data['actFis'] = $modeloActFis->getAllActFisica();
         $data['num_comidas'] = self::NUMERO_COMIDAS_DIARIAS;
+        $data['alergenos'] = $modeloAlergenos->getAll();
         return view('IMCform.view.php', $data);
     }
 
@@ -70,13 +72,7 @@ class ImcController extends \App\Core\BaseController {
             $m = array_merge($_SESSION['usuario'], $res);
             $modelo = new \App\Models\InfoUsuariosModel();
             if ($modelo->addInfoUsuario($res, $_SESSION['usuario']['id'])) {
-                $data['etiquetas'] = ['Proteinas', 'Grasas', 'Carbohidratos'];
-                $data['valores_etiquetas'] = [200, 10, 70];
-                $data['chart_colors'] = [
-                    'rgb(255, 99, 132)',
-                    'rgb(54, 162, 235)',
-                    'rgb(255, 205, 86)'];
-                return view('left-menu.view.php').view('meal-plan.view.php', $data);
+                return redirect()->to('/meal-plan');
             }
             $data['input'] = $input;
             $data['errores'] = $errores;
@@ -88,7 +84,6 @@ class ImcController extends \App\Core\BaseController {
             $act_fisica = $modeloActividad->getAllId();
             var_dump($errores);
             var_dump($_POST);
-            var_dump($act_fisica);
             $data['input'] = $input;
             $data['errores'] = $errores;
             $data['input'] = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
@@ -138,15 +133,7 @@ class ImcController extends \App\Core\BaseController {
             'caloriasObjetivo' => $caloriasObjetivo
         ]);
     }
-
-    function getPorcentageGraso(array $datos): float {
-        if (isset($datos ['genero']) && $datos['genero'] == 'masculino') {
-            return ((495 / (1.0324 - 0.19077 * log10($datos['cintura'] - $datos['cuello']) + 0.15456 * log10($datos['altura']))) - 450);
-        } else {
-            return ((495 / (1.29579 - 0.35004 * log10($datos['cintura'] + $datos['cadera'] - $datos['cuello']) + 0.22100 * log10($datos['altura']))) - 450);
-        }
-    }
-
+    
     function formaFisica(float $imc, int $edad): string {
         if ($edad >= 18) {
             if ($imc <= self::PORCENTAJES_IMC_ADULTOS['bajo']) {

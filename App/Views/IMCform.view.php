@@ -149,11 +149,22 @@
                         </select>
                     </div>
                     <div class="field">
-                        <label for="dieta">Dieta a seguir</label>
-                        <select id="dieta" name="dieta" value="<?php echo isset($input['dieta']) ? $input['dieta'] : ''; ?>" required>
+                        <label for="dietas[]">Dieta a seguir</label>
+                        <select class="form-select" multiple aria-label=".form-select" id="dieta" name="dietas[]" value="<?php echo isset($input['dieta']) ? $input['dieta'] : ''; ?>" required>
                             <option value="" disabled selected>-</option>
                             <?php foreach ($dietas as $dieta) { ?>
                                 <option value="<?php echo isset($dieta['id_dieta']) ? $dieta['id_dieta'] : 0 ?>"><?php echo isset($dieta['nombre_dieta']) ? $dieta['nombre_dieta'] : '' ?></option>
+                                <?php
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="alergenos">Alergenos</label>
+                        <select class="form-select" multiple aria-label=".form-select" id="alergenos" name="alergenos[]" value="<?php echo isset($input['alergenos']) ? $input['alergenos'] : ''; ?>" required>
+                            <option value="" disabled selected>-</option>
+                            <?php foreach ($alergenos as $alergeno) { ?>
+                                <option value="<?php echo $alergeno['id_alergenos']?>"><?php echo $alergeno['nombre_alergeno']?></option>
                                 <?php
                             }
                             ?>
