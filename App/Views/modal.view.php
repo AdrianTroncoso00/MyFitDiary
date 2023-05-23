@@ -9,7 +9,7 @@
                     <div class="col-auto px-4">
                         <!-- Image -->
                         <div class="mb-3">
-                            <img src="<?php echo $infoComida['recipe']['image'] ?>" alt="<?php echo $infoComida['recipe']['label'] ?>">
+                            <img src="<?php echo $infoComida['image'] ?>" alt="<?php echo $infoComida['label'] ?>">
                         </div>
                         <!-- Total Time and Calories -->
                         <div class="small mb-4 lh-lg d-flex flex-wrap justify-content-between">
@@ -18,25 +18,25 @@
                                 <span class="bi bi-stopwatch"></span>
                                 <!-- Handle error if no data for totalTime -->
 
-                                <span><?php echo $infoComida['recipe']['totalTime'] . ' Min' ?></span>
+                                <span><?php echo $infoComida['totalTime'] . ' Min' ?></span>
 
 
                             </small>
                             <!-- Calories -->
                             <small>
                                 <span class="bi bi-fire"></span>
-                                <span><?php echo $infoComida['recipe']['calories'] . ' kcal' ?></span>
+                                <span><?php echo $infoComida['calorias'] . ' kcal' ?></span>
                             </small>
                         </div>
                         <!-- View recipe -->
                         <div class="mb-3 text-center">
-                            <a href="<?php echo $infoComida['recipe']['url'] ?>" target=”_blank”><button type="button" class=" yellow px-5 btn btn-primary">View Full Recipe <span class="bi bi-box-arrow-up-right"></span></button></a>
+                            <a href="<?php echo $infoComida['url'] ?>" target=”_blank”><button type="button" class=" yellow px-5 btn btn-primary">View Full Recipe <span class="bi bi-box-arrow-up-right"></span></button></a>
                         </div>
                     </div>
                     <!-- Title, Source, & Ingredients -->
                     <div class="col px-4">
                         <!-- Title -->
-                        <div class="h3 pb-2 lh-sm text-capitalize"><?php echo $infoComida['recipe']['label'] ?></div>
+                        <div class="h3 pb-2 lh-sm text-capitalize"><?php echo $infoComida['label'] ?></div>
                         <!-- Source -->
 
                         <!-- Ingredients -->
@@ -44,7 +44,7 @@
                             <div class="lh-sm text-muted mb-2">Ingredients:</div>
                             <small class="lh-1 text-lowercase">
                                 <ul class="list-group border-top border-bottom list-group-flush mb-3">
-                                    <?php foreach ($infoComida['recipe']['ingredientes'] as $ingredient) { ?>
+                                    <?php foreach ($infoComida['ingredientes'] as $ingredient) { ?>
                                         <li class="list-group-item p-1"><?php echo $ingredient['stringIngrediente'] ?></li>
                                     <?php } ?>
                                 </ul>
@@ -60,25 +60,11 @@
                             <a href="javascript:void(0)" id="tag" class="toggler small text-muted ms-2 bi bi-chevron-down"></a>
                         </div>
                         <div class="mb-4 py-2 border-top border-bottom hide">
-                            <!-- Dish Tags -->
-
-                            <!-- Diet Tags -->
-                            <div class="mb-1">
-                                <div class="lh-sm small text-muted">Diet Type:</div>
-                                <small class="ps-2 lh-1 text-uppercase d-flex flex-wrap">
-                                    <?php foreach ($infoComida['recipe']['dietLabels'] as $dietLabel) { ?>
-                                        <small class="fw-4 p-2 mb-1 me-1 form"><?php echo $dietLabel ?></small>
-                                    <?php } ?>
-                                </small>
-                            </div>
-
                             <!-- Cuisine Tags -->
                             <div class="mb-1">
                                 <div class="lh-sm small text-muted">Cuisine Type:</div>
                                 <small class="ps-2 lh-1 text-uppercase d-flex flex-wrap">
-                                    <?php foreach ($infoComida['recipe']['cuisineType'] as $cuisine) { ?>
-                                        <small class="fw-4 p-2 mb-1 me-1 form"><?php echo $cuisine ?></small>
-                                    <?php } ?>
+                                    <small class="fw-4 p-2 mb-1 me-1 form"><?php echo $infoComida['cuisineType'] ?></small>
                                 </small>
                             </div>
                         </div>

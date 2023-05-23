@@ -1,10 +1,10 @@
 
-<?php if(isset($errorGuardar)){?>
+<?php if (isset($errorGuardar)) { ?>
     <div class="card bg-danger">
         <div class="card-body">
             <p><?php echo $errorGuardar ?></p>
         </div>
-  </div>
+    </div>
 <?php } ?>
 <!-- Result -->
 <div class="form col-12">
@@ -136,19 +136,19 @@
                                 <form action="/add" method="POST">
                                     <div class="row center">
                                         <div>
-                                            <input type="hidden" name="image" value="<?php echo $receta['image']?>">
+                                            <input type="hidden" name="image" value="<?php echo $receta['image'] ?>">
                                             <input type="hidden" name="label" value="<?php echo $receta['label'] ?>">
                                             <input type="hidden" name="url" value="<?php echo $receta['url'] ?>">
-                                            <input type="hidden" name="dietLabels" value="<?php echo implode(',',$receta['dietLabels']) ?>">
-                                            <input type="hidden" name="ingredientLines" value="<?php echo implode(',',$receta['ingredientLines'])?>">
+                                            <input type="hidden" name="dietLabels" value="<?php echo implode(',', $receta['dietLabels']) ?>">
+                                            <input type="hidden" name="ingredientLines" value="<?php echo implode(',', $receta['ingredientLines']) ?>">
                                             <input type="hidden" name="calories" value="<?php echo $receta['calories'] ?>">
                                             <input type="hidden" name="totalTime" value="<?php echo $receta['totalTime'] ?>">
-                                            <input type="hidden" name="cuisineType" value="<?php echo implode(',',$receta['cuisineType']) ?>">
-    
+                                            <input type="hidden" name="cuisineType" value="<?php echo implode(',', $receta['cuisineType']) ?>">
+
                                         </div>
                                         <div class="col text-center">
                                             <input type="submit" name="bookmark" id="bookmark" value="Bookmark" class="px-5 btn btn-primary">
-                                                   
+
                                         </div>
                                     </div>
                                 </form>
@@ -160,17 +160,10 @@
         </div>
     <?php } ?>
 </div>
-<?php if(count($recetas)>19){?>
-    <div class="d-flex d-flex align-items-center justify-content-center">
-        <button type="button" class="btn btn-primary">
-            Mostrar Mas
-        </button>
-    </div>
+<?php if(isset($nextPage)){?>
+<form method="post" action="next-page" class="d-flex d-flex align-items-center justify-content-center">
+    <input type="hidden" name="nextPage" value="<?php echo $nextPage ?>">
+    <input type="submit" target="_blank" name="submit" value="Next Page">
+</form>
 <?php } ?>
-<!-- To top -->
 
-
-
-
-<script src="assets/js/toggle.js"></script>
-<script src="assets/js/toTop.js"></script>

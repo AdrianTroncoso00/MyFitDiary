@@ -24,8 +24,8 @@ class ComidasModel extends \App\Core\BaseModel {
     }
     
     function addComida(int $id_usuario,array $datos, string $mealType, string $fecha):bool{
-        $statement = $this->pdo->prepare('INSERT INTO comidas (id_usuario, label, image, url, calorias, fecha_comida, totaltime, cuisinetype, ingredients, nombre_comida, nutrientes, yield) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)');
-        $statement->execute([$id_usuario,$datos['label'],$datos['image'],$datos['url'],$datos['calorias'],$fecha,$datos['totalTime'],implode($datos['cuisineType']),json_encode($datos['ingredientes']),$mealType,json_encode($datos['nutrientes']),$datos['yield']]);
+        $statement = $this->pdo->prepare('INSERT INTO comidas (id_usuario, label, image, url, calorias, fecha_comida, totaltime, cuisinetype, ingredients, nombre_comida, nutrientes, yield, healthlabels) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)');
+        $statement->execute([$id_usuario,$datos['label'],$datos['image'],$datos['url'],$datos['calorias'],$fecha,$datos['totalTime'],implode($datos['cuisineType']),json_encode($datos['ingredientes']),$mealType,json_encode($datos['nutrientes']),$datos['yield'], json_encode($datos['healthLabels'])]);
         return $statement->rowCount()==1;
     }
     
@@ -59,6 +59,13 @@ class ComidasModel extends \App\Core\BaseModel {
         $statement = $this->pdo->prepare('SELECT * FROM comidas WHERE id_usuario=? AND label =? AND fecha_comida >= ? AND fecha_comida <=?');
         $statement->execute([$id_usuario, $nombreComida, $fechaFinal, $fecha]);
         return $statement->rowCount()>0;
+    }
+    
+    function existeRecetaEspecificaDia(int $id_usuario, string $mealType, string $label, string $fecha):bool{
+        $statement = $this->pdo->prepare('SELECT * FROM comidas WHERE id_usuario=? AND nombre_comida LIKE ? AND label=? AND fecha_comida=?');
+        $nombreComida = $mealType.'%';
+        $statement->execute([$id_usuario,$nombreComida,$label,$fecha]);
+        return $statement->rowCount()==1;
     }
 }
 

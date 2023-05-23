@@ -56,6 +56,21 @@ class SearchRecipeController extends \App\Core\BaseController {
         
     }
     
+    function mostrarPaginaAnterior(){
+        
+    }
+    
+    function mostrarPaginaSiguiente(){
+        $recetas= $this->getRequestCurlArray('', $_POST['nextPage']);
+        if(count($recetas)>0){
+            $recetasBuenas = $this->getAllNecesary($recetas);
+            $data['recetas']= $recetasBuenas;
+            $linkNextPage = $recetas['_links']['next']['href'];
+            $data['nextPage']= $linkNextPage;
+            $this->view->showViews(array('left-menu.view.php', 'recipe-search-results.view.php'), $data);   
+        }
+    }
+    
     function addBookmark(){
         $modelo = new \App\Models\RecetasFavoritasModel();  
         if($modelo->addRecetaFavorita($_SESSION['usuario']['id'], $_POST)){
@@ -74,14 +89,14 @@ class SearchRecipeController extends \App\Core\BaseController {
         if(count($errores)==0){
             var_dump($cadenaParametros);
             $recetas = $this->getRequestCurlArray($cadenaParametros['cadenaTotal']);
+            var_dump($recetas);
             $recetasBuenas = $this->getAllNecesary($recetas);
             $data['recetas']= $recetasBuenas;
-            //$linkNextPage = $recetas['_links']['next']['href'];
+            $linkNextPage = $recetas['_links']['next']['href'];
+            $data['nextPage']= $linkNextPage;
             $this->view->showViews(array('left-menu.view.php', 'recipe-search-results.view.php'), $data);   
         }else{
             $data['errores']=$errores;
-            var_dump($errores);
-            var_dump($cadenaParametros);
             $this->view->showViews(array('left-menu.view.php', 'recipe-search-filtros.view.php'), $data);   
             
         }
