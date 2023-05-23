@@ -22,8 +22,8 @@ class SessionController extends \App\Core\BaseController {
         $modelo = new \App\Models\SessionModel();
         $usuario = $modelo->login($_POST['email'], $_POST['pass']);
         if (!is_null($usuario)) {
-            $modelo->updateLastDate($_SESSION['usuario']['id']);
             $_SESSION['usuario'] = $usuario;
+            $modelo->updateLastDate($_SESSION['usuario']['id']);
             return redirect()->to('/meal-plan');
         } else {
             $data['input'] = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
@@ -40,16 +40,16 @@ class SessionController extends \App\Core\BaseController {
             $modelo = new \App\Models\SessionModel();
             $exito = $modelo->signUp($_POST);
             if ($exito) {
-                $user = $modelo->login($_POST['email'], $_POST['pass']);
-                if (!is_null($user)) {
-                    $_SESSION['usuario'] = $user;
-                    $modeloDietas = new \App\Models\DietasModel();
-                    $data['dietas']=$modeloDietas->getAllDietas();
-                    $modeloActFis= new \App\Models\ActFisicaModel();
-                    $data['actFis']=$modeloActFis->getAllActFisica();
-                    $data['num_comidas']= self::NUM_COMIDAS_DIARIAS;
-                    return view('IMCform.view.php', $data);
-                }
+                $modeloDietas = new \App\Models\DietasModel();
+                $modeloActFis= new \App\Models\ActFisicaModel();
+                $modeloAlergenos= new \App\Models\AlergenosModel();
+                $data['dietas']=$modeloDietas->getAllDietas();
+                $data['alergenos']= $modeloAlergenos->getAll();
+                $data['actFis']=$modeloActFis->getAllActFisica();
+                $data['num_comidas']= self::NUM_COMIDAS_DIARIAS;
+                return view('IMCform.view.php', $data);
+                
+                
             } else {
                 $data['input'] = $input;
                 $data['errores']['error'] = 'error indeterminado al guardar';

@@ -58,44 +58,27 @@
                             </a>
                         </li>
                         <li>
-                            <a class="nav-link" href="./user.html">
-                                <i class="nc-icon nc-circle-09"></i>
-                                <p>plan personal</p>
+                            <a class="nav-link" href="/meal-plan">
+                                <i class="fa-solid fa-utensils"></i>
+                                <p>Plan Alimenticio</p>
                             </a>
                         </li>
                         <li>
-                            <a class="nav-link" href="./table.html">
-                                <i class="nc-icon nc-notes"></i>
-                                <p>Table List</p>
+                            <a class="nav-link" href="/recipe-search">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <p>Buscador de Recetas</p>
                             </a>
                         </li>
                         <li>
-                            <a class="nav-link" href="./typography.html">
-                                <i class="nc-icon nc-paper-2"></i>
-                                <p>Typography</p>
+                            <a class="nav-link" href="/imc">
+                                <i class="fa-solid fa-gear"></i>
+                                <p>Configuracion dieta</p>
                             </a>
                         </li>
-                        <li>
-                            <a class="nav-link" href="./icons.html">
-                                <i class="nc-icon nc-atom"></i>
-                                <p>Icons</p>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="nav-link" href="./maps.html">
-                                <i class="nc-icon nc-pin-3"></i>
-                                <p>Maps</p>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="nav-link" href="./notifications.html">
-                                <i class="nc-icon nc-bell-55"></i>
-                                <p>Notifications</p>
-                            </a>
-                        </li>
+                        
                         <li class="nav-item active active-pro">
                             <a class="nav-link active" href="upgrade.html">
-                                <i class="fa-solid fa-arrow-up"></i>
+                                <i class="fa-sharp fa-solid fa-rocket"></i>
                                 <p>Upgrade to PRO</p>
                             </a>
                         </li>

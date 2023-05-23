@@ -61,9 +61,9 @@ class ImcController extends \App\Core\BaseController {
 
     function mostrarResForm() {
         $data = [];
-        $errores = $this->checkForm($_POST);
+        //$errores = $this->checkForm($_POST);
         $input = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
-        if (count($errores) == 0) {
+        //if (count($errores) == 0) {
             $imc = $this->calcularImc($_POST['peso'], $_POST['altura']);
             $calorias = $this->getTMB($_POST);
             $data['forma_fisica'] = $this->formaFisica($imc, $_POST['edad']);
@@ -74,26 +74,26 @@ class ImcController extends \App\Core\BaseController {
             if ($modelo->addInfoUsuario($res, $_SESSION['usuario']['id'])) {
                 return redirect()->to('/meal-plan');
             }
-            $data['input'] = $input;
-            $data['errores'] = $errores;
-            $data['input'] = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
-            return view('IMCform.view.php', $data);
-        } else {
-            $modeloActividad = new \App\Models\ActFisicaModel();
-
-            $act_fisica = $modeloActividad->getAllId();
-            var_dump($errores);
-            var_dump($_POST);
-            $data['input'] = $input;
-            $data['errores'] = $errores;
-            $data['input'] = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
-            $modeloActFis = new \App\Models\ActFisicaModel();
-            $data['actFis'] = $modeloActFis->getAllActFisica();
-            $data['num_comidas'] = self::NUMERO_COMIDAS_DIARIAS;
-            $modeloDietas = new \App\Models\DietasModel();
-            $data['dietas'] = $modeloDietas->getAllDietas();
-            return view('IMCform.view.php', $data);
-        }
+//            $data['input'] = $input;
+//            $data['errores'] = $errores;
+//            $data['input'] = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
+//            return view('IMCform.view.php', $data);
+        //} else {
+//            $modeloActividad = new \App\Models\ActFisicaModel();
+//
+//            $act_fisica = $modeloActividad->getAllId();
+//            var_dump($errores);
+//            var_dump($_POST);
+//            $data['input'] = $input;
+//            $data['errores'] = $errores;
+//            $data['input'] = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
+//            $modeloActFis = new \App\Models\ActFisicaModel();
+//            $data['actFis'] = $modeloActFis->getAllActFisica();
+//            $data['num_comidas'] = self::NUMERO_COMIDAS_DIARIAS;
+//            $modeloDietas = new \App\Models\DietasModel();
+//            $data['dietas'] = $modeloDietas->getAllDietas();
+//            return view('IMCform.view.php', $data);
+        //}
     }
 
     function calcularImc(float $peso, float $altura): float {
