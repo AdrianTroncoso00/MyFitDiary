@@ -43,12 +43,9 @@ class EdamamController extends \App\Core\BaseController {
     }
     
     function prueba(){
-        var_dump($_SESSION['usuario']);
-        var_dump(self::ARRAY_MACROS);
-        $h= $this->generarQuery($_SESSION['usuario']['nombre_dieta'], 'Breakfast', self::ARRAY_MACROS, self::ALERGIAS);
-        var_dump($h);
-        $macros = $this->getMacrosComida(self::ARRAY_MACROS, 'Breakfast');
-        var_dump($macros);
+        $randoms = range(0, 5);
+        shuffle($randoms);
+        var_dump($randoms);
     }
     
     function getRequestCurlArray(string $query){
@@ -130,30 +127,23 @@ class EdamamController extends \App\Core\BaseController {
     function regenerarComidaEntera(string $mealType) {
         $fecha = date("j-n-Y");
         $modeloComida = new \App\Models\ComidasModel();
-        $recetasComidaEntera = $modeloComida->getComida($_SESSION['usuario']['id'], $mealType, $fecha);
-        $recetaEliminada = count($recetasComidaEntera)==1 ? true: false;
         $calorias = $this->getCaloriasComida($mealType);
-        $comidas = $recetaEliminada ? $this->getComida($_SESSION['usuario']['nombre_dieta'], $mealType, $calorias, $recetaEliminada) : $this->getComida($_SESSION['usuario']['nombre_dieta'], $mealType, $calorias);
-        $numComida = 1;
-        foreach ($comidas as $comida) {
-            
-            if (!$modeloComida->modificarComida($_SESSION['usuario']['id'], $fecha, ($mealType . $numComida), $comida)) {
+        $comidas = $this->getComida($_SESSION['usuario']['nombre_dieta'], $mealType, $calorias);
+        foreach ($comidas as $key=>$comida) {
+            var_dump($comida);
+            var_dump($mealType . ($key+1));
+            if (!$modeloComida->modificarComida($_SESSION['usuario']['id'], $fecha, ($mealType . ($key+1)), $comida)) {
                 var_dump('ho');
                 $data['error'] = 'No se ha podido regenerar la comida';
-                $this->view->showViews(array('left-menu.view.php', 'meal-plan.view.php'), $data);
             }
-            $numComida++;
+ 
         }
         return redirect()->to('meal-plan');
     }
 
     function regenerarComidaEspecifica(int $id_receta, string $nombreComida, int $caloriasComida) {
-        $fecha = date("j-n-Y");
         $modeloComida = new \App\Models\ComidasModel();
         $receta = $this->getComida($_SESSION['usuario']['nombre_dieta'], substr($nombreComida, 0, -1), $caloriasComida);
-        if($modeloComida->existeRecetaEspecificaDia($_SESSION['usuario']['id'], $nombreComida, $receta[0]['label'], $fecha)){
-            $this->regenerarComidaEspecifica($id_receta, $nombreComida, $caloriasComida);
-        }
         if ($modeloComida->modificarRecetaEspecifica($id_receta, $receta[0], $nombreComida, $receta)) {
             return redirect()->to('/meal-plan');
         } else {
@@ -172,12 +162,13 @@ class EdamamController extends \App\Core\BaseController {
         }
     }
     
-    function getComida(string $dieta, string $mealType, int $calorias, bool $recetaEliminada=false) {
+    function getComida(string $dieta, string $mealType, int $calorias) {
         $modelo = new \App\Models\ComidasModel();
         $dia = date("j-n-Y");
         $query= $this->generarQuery($dieta, $mealType);
         $recetas = $this->getRequestCurlArray($query);
-        if ($calorias <= 450 || $recetaEliminada) {
+        
+        if ($calorias <= 450) {
             $receta = $this->obtenerRecetasSinRepetir($recetas, $mealType, $calorias, 1);
             if ($modelo->existeComidaDia($dia, $_SESSION['usuario']['id'], $mealType)) {
                 return $receta;
@@ -200,22 +191,31 @@ class EdamamController extends \App\Core\BaseController {
 
     function obtenerRecetasSinRepetir(array $recetas, string $mealType, int $calorias, int $numComidas): array {
         $modelo = new \App\Models\ComidasModel();
+        $numRecetas = count($recetas)-1;
         $dia = date("j-n-Y");
         $recetasInput = [];
-        for ($i = 0; $i < $numComidas; $i++) {
-            $caloriasInput= $numComidas==1 ? $calorias : $calorias/2;
-            $receta = $recetas[rand(0, count($recetas) - 1)];
-            if ($modelo->existeComidaSemana($_SESSION['usuario']['id'], $receta['recipe']['label'], $dia) || in_array($receta, $recetasInput)) {
-                $this->obtenerRecetasSinRepetir($recetas, $mealType, $calorias, $numComidas);
+        $randoms = range(0,1);
+        shuffle($randoms);
+        var_dump($numComidas);
+        $caloriasInput= $numComidas==1 ? $calorias : $calorias/2;
+        for($j=0; $j<2; $j++){
+            foreach($randoms as $random){
+                $receta = $recetas[$random];
+                if (!$modelo->existeComidaSemana($_SESSION['usuario']['id'], $receta['recipe']['label'], $dia) && !in_array($receta, $recetasInput)) {
+                    var_dump($random);
+                    $receta = $this->modifyReceta($recetas[$random], $caloriasInput, $mealType);
+                    $recetasInput[$j]= $receta;
+                    unset($randoms[$random]);
+                }
+                unset($recetas[$random]);
             }
-            $recetasInput[$i] = $this->modifyReceta($receta, $caloriasInput, $mealType);
         }
+        var_dump($randoms);
         return $recetasInput;
     }
 
     function modifyReceta(array $receta, float $calorias, string $mealType): array {
         $nuevaReceta = [];
-        var_dump($receta);
         $caloriasRacion = $receta['recipe']['calories']==0 ? 0 : round(($receta['recipe']['calories'] / $receta['recipe']['yield']), 0);
         $yield = $caloriasRacion==0 ? 1 : round(($calorias / $caloriasRacion), 0);
         $nuevaReceta['url'] = $receta['recipe']['url'];

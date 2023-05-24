@@ -41,6 +41,7 @@ $routes->get('imc', 'ImcController::showFormIMC');
 $routes->post('imc', 'ImcController::mostrarResForm');
 $routes->get('prueba', 'EdamamController::prueba');
 $routes->get('meal-plan', 'EdamamController::getMealPlanDiario');
+$routes->post('meal-plan', 'EdamamController::prueba');
 $routes->get('meal-prueba', 'EdamamController::pruebaView');
 $routes->get('recipe-search', 'SearchRecipeController::showForm');
 $routes->get('recipes', 'SearchRecipeController::showRecipes');

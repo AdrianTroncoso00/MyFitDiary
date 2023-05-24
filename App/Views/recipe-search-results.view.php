@@ -160,7 +160,7 @@
         </div>
     <?php } ?>
 </div>
-<?php if(isset($nextPage)){?>
+<?php if(!is_null($nextPage)){?>
 <form method="post" action="next-page" class="d-flex d-flex align-items-center justify-content-center">
     <input type="hidden" name="nextPage" value="<?php echo $nextPage ?>">
     <input type="submit" target="_blank" name="submit" value="Next Page">

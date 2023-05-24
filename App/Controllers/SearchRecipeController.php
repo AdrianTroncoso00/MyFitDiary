@@ -48,6 +48,8 @@ class SearchRecipeController extends \App\Core\BaseController {
         $modeloTipoCocina = new \App\Models\TipoCocinaModel();
         $modeloAlergenos = new \App\Models\AlergenosModel();
         $modeloDieta = new \App\Models\DietasModel();
+        $modeloNombreComida = new \App\Models\NombreComidasModel();
+        $data['nombreComidas']= $modeloNombreComida->getAllNombresComidas();
         $data['tipoComida'] = $modeloTipoComida->getAll();
         $data['tipoCocina'] = $modeloTipoCocina->getAll();
         $data['dietas'] = $modeloDieta->getAllDietas();
@@ -65,7 +67,7 @@ class SearchRecipeController extends \App\Core\BaseController {
         if(count($recetas)>0){
             $recetasBuenas = $this->getAllNecesary($recetas);
             $data['recetas']= $recetasBuenas;
-            $linkNextPage = $recetas['_links']['next']['href'];
+            $linkNextPage = isset($recetas['_links']['next']['href']) ? $recetas['_links']['next']['href'] : null;
             $data['nextPage']= $linkNextPage;
             $this->view->showViews(array('left-menu.view.php', 'recipe-search-results.view.php'), $data);   
         }
@@ -92,7 +94,7 @@ class SearchRecipeController extends \App\Core\BaseController {
             var_dump($recetas);
             $recetasBuenas = $this->getAllNecesary($recetas);
             $data['recetas']= $recetasBuenas;
-            $linkNextPage = $recetas['_links']['next']['href'];
+            $linkNextPage = isset($recetas['_links']['next']['href']) ? $recetas['_links']['next']['href'] : null;
             $data['nextPage']= $linkNextPage;
             $this->view->showViews(array('left-menu.view.php', 'recipe-search-results.view.php'), $data);   
         }else{
@@ -161,6 +163,10 @@ class SearchRecipeController extends \App\Core\BaseController {
                     }
                 }
 
+            }
+            if(!empty($params['mealType'])){
+                $result['mealType'] = 'mealType=' .str_replace(' ','%20',implode('&mealType=', $params['mealType']));
+                
             }
             if(!empty($params['dishType'])){
                 $result['dishType'] = 'dishType=' .str_replace(' ','%20',implode('&dishType=', $params['dishType']));

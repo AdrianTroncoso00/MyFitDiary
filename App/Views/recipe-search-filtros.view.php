@@ -50,6 +50,18 @@
                        placeholder="Enter time"/>
         </div>
         <!-- Dish Type  -->
+        <div class="mb-5" id="mealTypeWrapper">
+            <p class="fw-normal" style="text-align: left!important;">Nombre Comidas<span class="ms-1 small text-muted">(optional)</span> </p>
+            <div id="mealWrapper" class="hide">
+                <div class="px-5 small d-flex flex-wrap justify-content-between mb-5">
+                    <?php foreach($nombreComidas as $nombre_comida){ ?>
+                    <div class="mb-3 col-sm-6">
+                        <input type="checkbox" name="mealType[]" value="<?php echo $nombre_comida['nombre_comida'] ?>">
+                        <label class="form-check-label" for="<?php echo $nombre_comida['nombre_comida']?>"><?php echo $nombre_comida['nombre_comida']?></label>
+                    </div>
+                    <?php } ?>
+                </div>
+            </div>
         <div class="mb-5" id="dishTypeWrapper">
             <p class="fw-normal" style="text-align: left!important;">Dish Type<span class="ms-1 small text-muted">(optional)</span> </p>
             <div id="dishListWrapper" class="hide">
