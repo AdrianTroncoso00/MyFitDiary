@@ -3,8 +3,7 @@
         <label for='fecha' class='form-label mt-2'>
             Fecha
         </label>
-        <input class='form-control align-self-center justify-content-center' type='date' name='fecha' id='fecha' value="<?php echo isset($input['fecha']) ? $input['fecha'] : '' ?>">
-        <p class='text-danger'><?php echo isset($errores['fecha']) ? $errores['fecha'] : '' ?></p>
+        <input class='form-control align-self-center justify-content-center' type='date' name='fecha' id='fecha' value="<?php echo $fecha?>" placeholder="<?php echo $fecha?>">
         <input type="submit" target="_blank" name="submit" value="Get Meal Plan">
     </form>
 </div>
@@ -30,7 +29,7 @@
                                                name="completado">
                                         <label for="completado" class="input-text">Completado</label>
                                     </div>
-                                    <a href="/cambiar-comida/<?php echo $nombre ?>"><i class="fa-solid fa-rotate"></i></a>
+                                    <a href="/cambiar-comida/<?php echo $nombre ?>/<?php echo $fecha?>"><i class="fa-solid fa-rotate"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -49,7 +48,7 @@
                                     </div>
 
                                     <div class="td-buttons">
-                                        <a href="/cambiar-comida-especifica/<?php echo $infoComida['id_receta']; ?>/<?php echo $infoComida['nombre_comida'] ?>/<?php echo $infoComida['calorias_comida'] ?>"><i class="fa-solid fa-rotate"></i></a>
+                                        <a href="/cambiar-comida-especifica/<?php echo $infoComida['id_receta']; ?>/<?php echo $infoComida['nombre_comida'] ?>/<?php echo $infoComida['calorias_comida'] ?>/<?php echo $fecha?>"><i class="fa-solid fa-rotate"></i></a>
                                         <a href="/eliminar-receta/<?php echo $infoComida['id_receta']; ?>"><i class='fas fa-trash-alt'></i></a>
                                         <i class="fa-solid fa-eye" data-toggle="modal" data-target="<?php echo '#' . $nombre . $key ?>"></i>
                                     </div>

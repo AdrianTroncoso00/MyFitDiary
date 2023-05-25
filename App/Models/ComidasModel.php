@@ -54,11 +54,26 @@ class ComidasModel extends \App\Core\BaseModel {
         return $statemetn->rowCount()>0;
     }
     
+    function eliminarComidasPasadas(string $dia):bool{
+        $date = date("j-n-Y", strtotime($dia));
+        $statement = $this->pdo->prepare('DELETE FROM comidas WHERE fecha_comida<?');
+        $statement->execute([$date]);
+        return $statement->rowCount()>0;
+    }
+    
     function existeComidaSemana(int $id_usuario, string $nombreComida, string $fecha):bool{
         $fechaFinal = date("j-n-Y", strtotime($fecha."-1 week"));
         $statement = $this->pdo->prepare('SELECT * FROM comidas WHERE id_usuario=? AND label =? AND fecha_comida >= ? AND fecha_comida <=?');
         $statement->execute([$id_usuario, $nombreComida, $fechaFinal, $fecha]);
         return $statement->rowCount()>0;
+    }
+    function getComidasSemana(int $id_usuario,string $fecha):?array{
+        $fechaFinal = date("j-n-Y", strtotime($fecha."-1 week"));
+        $statement = $this->pdo->prepare('SELECT * FROM comidas WHERE id_usuario=? AND fecha_comida >= ? AND fecha_comida <=?');
+        var_dump($fechaFinal);
+        var_dump($fecha);
+        $statement->execute([$id_usuario,$fechaFinal, $fecha]);
+        return $statement->rowCount()>0 ? $statement->fetchAll() : null;
     }
     
     function existeRecetaEspecificaDia(int $id_usuario, string $mealType, string $label, string $fecha):bool{
