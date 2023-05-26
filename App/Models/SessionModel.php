@@ -58,10 +58,12 @@ class SessionModel extends \App\Core\BaseModel {
     function getIdByEmail(string $email):int{
         $statement = $this->pdo->prepare('SELECT id FROM usuarios WHERE email=?');
         $statement->execute([$email]);
-        if($statement->rowCount()>0){
-            return $statement->fetchAll()[0]['id'];
-        }
-        return 0;
+        return $statement->rowCount()>0 ? $statement->fetchAll()[0]['id'] : 0;
     }
-
+    
+    function getInfoById(int $id):?array{
+        $statement = $this->pdo->prepare(self::SELECT_USUARIOS_INFO_USUARIOS . self::LEFT_JOIN ." WHERE id=?");
+        $statement->execute([$id]);
+        return $statement->rowCount()>0 ? $statement->fetchAll() : null;
+    }
 }

@@ -61,50 +61,41 @@ class ImcController extends \App\Core\BaseController {
 
     function mostrarResForm() {
         $data = [];
-        //$errores = $this->checkForm($_POST);
+        $modeloSesion = new \App\Models\SessionModel();
+        $errores = $this->checkForm($_POST);
+        var_dump($_POST);
         $input = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
-        //if (count($errores) == 0) {
+        if (count($errores) == 0) {
             $imc = $this->calcularImc($_POST['peso'], $_POST['altura']);
             $calorias = $this->getTMB($_POST);
             $data['forma_fisica'] = $this->formaFisica($imc, $_POST['edad']);
-            $res = array_merge($_POST, $calorias);
-            $res['imc'] = $imc;
-            $m = array_merge($_SESSION['usuario'], $res);
             $modelo = new \App\Models\InfoUsuariosModel();
-            if ($modelo->addInfoUsuario($res, $_SESSION['usuario']['id'])) {
+            if ($modelo->addInfoUsuario($_POST, $_SESSION['usuario']['id'], $imc, $calorias)) {
+                $infoUsuario = $modeloSesion->getInfoById($_SESSION['usuario']['id']);
+                $_SESSION['usuario']= $infoUsuario;
+                var_dump($_SESSION['usuario']);
                 return redirect()->to('/meal-plan');
             }
-//            $data['input'] = $input;
-//            $data['errores'] = $errores;
-//            $data['input'] = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
-//            return view('IMCform.view.php', $data);
-        //} else {
-//            $modeloActividad = new \App\Models\ActFisicaModel();
-//
-//            $act_fisica = $modeloActividad->getAllId();
-//            var_dump($errores);
-//            var_dump($_POST);
-//            $data['input'] = $input;
-//            $data['errores'] = $errores;
-//            $data['input'] = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
-//            $modeloActFis = new \App\Models\ActFisicaModel();
-//            $data['actFis'] = $modeloActFis->getAllActFisica();
-//            $data['num_comidas'] = self::NUMERO_COMIDAS_DIARIAS;
-//            $modeloDietas = new \App\Models\DietasModel();
-//            $data['dietas'] = $modeloDietas->getAllDietas();
-//            return view('IMCform.view.php', $data);
-        //}
+            $data['input'] = $input;
+            $data['errores'] = $errores;
+            $data['input'] = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
+            return view('IMCform.view.php', $data);
+        } else {
+            var_dump($errores);
+            $this->showFormIMC();
+        }
     }
 
     function calcularImc(float $peso, float $altura): float {
-        $altura = $altura / 100;
-        return round(($peso / (pow($altura, 2))), 2);
+        $alturaM = $altura / 100;
+        return round(($peso / (pow($alturaM, 2))), 2);
     }
 
     function getTMB(array $datos): array {
         if (isset($datos['genero']) && $datos['genero'] == 'masculino') {
             $tbd = 88.362 + (13.397 * $datos['peso']) + (4.799 * $datos['altura']) - (5.677 * $datos['edad']);
-        } else {
+        } 
+        if (isset($datos['genero']) && $datos['genero'] == 'femenino'){
             $tbd = 447.593 + (9.247 * $datos['peso']) + (3.098 * $datos['altura']) - (4.330 * $datos['edad']);
         }
         if ($datos['actividad'] == self::SEDENTARIO) {
@@ -184,17 +175,28 @@ class ImcController extends \App\Core\BaseController {
         $errores = [];
         $modeloActividad = new \App\Models\ActFisicaModel();
         $modeloDietas = new \App\Models\DietasModel();
+//        $modeloAlergenos = new \App\Models\AlergenosModel();
+        
         $act_fisica = $modeloActividad->getAllId();
-        $dietas = $modeloDietas->getAllDietas();
-
+        var_dump($act_fisica);
+        $dietas = $modeloDietas->getAllIdDietas();
+        var_dump($dietas);
+//        $alergenos = $modeloAlergenos->getAllIdAlergenos();
+        if (empty($datos['nombre'])){
+            $errores['nombre']= 'Este campo es obligatorio';
+        }else{
+//            if(!preg_match('/[a-zA-Z ]{8,}/', $datos['nombre'])){
+//                $errores['nombre']= 'solo puede estar formado por letras con una longitud minima de 8 caracteres';
+//            }
+        }
         if (empty($datos['genero'])) {
             $errores['genero'] = 'este campo es obligatorio';
         } else {
-//            if($datos['genero'] !=='masculino' || $datos['genero']!=='femenino'){
-//                $errores['genero']='El genero solo puede ser masculino o femenino';
-//            }      
+            if($datos['genero'] !=='masculino' && $datos['genero']!=='femenino'){
+                $errores['genero']='El genero solo puede ser masculino o femenino';
+            }      
         }
-        if (!isset($datos['edad'])) {
+        if (empty($datos['edad'])) {
             $errores['edad'] = 'el campo edad es obligatorio';
         } else {
             if (!is_numeric($datos['edad'])) {
@@ -204,7 +206,7 @@ class ImcController extends \App\Core\BaseController {
                 $errores['edad'] = 'la edad tiene que estar comprendida entre 12 y 100 años';
             }
         }
-        if (!isset($datos['peso'])) {
+        if (empty($datos['peso'])) {
             $errores['peso'] = 'el campo peso es obligatorio';
         } else {
             if (!is_numeric($datos['peso'])) {
@@ -214,7 +216,7 @@ class ImcController extends \App\Core\BaseController {
                 $errores['edad'] = 'introduzca un peso en KG valido';
             }
         }
-        if (!isset($datos['altura'])) {
+        if (empty($datos['altura'])) {
             $errores['altura'] = 'la altura es obligatoria';
         } else {
             if (!is_numeric($datos['altura'])) {
@@ -225,16 +227,22 @@ class ImcController extends \App\Core\BaseController {
             }
         }
         if (empty($datos['actividad'])) {
-            $errores['actividad'] = 'este campo es obligatorio';
+            $errores['actividad'] = 'Este campo es obligatorio';
         } else {
-//            if(!in_array($datos['actividad'], $act_fisica)){
-//                $errores['actividad']='tiene que seleccionar una opcion correcta';
-//            }
+            $i=0;
+            foreach ($act_fisica as $id_actividad) {
+                if($datos['actividad']!= $id_actividad['id_actividad']){
+                    $i++;
+                }  
+            }
+            if($i==0){
+                $errores['actividad'] = 'tiene que seleccionar una opcion correcta';
+            }
         }
         if (empty($datos['meta'])) {
             $errores['meta'] = 'este campo es obligatorio';
         } else {
-            if (!in_array($datos['meta'], self::METAS)) {
+            if(!in_array($datos['meta'], self::METAS)) {
                 $errores['meta'] = 'tiene que seleccionar una opcion correcta';
             }
         }
@@ -245,37 +253,44 @@ class ImcController extends \App\Core\BaseController {
                 $errores['num_comidas'] = 'el numero de comidas no es valido';
             }
         }
-        if (empty($datos['dieta'])) {
-            $errores['dieta'] = 'inserte la dieta que quiere seguir';
+        if (empty($datos['dietas'])) {
+            $errores['dietas'] = 'inserte la dieta que quiere seguir';
         } else {
-//            if(!in_array($datos['dieta'], $dietas)){
-//                $errores['dieta']='la dieta introducida no es valida';
-//            }
+            $i=0;
+            foreach ($dietas as $dieta) {
+                if($datos['dietas']!= $dieta['id_dieta']){
+                    $i++;
+                }  
+            }
+            if($i==0){
+                $errores['dietas'] = 'tiene que seleccionar una opcion correcta';
+            }
         }
-        if(empty($datos['porcent_desayuno'])){
+        if (empty($datos['porcent_desayuno'])){
             $errores['porcent_desayuno']='Introduce el porcentaje de las calorias totales que quiere consumir en el desayuno';
-        }else{
+        }else {
             if(!is_numeric($datos['porcent_desayuno']) || ($datos['porcent_desayuno'])<1 || $datos['porcent_desayuno']>100){
                 $errores['porcent_desayuno']='El porcentaje tiene que ser un valor numerico comprendido entre el 1 y el 100';
             }
         }
-        if(empty($datos['porcent_comida'])){
+        if (empty($datos['porcent_comida'])){
             $errores['porcent_comida']='Introduce el porcentaje de las calorias totales que quiere consumir en la comida';
         }else{
             if(!is_numeric($datos['porcent_comida']) || ($datos['porcent_comida'])<1 || $datos['porcent_comida']>100){
                 $errores['porcent_comida']='El porcentaje tiene que ser un valor numerico comprendido entre el 1 y el 100';
             }
         }
-        if(empty($datos['porcent_cena'])){
+        if (empty($datos['porcent_cena'])){
             $errores['porcent_cena']='Introduce el porcentaje de las calorias totales que quiere consumir en la cena';
         }else{
             if(!is_numeric($datos['porcent_cena']) || ($datos['porcent_cena'])<1 || $datos['porcent_cena']>100){
                 $errores['porcent_cena']='El porcentaje tiene que ser un valor numerico comprendido entre el 1 y el 100';
             }
         }
-        if($datos['porcent_desayuno']+$datos['porcent_comida']+$datos['porcent_cena'] !==100){
+        if ($datos['porcent_desayuno']+$datos['porcent_comida']+$datos['porcent_cena'] !==100){
             $errores['porcent_cena']='la suma de todos los porcentajes de las comidas tiene que ser el 100%';
         }
+        
         return $errores;
     }
 

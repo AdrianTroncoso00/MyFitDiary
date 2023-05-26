@@ -40,16 +40,9 @@ class SessionController extends \App\Core\BaseController {
             $modelo = new \App\Models\SessionModel();
             $exito = $modelo->signUp($_POST);
             if ($exito) {
-                $modeloDietas = new \App\Models\DietasModel();
-                $modeloActFis= new \App\Models\ActFisicaModel();
-                $modeloAlergenos= new \App\Models\AlergenosModel();
-                $data['dietas']=$modeloDietas->getAllDietas();
-                $data['alergenos']= $modeloAlergenos->getAll();
-                $data['actFis']=$modeloActFis->getAllActFisica();
-                $data['num_comidas']= self::NUM_COMIDAS_DIARIAS;
-                return view('IMCform.view.php', $data);
-                
-                
+                $id = $modelo->getIdByEmail($_POST['email']);
+                $_SESSION['usuario']['id']=$id;
+                return redirect()->to('/imc');
             } else {
                 $data['input'] = $input;
                 $data['errores']['error'] = 'error indeterminado al guardar';
