@@ -1,48 +1,39 @@
-<div class='col-3 d-flex justify-content-between align-items-center'>
-    <form method="post" action="/meal-plan">    
-        <label for='fecha' class='form-label mt-2'>
-            Fecha
-        </label>
-        <input class='form-control align-self-center justify-content-center' type='date' name='fecha' id='fecha' value="<?php echo $fecha?>" placeholder="<?php echo $fecha?>">
-        <input type="submit" target="_blank" name="submit" value="Get Meal Plan">
-    </form>
-</div>
-<div class="content-body col-12 d-flex justify-content-between">
 
-    <div class="card col-md-7 d-flex align-items-center">
-        <div class="header">
+
+<div class="content-body col-12 d-flex justify-content-around">
+    <div class="card row-cols-lg-6 col-lg-6 col-md-6 col-sm-10 col-xs-10 d-flex align-items-center">
+        <div class="card-header row-cols-lg-10">
             <h4 class="title" style="text-align: center;">PLAN ALIMENTICIO</h4>
+            <div class="card-body d-inline-flex align-items-center justify-content-between ">
+                <form method="post" action="/meal-plan">    
+                    <label for='fecha' class='form-label mt-2'>
+                        Fecha
+                    </label>
+                    <input class='form-control align-self-center justify-content-center' type='date' name='fecha' id='fecha' value="<?php echo $fecha?>" placeholder="<?php echo $fecha?>">
+                    <input type="submit" target="_blank" name="submit" value="Get Meal Plan">
+                </form>
+            </div>
         </div>
-        <div class="content col-10 ">
+        <div class="content col-10">
             <?php if (isset($mealPlan)) { ?>
                 <?php foreach ($mealPlan as $nombre => $comida) { ?>
                     <div class="box">
-                        <div class="box-header">
-                            <div class="box-header title">
+                        <div class="box-header title d-flex align-items-center justify-content-between">
+                            <div class="box-header">
                                 <h4 class="encabezado4"><?php echo strtoupper($nombre) ?></h4>
-                            </div>
-                            <div class="box-header-check">
-
-                                <div class="iconos">
-                                    <div class="input-icono">    
-                                        <input class="completado" type="checkbox" value="completado"
-                                               name="completado">
-                                        <label for="completado" class="input-text">Completado</label>
-                                    </div>
-                                    <a href="/cambiar-comida/<?php echo $nombre ?>/<?php echo $fecha?>"><i class="fa-solid fa-rotate"></i></a>
-                                </div>
+                                <a href="/cambiar-comida/<?php echo $nombre ?>/<?php echo $fecha?>"><i class="fa-solid fa-rotate"></i></a>
                             </div>
                         </div>
                         <div class="box-content">
                             <?php foreach ($comida as $key => $infoComida) { ?>
-                                <div class="tr-general">
+                                <div class="receta-box d-flex align-items-center justify-content-between">
 
                                     <div class="td-img">
                                         <img class="img" 
                                              src="<?php echo isset($infoComida['image']) ? $infoComida['image'] : '' ?>">
                                     </div>
-                                    <div class="td-descript">
-                                        <p><?php echo isset($infoComida['label']) ? $infoComida['label'] : '' ?></p>
+                                    <div class="td-descript align-self-center">
+                                        <p class="label"><?php echo isset($infoComida['label']) ? $infoComida['label'] : '' ?></p>
                                         <span><?php echo isset($infoComida['calorias']) ? $infoComida['calorias'] . ' kcal' : '' ?> </span>
 
                                     </div>
@@ -152,8 +143,8 @@
 
 
 
-    <div class="card col-md-5">
-        <div class="header">
+    <div class="card col-lg-4 col-md-4 col-sm-10 col-xs-10">
+        <div class="card-header">
             <h4 class="title" style="text-align: center;">MACRONUTRIENTES</h4>
         </div>
         <div class="content">

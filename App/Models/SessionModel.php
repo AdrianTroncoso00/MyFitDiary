@@ -51,8 +51,13 @@ class SessionModel extends \App\Core\BaseModel {
         $statement = $this->pdo->prepare('UPDATE usuarios SET pass=? WHERE id=?');
         $passCodificada = password_hash($pass, PASSWORD_DEFAULT);
         $statement->execute([$passCodificada, $id]);
+        return $statement->rowCount()==1;   
+    }
+    
+    function changeUsername(string $username, int $id){
+        $statement = $this->pdo->prepare('UPDATE usuarios SET username=? WHERE id=?');
+        $statement->execute([$username, $id]);
         return $statement->rowCount()==1;
-        
     }
     
     function getIdByEmail(string $email):int{
@@ -64,6 +69,6 @@ class SessionModel extends \App\Core\BaseModel {
     function getInfoById(int $id):?array{
         $statement = $this->pdo->prepare(self::SELECT_USUARIOS_INFO_USUARIOS . self::LEFT_JOIN ." WHERE id=?");
         $statement->execute([$id]);
-        return $statement->rowCount()>0 ? $statement->fetchAll() : null;
+        return $statement->rowCount()>0 ? $statement->fetchAll()[0] : null;
     }
 }

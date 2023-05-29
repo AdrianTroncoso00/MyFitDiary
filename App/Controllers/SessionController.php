@@ -19,10 +19,13 @@ class SessionController extends \App\Core\BaseController {
 
     function LogInProcess() {
         $data = [];
+        $date = date("j-n-Y");
         $modelo = new \App\Models\SessionModel();
+        $modeloComidas = new \App\Models\ComidasModel();
         $usuario = $modelo->login($_POST['email'], $_POST['pass']);
         if (!is_null($usuario)) {
             $_SESSION['usuario'] = $usuario;
+            $modeloComidas->deleteComidasSemanaAnterior($_SESSION['usuario']['id'], $date);
             $modelo->updateLastDate($_SESSION['usuario']['id']);
             return redirect()->to('/meal-plan');
         } else {

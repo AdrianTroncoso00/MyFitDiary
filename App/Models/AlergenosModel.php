@@ -13,5 +13,7 @@ class AlergenosModel extends \App\Core\BaseModel {
         $statement = $this->pdo->query('SELECT id_alergenos FROM alergenos');
         return $statement->fetchAll();
     }
+    
+    
 }
 

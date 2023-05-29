@@ -42,11 +42,7 @@ abstract class BaseController extends Controller
      * The creation of dynamic property is deprecated in PHP 8.2.
      */
     // protected $session;
-    protected $view;
-  
-    function __construct() {
-        $this->view = new View(get_class($this));
-    }
+    
     /**
      * Constructor.
      */

@@ -68,11 +68,12 @@ class ComidasModel extends \App\Core\BaseModel {
         return $statement->rowCount()>0;
     }
     function getComidasSemana(int $id_usuario,string $fecha):?array{
-        $fechaFinal = date("j-n-Y", strtotime($fecha."-1 week"));
+        $fechaInicio = date("j-n-Y", strtotime($fecha."-1 week"));
+        $fechaFinal = date("j-n-Y", strtotime($fecha."+1 week"));
         $statement = $this->pdo->prepare('SELECT * FROM comidas WHERE id_usuario=? AND fecha_comida >= ? AND fecha_comida <=?');
         var_dump($fechaFinal);
         var_dump($fecha);
-        $statement->execute([$id_usuario,$fechaFinal, $fecha]);
+        $statement->execute([$id_usuario,$fechaInicio, $fechaFinal]);
         return $statement->rowCount()>0 ? $statement->fetchAll() : null;
     }
     
@@ -81,6 +82,13 @@ class ComidasModel extends \App\Core\BaseModel {
         $nombreComida = $mealType.'%';
         $statement->execute([$id_usuario,$nombreComida,$label,$fecha]);
         return $statement->rowCount()==1;
+    }
+    
+    function deleteComidasSemanaAnterior(int $id_usuario, string $fecha):bool{
+        $fechaEliminar = date("j-n-Y", strtotime($fecha."-1 week"));
+        $statement = $this->pdo->prepare('DELETE FROM comidas WHERE id_usuario=? AND fecha_comida<?');
+        $statement->execute([$id_usuario,$fechaEliminar]);
+        return $statement->rowCount()>0;
     }
 }
 

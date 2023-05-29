@@ -11,30 +11,6 @@ class EdamamController extends \App\Core\BaseController {
     const PORCENTAJE_COMIDA1 = 50;
     const PORCENTAJE_COMIDA2 = 50;
     const COMIDAS = ['Breakfast', 'Snack', 'Lunch', 'Merienda', 'Dia final', 'Dinner'];
-    
-    const ARRAY_MACROS =([
-        'Proteinas' => [
-            'min'=>100,
-            'max'=>200
-        ],
-        'Carbohidratos'=>[
-            'min'=>130,
-            'max'=>220
-        ],
-        'Grasas'=>[
-            'min'=>70,
-            'max'=>130
-        ]
-    ]);
-    
-    const PROTEINAS_MIN = 100;
-    const PROTEINAS_MAX = 200;
-    const GRASAS_MIN = 70;
-    const GRASAS_MAX = 130;
-    const CARBOHIDRATOS_MIN = 130;
-    const CARBOHIDRATOS_MAX = 220;
-    
-    
 
     function generarQuery(string $dieta, string $mealType): string{
         return self::URL_CONSULTA_BUSCADOR . '&diet=' . $dieta . '&mealType=' . $mealType. '&health=vegan&health=peanut-free&health=pescatarian&rand=true'. self::URL_CONSULTA_FIELD;
@@ -104,6 +80,7 @@ class EdamamController extends \App\Core\BaseController {
     
     function getMealPlanDiario2() {
         $dia = date("j-n-Y");
+        var_dump($_SESSION);
         $modelo = new \App\Models\ComidasModel();
         $mealPlanDia = $modelo->getMealPlanDiaria($_SESSION['usuario']['id'], $dia);
         if (!is_null($mealPlanDia)) {
@@ -118,9 +95,9 @@ class EdamamController extends \App\Core\BaseController {
                 'rgb(255, 205, 86)'];
             $data['fecha']= $dia;
             $data['input']['fecha']= date("d/m/Y", strtotime($dia));
-            $this->view->showViews(array('left-menu.view.php', 'meal-plan.view.php'), $data);
+            return view('left-menu.view.php'). view('meal-plan.view.php',$data);
         } else {
-            $this->view->showViews(array('left-menu.view.php', 'p.view.php'));
+            return view('left-menu.view.php'). view('p.view.php');
 //            $this->getCaloriasAndMealPlan($_SESSION['usuario']['num_comidas'], $_SESSION['usuario']['nombre_dieta']);
 //            $mealPlan = $modelo->getMealPlanDiaria($_SESSION['usuario']['id'], $dia);
 //            $data['mealPlan'] = $this->transformarArray($mealPlan);
@@ -155,7 +132,7 @@ class EdamamController extends \App\Core\BaseController {
             'rgb(255, 99, 132)',
             'rgb(54, 162, 235)',
             'rgb(255, 205, 86)'];
-        $this->view->showViews(array('left-menu.view.php', 'meal-plan.view.php'), $data);
+        return view('left-menu.view.php'). view('meal-plan.view.php',$data);
     }
 
     function regenerarComidaEntera(string $mealType, string $date) {
@@ -193,7 +170,7 @@ class EdamamController extends \App\Core\BaseController {
             return redirect()->to('/meal-plan');
         }else{
             $data['error']='Ha ocurrido un error al eliminar la comida';
-            $this->view->showViews(array('left-menu.view.php', 'meal-plan.view.php'), $data);
+            return view('left-menu.view.php'). view('meal-plan.view.php',$data);
         }
     }
     

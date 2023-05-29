@@ -48,7 +48,8 @@ class ImcController extends \App\Core\BaseController {
     const NUMERO_COMIDAS_DIARIAS = [3, 4, 5];
     const METAS = ['Perder Peso', 'Mantener Peso', 'Aumentar Masa Muscular'];
 
-    function showFormIMC() {
+    function showFormIMC(array $errores=null) {
+        $data['errores']= $errores!=null ? $errores : null;
         $modeloDietas = new \App\Models\DietasModel();
         $modeloActFis = new \App\Models\ActFisicaModel();
         $modeloAlergenos = new \App\Models\AlergenosModel();
@@ -64,16 +65,23 @@ class ImcController extends \App\Core\BaseController {
         $modeloSesion = new \App\Models\SessionModel();
         $errores = $this->checkForm($_POST);
         var_dump($_POST);
+        var_dump($errores);
         $input = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
         if (count($errores) == 0) {
             $imc = $this->calcularImc($_POST['peso'], $_POST['altura']);
             $calorias = $this->getTMB($_POST);
             $data['forma_fisica'] = $this->formaFisica($imc, $_POST['edad']);
             $modelo = new \App\Models\InfoUsuariosModel();
+            $alergenos =$_POST['alergenos'];
+            $modeloRelAlergenos = new \App\Models\RelAlergenosModel();
             if ($modelo->addInfoUsuario($_POST, $_SESSION['usuario']['id'], $imc, $calorias)) {
                 $infoUsuario = $modeloSesion->getInfoById($_SESSION['usuario']['id']);
                 $_SESSION['usuario']= $infoUsuario;
-                var_dump($_SESSION['usuario']);
+                if(!empty($alergenos) && is_array($alergenos)){
+                    foreach ($alergenos as $alergeno) {
+                        $modeloRelAlergenos->addAlergenoUser($alergeno, $_SESSION['usuario']['id']);
+                    }
+                }
                 return redirect()->to('/meal-plan');
             }
             $data['input'] = $input;
@@ -81,8 +89,8 @@ class ImcController extends \App\Core\BaseController {
             $data['input'] = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
             return view('IMCform.view.php', $data);
         } else {
-            var_dump($errores);
-            $this->showFormIMC();
+            $data['errores']= $errores;
+            $this->showFormIMC($errores);
         }
     }
 
@@ -266,29 +274,29 @@ class ImcController extends \App\Core\BaseController {
                 $errores['dietas'] = 'tiene que seleccionar una opcion correcta';
             }
         }
-        if (empty($datos['porcent_desayuno'])){
-            $errores['porcent_desayuno']='Introduce el porcentaje de las calorias totales que quiere consumir en el desayuno';
+        if (empty($datos['porcent_breakfast'])){
+            $errores['porcent_breakfast']='Introduce el porcentaje de las calorias totales que quiere consumir en el desayuno';
         }else {
-            if(!is_numeric($datos['porcent_desayuno']) || ($datos['porcent_desayuno'])<1 || $datos['porcent_desayuno']>100){
-                $errores['porcent_desayuno']='El porcentaje tiene que ser un valor numerico comprendido entre el 1 y el 100';
+            if(!is_numeric($datos['porcent_breakfast']) || ($datos['porcent_breakfast'])<1 || $datos['porcent_breakfast']>100){
+                $errores['porcent_brekfast']='El porcentaje tiene que ser un valor numerico comprendido entre el 1 y el 100';
             }
         }
-        if (empty($datos['porcent_comida'])){
-            $errores['porcent_comida']='Introduce el porcentaje de las calorias totales que quiere consumir en la comida';
+        if (empty($datos['porcent_lunch'])){
+            $errores['porcent_lunch']='Introduce el porcentaje de las calorias totales que quiere consumir en la comida';
         }else{
-            if(!is_numeric($datos['porcent_comida']) || ($datos['porcent_comida'])<1 || $datos['porcent_comida']>100){
-                $errores['porcent_comida']='El porcentaje tiene que ser un valor numerico comprendido entre el 1 y el 100';
+            if(!is_numeric($datos['porcent_lunch']) || ($datos['porcent_lunch'])<1 || $datos['porcent_lunch']>100){
+                $errores['porcent_lunch']='El porcentaje tiene que ser un valor numerico comprendido entre el 1 y el 100';
             }
         }
-        if (empty($datos['porcent_cena'])){
-            $errores['porcent_cena']='Introduce el porcentaje de las calorias totales que quiere consumir en la cena';
+        if (empty($datos['porcent_dinner'])){
+            $errores['porcent_dinner']='Introduce el porcentaje de las calorias totales que quiere consumir en la cena';
         }else{
-            if(!is_numeric($datos['porcent_cena']) || ($datos['porcent_cena'])<1 || $datos['porcent_cena']>100){
-                $errores['porcent_cena']='El porcentaje tiene que ser un valor numerico comprendido entre el 1 y el 100';
+            if(!is_numeric($datos['porcent_dinner']) || ($datos['porcent_dinner'])<1 || $datos['porcent_dinner']>100){
+                $errores['porcent_dinner']='El porcentaje tiene que ser un valor numerico comprendido entre el 1 y el 100';
             }
         }
-        if ($datos['porcent_desayuno']+$datos['porcent_comida']+$datos['porcent_cena'] !==100){
-            $errores['porcent_cena']='la suma de todos los porcentajes de las comidas tiene que ser el 100%';
+        if ($datos['porcent_breakfast']+$datos['porcent_lunch']+$datos['porcent_dinner']+ $datos['porcent_brunch'] + $datos['porcent_snack'] !==100){
+            $errores['porcent_dinner']='la suma de todos los porcentajes de las comidas tiene que ser el 100%';
         }
         
         return $errores;

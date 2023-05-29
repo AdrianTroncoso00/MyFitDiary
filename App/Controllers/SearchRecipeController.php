@@ -51,10 +51,13 @@ class SearchRecipeController extends \App\Core\BaseController {
         $modeloNombreComida = new \App\Models\NombreComidasModel();
         $data['nombreComidas']= $modeloNombreComida->getAllNombresComidas();
         $data['tipoComida'] = $modeloTipoComida->getAll();
-        $data['tipoCocina'] = $modeloTipoCocina->getAll();
-        $data['dietas'] = $modeloDieta->getAllDietas();
-        $data['alergenos'] = $modeloAlergenos->getAll();
-        $this->view->showViews(array('left-menu.view.php', 'recipe-search-filtros.view.php'), $data);
+        $tipoCocina = $modeloTipoCocina->getAll();
+        $data['tipoCocina']= array_chunk($tipoCocina, 6);
+        $dietas = $modeloDieta->getAllDietas();
+        $data['dietas']= array_chunk($dietas, 6);
+        $alergenos = $modeloAlergenos->getAll();
+        $data['alergenos'] = array_chunk($alergenos, 8);
+        return view('left-menu.view.php'). view('recipe-search-filtros.view.php',$data);
         
     }
     
@@ -64,12 +67,14 @@ class SearchRecipeController extends \App\Core\BaseController {
     
     function mostrarPaginaSiguiente(){
         $recetas= $this->getRequestCurlArray('', $_POST['nextPage']);
+        $linkPagina = $_POST['nextPage'];
+        var_dump($recetas);
         if(count($recetas)>0){
             $recetasBuenas = $this->getAllNecesary($recetas);
             $data['recetas']= $recetasBuenas;
             $linkNextPage = isset($recetas['_links']['next']['href']) ? $recetas['_links']['next']['href'] : null;
             $data['nextPage']= $linkNextPage;
-            $this->view->showViews(array('left-menu.view.php', 'recipe-search-results.view.php'), $data);   
+            return view('left-menu.view.php'). view('recipe-search-results.view.php',$data);   
         }
     }
     
@@ -79,8 +84,7 @@ class SearchRecipeController extends \App\Core\BaseController {
             return redirect()->to($_SERVER['HTTP_REFERER']);
         }else{
             $data['errorGuardar']='Ha ocurrido un error indeterminado al guardar, vuelve a intentarlo mas tarde';
-            $this->view->showViews(array('left-menu.view.php', 'recipe-search-results.view.php'), $data);
-        }
+            return view('left-menu.view.php'). view('recipe-search-results.view.php',$data);            }
     }
     
     function showRecipes(){
@@ -96,10 +100,10 @@ class SearchRecipeController extends \App\Core\BaseController {
             $data['recetas']= $recetasBuenas;
             $linkNextPage = isset($recetas['_links']['next']['href']) ? $recetas['_links']['next']['href'] : null;
             $data['nextPage']= $linkNextPage;
-            $this->view->showViews(array('left-menu.view.php', 'recipe-search-results.view.php'), $data);   
+            return view('left-menu.view.php'). view('recipe-search-results.view.php',$data);      
         }else{
             $data['errores']=$errores;
-            $this->view->showViews(array('left-menu.view.php', 'recipe-search-filtros.view.php'), $data);   
+            return view('left-menu.view.php'). view('recipe-search-filtros.view.php',$data);      
             
         }
     }
@@ -109,10 +113,22 @@ class SearchRecipeController extends \App\Core\BaseController {
         $errores=[];
         if(!empty($params)){
             if(is_array($params['ingredients']) && count($params['ingredients'])==1 && !empty($params['ingredients'][0])){
-                $result['ingredients']= 'q=' .str_replace(' ','%20',implode('&q=', $params['ingredients']));
+                foreach ($params['ingredients'] as $ingrediente) {
+                    if(!preg_match('/[a-zA-Z ]{4, }/', $ingrediente)){
+                        $errores['ingredients'] ='Solo puede introducir letras y un minimo de 4 caracteres';
+                    }else{
+                        $result['ingredients']= 'q=' .str_replace(' ','%20',implode('&q=', $params['ingredients']));  
+                    }
+                }
             }
             if(is_array($params['excluded']) && count($params['excluded'])==1 &&!empty($params['excluded'][0])){
-                $result['excluded']= 'excluded=' .str_replace(' ','%20',implode('&excluded=', $params['excluded']));
+                foreach ($params['excluded'] as $excluded) {
+                    if(!preg_match('/[a-zA-Z ]{4, }/', $excluded)){
+                        $errores['excluded'] ='Solo puede introducir letras y un minimo de 4 caracteres';
+                    }else{
+                        $result['excluded']= 'excluded=' .str_replace(' ','%20',implode('&excluded=', $params['excluded']));
+                    }
+                }
             }
             if(!empty($params['minCalories']) && !empty($params['maxCalories'])) {
                 if((is_numeric($params['minCalories']) && $params['minCalories']>0) && (is_numeric($params['maxCalories']) && $params['maxCalories']>0)){
@@ -137,7 +153,6 @@ class SearchRecipeController extends \App\Core\BaseController {
 
                     }
                 }
-
             }
             if(!empty($params['timeMin']) && !empty($params['timeMax'])) {
                 if((is_numeric($params['timeMin']) && $params['timeMin']>0) && (is_numeric($params['timeMax']) && $params['timeMax']>0)){

@@ -24,10 +24,7 @@ class UsuarioController extends \App\Core\BaseController {
         }
         return $data;
     }
-    function showMealPlan(){
-        
-    }
-    
+
     function showAccount() {
         $data = $this->showData();
         $this->view->showViews(array('left-menu.view.php', 'account-details.view.php'), $data);
@@ -54,8 +51,55 @@ class UsuarioController extends \App\Core\BaseController {
         }
         return redirect()->to('/account');
     }
+    
+    function changeUsername(){
+        $modeloSesion = new \App\Models\SessionModel();
+        $errores = $this->checkUsername($_POST);
+        if(count($errores)==0){
+            if(!$modeloSesion->changeUsername($_POST['username'], $_SESSION['usuario']['id'])){
+                
+            }else{
+                return redirect()->to('/account');
+            }
+        }
+    }
 
-
+    function changePassword(){
+        $modeloSesion = new \App\Models\SessionModel();
+        $errores = $this->checkPass($_POST);
+        if(count($errores)==0){
+            if(!$modeloSesion->changePass($_POST['pass'], $_SESSION['usuario']['id'])){
+                
+            }else{
+                return redirect()->to('/account');
+            }
+        }
+    }
+    
+    function checkUsername(array $datos):array{
+        $errores = [];
+        if(!empty($datos['username'])){
+            if(!preg_match('/[0-9a-zA-Z_]{8,}/', $datos['pass'])){
+                $errores['username']='el username tiene que tener 8 caracteres minimo y solo puede estar formado por letras, numeros y  _';
+            }
+        }else{
+            $errores['username']='introduce una contraseña';
+        }
+        return $errores; 
+    }
+    
+    function checkPass(array $datos):array{
+        $errores = [];
+        if(!empty($datos['pass'])){
+            if(!preg_match('/[0-9a-zA-Z_]{8,}/', $datos['pass'])){
+                $errores['pass']='la contraseña tiene que tener 8 caracteres minimo y solo puede estar formado por letras, numeros y  _';
+            }
+        }else{
+            $errores['pass']='introduce una contraseña';
+        }
+        return $errores;
+    }
+    
     function checkForm(array $datos, bool $edit = false, int $id = 0): array {
         $errores = [];
         $modelo = new \App\Models\HistorialPesoModel();
@@ -81,10 +125,6 @@ class UsuarioController extends \App\Core\BaseController {
                 if ($modelo->existePesoDia($_SESSION['usuario']['id'], $datos['fecha'])) {
                     $errores['fecha'] = 'no puede introducir 2 pesos el mismo dia';
                 }
-//            $patron = '~(0[1-9]|1[012])[-/](0[1-9]|[12][0-9]|3[01])[-/](19|20)\d\d~';
-//            if (!preg_match($patron, $datos['fecha'])) {
-//                $errores['fecha'] = 'introduce una fecha valida';
-//            }
             }
             if (empty($datos['peso'])) {
                 $errores['peso'] = 'tiene que introducir un peso en kg';
