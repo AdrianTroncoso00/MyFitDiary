@@ -1,4 +1,3 @@
-
 <?php if (isset($errorGuardar)) { ?>
     <div class="card bg-danger">
         <div class="card-body">
@@ -9,14 +8,18 @@
 <!-- Result -->
 <div class="form col-12">
     <!-- Handle error -->
-    <?php if (count($recetas) < 1) { ?>
+    <?php if (count($bookmarks) < 1) { ?>
         <div class="text-center">
-            <div class="fs-1 fw-7 text-center mb-3">No result! <span class="noto">🙁</span></div>
-            <div class="fs-5">We couldn't find recipes that match all of your requirements.</div>
-            <div class="fs-5 mb-5">Please make sure there's no typo in your query.</div>
-            <a href="/recipe-search" class="fw-6 fs-4">Try Again?</a>
+            <div class="fs-1 fw-7 text-center mb-3">Nothing here!</div>
+            <div class="fs-5">You haven't bookmarked any recipe so far.</div>
+            <div class="fs-5 mb-5">Start browsing to have a list of your favorite recipes!</div>
+            <a href="/" class="fw-6 fs-4">Start now!</a>
         </div>
     <?php } else { ?>
+    
+        <div class="my-3 text-left">
+            <h5>Bookmarked recipes:</h5>
+        </div>
         <!-- Show result -->
         <div class="d-flex flex-wrap justify-content-evenly col-12">
             <?php foreach ($recetas as $receta) { ?>
@@ -159,10 +162,3 @@
         </div>
     <?php } ?>
 </div>
-<?php if(!is_null($nextPage)){?>
-<form method="post" action="next-page" class="d-flex d-flex align-items-center justify-content-center">
-    <input type="hidden" name="nextPage" value="<?php echo $nextPage ?>">
-    <input type="submit" target="_blank" name="submit" value="Next Page">
-</form>
-<?php } ?>
-

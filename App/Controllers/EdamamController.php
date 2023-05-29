@@ -13,6 +13,7 @@ class EdamamController extends \App\Core\BaseController {
     const COMIDAS = ['Breakfast', 'Snack', 'Lunch', 'Merienda', 'Dia final', 'Dinner'];
 
     function generarQuery(string $dieta, string $mealType): string{
+        
         return self::URL_CONSULTA_BUSCADOR . '&diet=' . $dieta . '&mealType=' . $mealType. '&health=vegan&health=peanut-free&health=pescatarian&rand=true'. self::URL_CONSULTA_FIELD;
     }
     

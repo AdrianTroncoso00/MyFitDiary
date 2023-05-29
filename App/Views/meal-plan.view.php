@@ -1,32 +1,27 @@
 
 
 <div class="content-body col-12 d-flex justify-content-around">
-    <div class="card row-cols-lg-6 col-lg-6 col-md-6 col-sm-10 col-xs-10 d-flex align-items-center">
-        <div class="card-header row-cols-lg-10">
+    <div class="card row-cols-lg-6 col-lg-6 col-md-6 d-flex align-items-center">
+        <div class="card-header row-cols-lg-12">
             <h4 class="title" style="text-align: center;">PLAN ALIMENTICIO</h4>
-            <div class="card-body d-inline-flex align-items-center justify-content-between ">
-                <form method="post" action="/meal-plan">    
-                    <label for='fecha' class='form-label mt-2'>
-                        Fecha
-                    </label>
-                    <input class='form-control align-self-center justify-content-center' type='date' name='fecha' id='fecha' value="<?php echo $fecha?>" placeholder="<?php echo $fecha?>">
-                    <input type="submit" target="_blank" name="submit" value="Get Meal Plan">
-                </form>
-            </div>
+            <form class="form-card-header d-inline-flex align-items-start justify-content-between" method="post" action="/meal-plan">
+                <input type='date' name='fecha' id='fecha' value="<?php echo $fecha?>" placeholder="<?php echo $fecha?>">
+                <input type="submit" target="_blank" name="submit" value="Get Meal Plan">
+            </form>
         </div>
-        <div class="content col-10">
+        <div class="content">
             <?php if (isset($mealPlan)) { ?>
                 <?php foreach ($mealPlan as $nombre => $comida) { ?>
                     <div class="box">
-                        <div class="box-header title d-flex align-items-center justify-content-between">
+                        <div class="box-header title d-flex flex-row align-items-start justify-content-between col-12">
                             <div class="box-header">
                                 <h4 class="encabezado4"><?php echo strtoupper($nombre) ?></h4>
-                                <a href="/cambiar-comida/<?php echo $nombre ?>/<?php echo $fecha?>"><i class="fa-solid fa-rotate"></i></a>
                             </div>
+                            <a class="align-self-center" href="/cambiar-comida/<?php echo $nombre ?>/<?php echo $fecha?>"><i class="fa-solid fa-rotate"></i></a>
                         </div>
                         <div class="box-content">
                             <?php foreach ($comida as $key => $infoComida) { ?>
-                                <div class="receta-box d-flex align-items-center justify-content-between">
+                                <div class="table-hover receta-box d-flex align-items-center justify-content-between">
 
                                     <div class="td-img">
                                         <img class="img" 
@@ -62,15 +57,8 @@
                                                         </div>
                                                         <!--Total Time and Calories--> 
                                                         <div class="small mb-4 lh-lg d-flex flex-wrap justify-content-between">
-                                                            Time 
-                                                            <small>
-                                                                <span class="bi bi-stopwatch"></span>
-                                                                <!--Handle error if no data for totalTime--> 
-
-                                                                <span><?php echo $infoComida['totalTime'] . ' Min' ?></span>
-
-
-                                                            </small>
+                                                            Time: 
+                                                            <span><?php echo $infoComida['totalTime'] . ' Min' ?></span>
                                                             <!--Calories--> 
                                                             <small>
                                                                 <span class="bi bi-fire"></span>
@@ -143,7 +131,7 @@
 
 
 
-    <div class="card col-lg-4 col-md-4 col-sm-10 col-xs-10">
+    <div class="card col-lg-5 col-md-5">
         <div class="card-header">
             <h4 class="title" style="text-align: center;">MACRONUTRIENTES</h4>
         </div>
