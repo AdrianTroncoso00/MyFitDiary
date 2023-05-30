@@ -24,8 +24,8 @@ class ComidasModel extends \App\Core\BaseModel {
     }
     
     function addComida(int $id_usuario,array $datos, string $mealType, string $fecha):bool{
-        $statement = $this->pdo->prepare('INSERT INTO comidas (id_usuario, label, image, url, calorias, fecha_comida, totaltime, cuisinetype, ingredients, nombre_comida, nutrientes, yield, healthlabels) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)');
-        $statement->execute([$id_usuario,$datos['label'],$datos['image'],$datos['url'],$datos['calorias'],$fecha,$datos['totalTime'],implode($datos['cuisineType']),json_encode($datos['ingredientes']),$mealType,json_encode($datos['nutrientes']),$datos['yield'], json_encode($datos['healthLabels'])]);
+        $statement = $this->pdo->prepare('INSERT INTO comidas (id_usuario, label, image, url, calorias, fecha_comida, totaltime, cuisinetype,mealType ,ingredients, nombre_comida, nutrientes, yield, healthlabels) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
+        $statement->execute([$id_usuario,$datos['label'],$datos['image'],$datos['url'],$datos['calorias'],$fecha,$datos['totalTime'],implode($datos['cuisineType']), implode(',', $datos['mealType']),json_encode($datos['ingredientes']),$mealType,json_encode($datos['nutrientes']),$datos['yield'], json_encode($datos['healthLabels'])]);
         return $statement->rowCount()==1;
     }
     
@@ -61,19 +61,21 @@ class ComidasModel extends \App\Core\BaseModel {
         return $statement->rowCount()>0;
     }
     
-    function existeComidaSemana(int $id_usuario, string $nombreComida, string $fecha):bool{
+    function existeComidaSemana(int $id_usuario, string $nombreComida, string $label, string $fecha):bool{
         $fechaFinal = date("j-n-Y", strtotime($fecha."-1 week"));
-        $statement = $this->pdo->prepare('SELECT * FROM comidas WHERE id_usuario=? AND label =? AND fecha_comida >= ? AND fecha_comida <=?');
-        $statement->execute([$id_usuario, $nombreComida, $fechaFinal, $fecha]);
+        $statement = $this->pdo->prepare('SELECT * FROM comidas WHERE id_usuario=? AND nombre_comida LIKE ? AND label =? AND fecha_comida >= ? AND fecha_comida <=?');
+        $statement->execute([$id_usuario, $nombreComida, $label,$fechaFinal, $fecha]);
         return $statement->rowCount()>0;
     }
-    function getComidasSemana(int $id_usuario,string $fecha):?array{
-        $fechaInicio = date("j-n-Y", strtotime($fecha."-1 week"));
-        $fechaFinal = date("j-n-Y", strtotime($fecha."+1 week"));
-        $statement = $this->pdo->prepare('SELECT * FROM comidas WHERE id_usuario=? AND fecha_comida >= ? AND fecha_comida <=?');
+    function getComidasSemana(int $id_usuario,string $nombreComida,string $fecha):?array{
+        $fechaInicio = date("Y-m-d H:i:s", strtotime($fecha."-1 week"));
+        $fechaFinal = date("Y-m-d H:i:s", strtotime($fecha."+1 week"));
+        $nombreComida = $nombreComida=='dinner' ? '%'.$nombreComida : $nombreComida.'%';
+        var_dump($nombreComida);
+        $statement = $this->pdo->prepare('SELECT * FROM comidas WHERE id_usuario=? AND mealType LIKE ? AND fecha_comida >= ? AND fecha_comida <=?');
         var_dump($fechaFinal);
-        var_dump($fecha);
-        $statement->execute([$id_usuario,$fechaInicio, $fechaFinal]);
+        var_dump($fechaInicio);
+        $statement->execute([$id_usuario,$nombreComida,$fechaInicio, $fechaFinal]);
         return $statement->rowCount()>0 ? $statement->fetchAll() : null;
     }
     

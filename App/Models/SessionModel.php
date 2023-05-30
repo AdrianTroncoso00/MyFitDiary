@@ -37,7 +37,6 @@ class SessionModel extends \App\Core\BaseModel {
         if ($statement->rowCount() == 1) {
             return true;
         }
-
         return false;
     }
     

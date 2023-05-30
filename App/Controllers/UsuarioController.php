@@ -24,10 +24,15 @@ class UsuarioController extends \App\Core\BaseController {
         }
         return $data;
     }
+    
+    function showFormChangePass(){
+        $data['titulo'] = 'Change Pass';
+        return view('left-menu.view.php').view('settings.view.php', $data);
+    }
 
     function showAccount() {
         $data = $this->showData();
-        $this->view->showViews(array('left-menu.view.php', 'account-details.view.php'), $data);
+        return view('left-menu.view.php').view('account-details.view.php', $data);
     }
 
     function addPeso() {

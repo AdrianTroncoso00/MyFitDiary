@@ -14,7 +14,7 @@ class EdamamController extends \App\Core\BaseController {
 
     function generarQuery(string $dieta, string $mealType): string{
         
-        return self::URL_CONSULTA_BUSCADOR . '&diet=' . $dieta . '&mealType=' . $mealType. '&health=vegan&health=peanut-free&health=pescatarian&rand=true'. self::URL_CONSULTA_FIELD;
+        return self::URL_CONSULTA_BUSCADOR . '&diet=' . $dieta . '&mealType=' . $mealType. '&health=vegan&health=peanut-free&health=pescatarian&calories=100&rand=true'. self::URL_CONSULTA_FIELD;
     }
     
     function prueba(){
@@ -99,15 +99,23 @@ class EdamamController extends \App\Core\BaseController {
             return view('left-menu.view.php'). view('meal-plan.view.php',$data);
         } else {
             return view('left-menu.view.php'). view('p.view.php');
-//            $this->getCaloriasAndMealPlan($_SESSION['usuario']['num_comidas'], $_SESSION['usuario']['nombre_dieta']);
-//            $mealPlan = $modelo->getMealPlanDiaria($_SESSION['usuario']['id'], $dia);
-//            $data['mealPlan'] = $this->transformarArray($mealPlan);
-//            $nutrientesTotales = $this->getAllNutrientes($mealPlan);
         }
     }
+    
+    function getMealPlanSemanal(){
+        $modelo = new \App\Models\ComidasModel();
+        $dia = date("Y-m-d H:i:s", strtotime('30-5-2023'));
+        $diaFinal = date("Y-m-d H:i:s", strtotime($dia."+1 week"));
+        $semana = [];
+        while($dia<$diaFinal){
+            array_push($semana, $dia);
+            $dia = date("Y-m-d H:i:s", strtotime($dia."+1 days"));
+        }
+    }
+        
+    
     function getMealPlanDiario() {
-        $dia = date("j-n-Y", strtotime($_POST['fecha']));
-        var_dump($dia);
+        $dia = date("Y-m-d H:i:s", strtotime($_POST['fecha']));
         $modelo = new \App\Models\ComidasModel();
         $mealPlanDia = $modelo->getMealPlanDiaria($_SESSION['usuario']['id'], $dia);
         if (!is_null($mealPlanDia)) {
@@ -118,9 +126,6 @@ class EdamamController extends \App\Core\BaseController {
         } else {
             $this->getCaloriasAndMealPlan($_SESSION['usuario']['num_comidas'], $_SESSION['usuario']['nombre_dieta'], $dia);
             $mealPlan = $modelo->getMealPlanDiaria($_SESSION['usuario']['id'], $dia);
-            if(is_null($mealPlan)){
-                var_dump('nulo');
-            }
             $data['mealPlan'] = $this->transformarArray($mealPlan);
             $data['fecha']= $_POST['fecha'];
             $nutrientesTotales = $this->getAllNutrientes($mealPlan);
@@ -147,7 +152,6 @@ class EdamamController extends \App\Core\BaseController {
                 redirect()->to('meal-plan');
                 unset($_SESSION['usuario']['error']);
             }
- 
         }
         return redirect()->to('meal-plan');
     }
@@ -177,11 +181,12 @@ class EdamamController extends \App\Core\BaseController {
     
     function getComida(string $dieta, string $mealType, int $calorias, string $date): ?array {
         $modelo = new \App\Models\ComidasModel();
-        $dia = date("j-n-Y", strtotime($date));
+        $dia = date("Y-m-d H:i:s", strtotime($date));
         $query= $this->generarQuery($dieta, $mealType);
         $recetas = $this->getRequestCurlArray($query);
+        $numComidas = $calorias<450 ? 1: 2;
         if ($calorias <= 450) {
-            $receta = $this->obtenerRecetasSinRepetir($recetas, $mealType, $calorias, 1, $dia);
+            $receta = $this->obtenerRecetasSinRepetir($recetas, $mealType, $calorias, $numComidas, $dia);
             if ($modelo->existeComidaDia($dia, $_SESSION['usuario']['id'], $mealType)) {
                 return $receta;
             }else{
@@ -190,7 +195,7 @@ class EdamamController extends \App\Core\BaseController {
                 } 
             } 
         } else {
-            $recetasProcesadas = $this->obtenerRecetasSinRepetir($recetas, $mealType, $calorias, 2, $dia);
+            $recetasProcesadas = $this->obtenerRecetasSinRepetir($recetas, $mealType, $calorias, $numComidas, $dia);
             if ($modelo->existeComidaDia($dia, $_SESSION['usuario']['id'], $mealType)) {
                 return $recetasProcesadas;
             }else {
@@ -201,20 +206,21 @@ class EdamamController extends \App\Core\BaseController {
         }
     }
 
-    function obtenerRecetasSinRepetir(array $recetas, string $mealType, int $calorias, int $numComidas, string $fecha): ?array {
-        $dia = date("j-n-Y", strtotime($fecha));
+    function obtenerRecetasSinRepetir(array $recetas, string $mealType, int $calorias, int $numComidas, string $fecha): array {
+        $dia = date("Y-m-d H:i:s", strtotime($fecha));
         $modelo = new \App\Models\ComidasModel();
         $recetasCopia = $recetas;
         $randoms = range(0, count($recetas)-1);
-        $recetasSemanaComidas = $modelo->getComidasSemana($_SESSION['usuario']['id'], $dia);
+        $recetasSemanaComidas = $modelo->getComidasSemana($_SESSION['usuario']['id'], strtolower($mealType) ,$dia);
         $nums =[];
         $recetasInput = [];
         $posiciones=[];
         if(!is_null($recetasSemanaComidas)){
             foreach ($recetasSemanaComidas as $recetaSemana) {
                 foreach ($recetas as $key=> $receta) {
-                    if($receta['recipe']['label']==$recetaSemana['label']){
-                        unset($recetas[$key]);
+                    if($receta['recipe']['label']==$recetaSemana['label'] || $receta['recipe']['calories']<1){
+                        var_dump($receta['recipe']['label']);
+                        unset($receta);
                         array_push($nums, $key);
                     }
                 }
@@ -223,7 +229,8 @@ class EdamamController extends \App\Core\BaseController {
                 $posiciones = array_diff($randoms, $nums);
                 shuffle($posiciones);  
             }else{
-                $posiciones= range(0, count($recetasCopia)-1);
+                $recetas= $recetasCopia;
+                $posiciones=$randoms;
                 shuffle($posiciones);
             }
         }else{
@@ -231,12 +238,14 @@ class EdamamController extends \App\Core\BaseController {
             shuffle($posiciones);
         }
         $caloriasInput= $numComidas==1 ? $calorias : $calorias/2;
-        if(count($recetas)>$numComidas){
-            for($j=0; $j<$numComidas; $j++){
-                $random= $posiciones[$j];
+        while(count($recetasInput)<$numComidas){
+                $random= $posiciones[rand(0, count($posiciones)-1)];
                 $receta = $this->modifyReceta($recetas[$random], $caloriasInput, $mealType);
-                array_push($recetasInput ,$receta);
-            }
+                if(!in_array($receta, $recetasInput)){
+                    if($receta['calorias']>1){
+                        array_push($recetasInput ,$receta);
+                    }
+                }
         }
         return $recetasInput;
     }
@@ -253,6 +262,7 @@ class EdamamController extends \App\Core\BaseController {
         $nuevaReceta['calorias'] = round(($caloriasRacion * $yield), 0);
         $nuevaReceta['yield'] = $yield;
         $nuevaReceta['nombre_comida'] = $mealType;
+        $nuevaReceta['mealType'] = $receta['recipe']['mealType'];
         $nuevaReceta['healthLabels']= $receta['recipe']['healthLabels'];
         if ($receta['recipe']['yield'] !== $yield) {
             foreach ($receta['recipe']['totalNutrients'] as $key => $nutriente) {
@@ -301,21 +311,21 @@ class EdamamController extends \App\Core\BaseController {
         $calorias['cena'] = $_SESSION['usuario']['calorias_objetivo'] * ($_SESSION['usuario']['porcent_dinner'] / 100);
         $mealPlan = [];
         if ($numComidas == 3) {
-            $mealPlan['desayuno'] = $this->getComida($dieta, 'Breakfast', $calorias['desayuno'], $dia);
-            $mealPlan['comida'] = $this->getComida($dieta, 'Lunch', $calorias['comida'],$dia);
-            $mealPlan['cena'] = $this->getComida($dieta, 'Dinner', $calorias['cena'],$dia);
+            $mealPlan['desayuno'] = $this->getComida($dieta, 'Breakfast', $calorias['desayuno'], $dia );
+            $mealPlan['comida'] = $this->getComida($dieta, 'Lunch', $calorias['comida'],$dia );
+            $mealPlan['cena'] = $this->getComida($dieta, 'Dinner', $calorias['cena'],$dia );
         }
         if ($numComidas == 4) {
             $mealPlan['desayuno'] = $this->getComida($dieta, 'Breakfast', $calorias['desayuno'],$dia);
-            $mealPlan['brunch'] = $this->getComida($dieta, 'Snack', $calorias['brunch'],$dia);
+            $mealPlan['brunch'] = $this->getComida($dieta, 'Brunch', $calorias['brunch'],$dia);
             $mealPlan['comida'] = $this->getComida($dieta, 'Lunch', $calorias['comida'],$dia);
             $mealPlan['cena'] = $this->getComida($dieta, 'Dinner', $calorias['cena'],$dia);
         }
         if ($numComidas == 5) {
             $mealPlan['desayuno'] = $this->getComida($dieta, 'Breakfast', $calorias['desayuno'],$dia);
-            $mealPlan['brunch'] = $this->getComida($dieta, 'Snack', $calorias['brunch'],$dia,$dia);
+            $mealPlan['brunch'] = $this->getComida($dieta, 'Brunch', $calorias['brunch'],$dia);
             $mealPlan['comida'] = $this->getComida($dieta, 'Lunch', $calorias['comida'],$dia);
-            $mealPlan['merienda'] = $this->getComida($dieta, 'Teatime', $calorias['merienda'],$dia);
+            $mealPlan['merienda'] = $this->getComida($dieta, 'Snack', $calorias['merienda'],$dia);
             $mealPlan['cena'] = $this->getComida($dieta, 'Dinner', $calorias['cena'],$dia);
         }
     }

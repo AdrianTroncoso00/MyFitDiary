@@ -30,7 +30,7 @@
                 </div>
               </div>
 
-              <div class='card bg-secondary mb-3'>
+              <div class='card mb-3'>
 
                 <div class='card-header'>
                   <h4>Añadir peso</h4>
@@ -43,7 +43,7 @@
                     <form action="/account" method='POST'>
                       
                       <div class='form-group'>
-                        <div class='row'>
+                        <div class='row col-12 d-flex flex-row align-items-center justify-content-between'>
                           <div class='col-5'>
                             <label for='fecha' class='form-label mt-2'>
                               Fecha
@@ -60,11 +60,9 @@
                               pattern='^\d*(\.\d{0,2})?$'>
                             <p class="text-danger"><?php echo isset($errores['peso']) ? $errores['peso'] :''?></p>
                           </div>
-                          <div class='col-2'>
-                            <button type='submit' class='btn btn-primary' href="<?php echo isset($editar) ? "/account/edit-peso/$id_peso": '/account'?>">
+                            <button type='submit' class='btn btn-primary edit-peso' href="<?php echo isset($editar) ? "/account/edit-peso/$id_peso": '/account'?>">
                               Añadir
                             </button>
-                          </div>
                         </div>
                       </div>
                     </form>
@@ -74,11 +72,11 @@
                 </div>
               </div>
                  <?php if($pesos!=null){?>
-              <div class='card bg-secondary mb-3'>
+              <div class='card mb-3'>
                 <div class='card-header'>
                   <h4>Registros de Pesos</h4>
                 </div>
-                <div class='card-body'>
+                <div class='card-body col-12'>
                     <?php
                      if(isset($pesos)) {    
                       
@@ -123,7 +121,7 @@
             </div>
             
             <div class='col-md-6 mt-4'>
-              <div class='card bg-secondary mb-3'>
+              <div class='card mb-3'>
                 <div class='card-header'>
                   <h4>Historial de Pesos</h4>
                 </div>

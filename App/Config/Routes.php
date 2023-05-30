@@ -33,8 +33,6 @@ $routes->set404Override();
 $routes->get('/', 'Home::index');
 $routes->get('/login', 'SessionController::showLogIn');
 $routes->get('/signup', 'SessionController::showSignUp');
-$routes->get('/recuperarContrasena', 'SessionController::showRecCont');
-$routes->post('/recuperarContrasena', 'SessionController::changePass');
 $routes->post('login', 'SessionController::LogInProcess');
 $routes->post('signup', 'SessionController::SignUp');
 $routes->get('imc', 'ImcController::showFormIMC');
@@ -42,7 +40,7 @@ $routes->post('imc', 'ImcController::mostrarResForm');
 $routes->get('prueba', 'EdamamController::prueba');
 $routes->get('meal-plan', 'EdamamController::getMealPlanDiario2');
 $routes->post('meal-plan', 'EdamamController::getMealPlanDiario');
-$routes->get('meal-prueba', 'EdamamController::pruebaView');
+$routes->get('meal-prueba', 'EdamamController::getMealPlanSemanal');
 $routes->get('recipe-search', 'SearchRecipeController::showForm');
 $routes->get('recipes', 'SearchRecipeController::showRecipes');
 $routes->post('add', 'SearchRecipeController::addBookmark');
@@ -59,6 +57,7 @@ $routes->get('account/deletePeso/(:num)', 'UsuarioController::deletePeso/$1');
 $routes->get('account/edit-peso/(:num)', 'UsuarioController::showEdit/$1');
 $routes->post('account/edit-peso/(:num)', 'UsuarioController::changePeso/$1');
 $routes->post('account', 'UsuarioController::addPeso');
+$routes->get('user/settings', 'UsuarioController::showFormChangePass');
 /*
  * --------------------------------------------------------------------
  * Additional Routing
