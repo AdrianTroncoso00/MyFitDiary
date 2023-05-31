@@ -37,7 +37,7 @@ $routes->post('login', 'SessionController::LogInProcess');
 $routes->post('signup', 'SessionController::SignUp');
 $routes->get('imc', 'ImcController::showFormIMC');
 $routes->post('imc', 'ImcController::mostrarResForm');
-$routes->get('prueba', 'EdamamController::prueba');
+$routes->get('prueba', 'EdamamController::showMealPlanSemana');
 $routes->get('meal-plan', 'EdamamController::getMealPlanDiario2');
 $routes->post('meal-plan', 'EdamamController::getMealPlanDiario');
 $routes->get('meal-prueba', 'EdamamController::getMealPlanSemanal');

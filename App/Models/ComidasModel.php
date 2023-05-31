@@ -68,8 +68,8 @@ class ComidasModel extends \App\Core\BaseModel {
         return $statement->rowCount()>0;
     }
     function getComidasSemana(int $id_usuario,string $nombreComida,string $fecha):?array{
-        $fechaInicio = date("Y-m-d H:i:s", strtotime($fecha."-1 week"));
-        $fechaFinal = date("Y-m-d H:i:s", strtotime($fecha."+1 week"));
+        $fechaInicio = date("Y-m-d", strtotime($fecha."-1 week"));
+        $fechaFinal = date("Y-m-d", strtotime($fecha."+1 week"));
         $nombreComida = $nombreComida=='dinner' ? '%'.$nombreComida : $nombreComida.'%';
         var_dump($nombreComida);
         $statement = $this->pdo->prepare('SELECT * FROM comidas WHERE id_usuario=? AND mealType LIKE ? AND fecha_comida >= ? AND fecha_comida <=?');
@@ -91,6 +91,13 @@ class ComidasModel extends \App\Core\BaseModel {
         $statement = $this->pdo->prepare('DELETE FROM comidas WHERE id_usuario=? AND fecha_comida<?');
         $statement->execute([$id_usuario,$fechaEliminar]);
         return $statement->rowCount()>0;
+    }
+    
+    function getMealPlanSemana(int $id_usuario, string $fecha):?array{
+        $statement = $this->pdo->prepare('SELECT * FROM comidas WHERE id_usuario=? AND fecha_comida=?');
+        $statement->execute([$id_usuario,$fecha]);
+        return $statement->rowCount()>0 ? $statement->fetchAll() : null;
+        
     }
 }
 
