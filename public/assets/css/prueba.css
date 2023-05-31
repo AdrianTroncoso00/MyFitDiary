@@ -92,8 +92,12 @@ a>i{
 .card.recipe-search{
     background-color: #dedede;
 }
+.change-pass{
+    height: 80vh;
+}
+.titulo{
 
-
+}
 @media (max-width: 770px){
 
     .content-body{

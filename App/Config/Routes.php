@@ -57,7 +57,10 @@ $routes->get('account/deletePeso/(:num)', 'UsuarioController::deletePeso/$1');
 $routes->get('account/edit-peso/(:num)', 'UsuarioController::showEdit/$1');
 $routes->post('account/edit-peso/(:num)', 'UsuarioController::changePeso/$1');
 $routes->post('account', 'UsuarioController::addPeso');
-$routes->get('user/settings', 'UsuarioController::showFormChangePass');
+$routes->get('change-pass', 'UsuarioController::showFormChangePass');
+$routes->post('change-pass', 'UsuarioController::changePassword');
+$routes->get('change-user', 'UsuarioController::showFormChangeUsername');
+$routes->post('change-user', 'UsuarioController::changeUsername');
 /*
  * --------------------------------------------------------------------
  * Additional Routing

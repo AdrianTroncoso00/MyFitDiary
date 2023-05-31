@@ -100,19 +100,7 @@ class EdamamController extends \App\Core\BaseController {
         } else {
             return view('left-menu.view.php'). view('p.view.php');
         }
-    }
-    
-    function getMealPlanSemanal(){
-        $modelo = new \App\Models\ComidasModel();
-        $dia = date("Y-m-d H:i:s", strtotime('30-5-2023'));
-        $diaFinal = date("Y-m-d H:i:s", strtotime($dia."+1 week"));
-        $semana = [];
-        while($dia<$diaFinal){
-            array_push($semana, $dia);
-            $dia = date("Y-m-d H:i:s", strtotime($dia."+1 days"));
-        }
-    }
-        
+    }  
     
     function getMealPlanDiario() {
         $dia = date("Y-m-d H:i:s", strtotime($_POST['fecha']));
@@ -179,7 +167,7 @@ class EdamamController extends \App\Core\BaseController {
         }
     }
     
-    function getComida(string $dieta, string $mealType, int $calorias, string $date): ?array {
+    function getComida(string $dieta, string $mealType, int $calorias, string $date, bool $semanal=false): ?array {
         $modelo = new \App\Models\ComidasModel();
         $dia = date("Y-m-d H:i:s", strtotime($date));
         $query= $this->generarQuery($dieta, $mealType);
@@ -238,7 +226,7 @@ class EdamamController extends \App\Core\BaseController {
             shuffle($posiciones);
         }
         $caloriasInput= $numComidas==1 ? $calorias : $calorias/2;
-        while(count($recetasInput)<$numComidas){
+        while(count($recetasInput)<($numComidas)){
                 $random= $posiciones[rand(0, count($posiciones)-1)];
                 $receta = $this->modifyReceta($recetas[$random], $caloriasInput, $mealType);
                 if(!in_array($receta, $recetasInput)){
@@ -249,6 +237,7 @@ class EdamamController extends \App\Core\BaseController {
         }
         return $recetasInput;
     }
+
 
     function modifyReceta(array $receta, float $calorias, string $mealType): array {
         $nuevaReceta = [];
@@ -311,9 +300,9 @@ class EdamamController extends \App\Core\BaseController {
         $calorias['cena'] = $_SESSION['usuario']['calorias_objetivo'] * ($_SESSION['usuario']['porcent_dinner'] / 100);
         $mealPlan = [];
         if ($numComidas == 3) {
-            $mealPlan['desayuno'] = $this->getComida($dieta, 'Breakfast', $calorias['desayuno'], $dia );
-            $mealPlan['comida'] = $this->getComida($dieta, 'Lunch', $calorias['comida'],$dia );
-            $mealPlan['cena'] = $this->getComida($dieta, 'Dinner', $calorias['cena'],$dia );
+            $mealPlan['desayuno'] = $this->getComida($dieta, 'Breakfast', $calorias['desayuno'], $dia);
+            $mealPlan['comida'] = $this->getComida($dieta, 'Lunch', $calorias['comida'],$dia);
+            $mealPlan['cena'] = $this->getComida($dieta, 'Dinner', $calorias['cena'],$dia);
         }
         if ($numComidas == 4) {
             $mealPlan['desayuno'] = $this->getComida($dieta, 'Breakfast', $calorias['desayuno'],$dia);

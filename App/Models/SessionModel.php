@@ -70,4 +70,17 @@ class SessionModel extends \App\Core\BaseModel {
         $statement->execute([$id]);
         return $statement->rowCount()>0 ? $statement->fetchAll()[0] : null;
     }
+    
+    function existePass(int $id_usuario,string $pass):bool{
+        $statement = $this->pdo->prepare('SELECT pass FROM usuarios WHERE id=?');
+        $statement->execute([$id_usuario]);
+        $password = $statement->fetch();
+        var_dump($password);
+        return password_verify($pass, $password['pass']);
+    }
+    function existeUsername(int $id_usuario,string $username):bool{
+        $statement = $this->pdo->prepare('SELECT username FROM usuarios WHERE id=? AND username=?');
+        $statement->execute([$id_usuario,$username]);
+        return $statement->rowCount()==1;
+    }
 }

@@ -67,13 +67,13 @@ class SearchRecipeController extends \App\Core\BaseController {
     
     function mostrarPaginaSiguiente(){
         $recetas= $this->getRequestCurlArray('', $_POST['nextPage']);
-        $linkPagina = $_POST['nextPage'];
-        var_dump($recetas);
         if(count($recetas)>0){
             $recetasBuenas = $this->getAllNecesary($recetas);
             $data['recetas']= $recetasBuenas;
             $linkNextPage = isset($recetas['_links']['next']['href']) ? $recetas['_links']['next']['href'] : null;
             $data['nextPage']= $linkNextPage;
+            $data['previousPage'] = $_SESSION['_ci_previous_url'];
+            var_dump($data['previousPage']);
             return view('left-menu.view.php'). view('recipe-search-results.view.php',$data);   
         }
     }

@@ -4,35 +4,43 @@ namespace App\Controllers;
 
 class UsuarioController extends \App\Core\BaseController {
 
-    function showData(){
+    function showData() {
         $data = [];
         $modelo = new \App\Models\HistorialPesoModel();
         $data['pesos'] = $modelo->getPesosUsuario($_SESSION['usuario']['id']);
         $fechas = [];
         $pesos = [];
-        if($data['pesos']!= null){
+        if ($data['pesos'] != null) {
             foreach ($data['pesos'] as $p) {
                 array_push($fechas, $p['fecha']);
                 array_push($pesos, $p['peso']);
             }
             $data['fechas'] = $fechas;
             $data['pesos_chart'] = $pesos;
-            
-        }else{
-            $data['fechas']=$fechas;
-            $data['pesos_chart']=$pesos;
+        } else {
+            $data['fechas'] = $fechas;
+            $data['pesos_chart'] = $pesos;
         }
         return $data;
     }
-    
-    function showFormChangePass(){
+
+    function showFormChangePass() {
         $data['titulo'] = 'Change Pass';
-        return view('left-menu.view.php').view('settings.view.php', $data);
+        $data['label'] = 'Password';
+        $data['name'] = 'pass';
+        return view('left-menu.view.php') . view('settings.view.php', $data);
+    }
+
+    function showFormChangeUsername() {
+        $data['titulo'] = 'Change Username';
+        $data['label'] = 'Username';
+        $data['name'] = 'user';
+        return view('left-menu.view.php') . view('settings.view.php', $data);
     }
 
     function showAccount() {
         $data = $this->showData();
-        return view('left-menu.view.php').view('account-details.view.php', $data);
+        return view('left-menu.view.php') . view('account-details.view.php', $data);
     }
 
     function addPeso() {
@@ -43,7 +51,7 @@ class UsuarioController extends \App\Core\BaseController {
                 return redirect()->to('/account');
             }
         } else {
-            $data= $this->showData();
+            $data = $this->showData();
             $data['errores'] = $errores;
             return view('left-menu.view.php') . view('account-details.view.php', $data);
         }
@@ -56,59 +64,100 @@ class UsuarioController extends \App\Core\BaseController {
         }
         return redirect()->to('/account');
     }
-    
-    function changeUsername(){
+
+    function changeUsername() {
         $modeloSesion = new \App\Models\SessionModel();
-        $errores = $this->checkUsername($_POST);
-        if(count($errores)==0){
-            if(!$modeloSesion->changeUsername($_POST['username'], $_SESSION['usuario']['id'])){
+        $errores = $this->checkUsername($_POST, $_SESSION['usuario']['id']);
+        if (count($errores) == 0) {
+            if (!$modeloSesion->changeUsername($_POST['username'], $_SESSION['usuario']['id'])) {
                 
-            }else{
+            } else {
                 return redirect()->to('/account');
             }
+        } else {
+            $data['errores'] = $errores;
+            $data['titulo'] = 'Change Username';
+            $data['label'] = 'Username';
+            $data['name'] = 'user';
+            return view('left-menu.view.php') . view('settings.view.php', $data);
         }
     }
 
-    function changePassword(){
+    function changePassword() {
         $modeloSesion = new \App\Models\SessionModel();
-        $errores = $this->checkPass($_POST);
-        if(count($errores)==0){
-            if(!$modeloSesion->changePass($_POST['pass'], $_SESSION['usuario']['id'])){
-                
-            }else{
+        $errores = $this->checkPass($_POST, $_SESSION['usuario']['id']);
+        if (count($errores) == 0) {
+            if (!$modeloSesion->changePass($_POST['pass'], $_SESSION['usuario']['id'])) {
+                $data['errores'] = 'Error indeterminado al cambiar la contraseña';
+                return view('left-menu.view.php') . view('settings.view.php', $data);
+            } else {
                 return redirect()->to('/account');
             }
+        } else {
+            $data['errores'] = $errores;
+            $data['titulo'] = 'Change Pass';
+            $data['label'] = 'Password';
+            $data['name'] = 'pass';
+            return view('left-menu.view.php') . view('settings.view.php', $data);
         }
     }
-    
-    function checkUsername(array $datos):array{
+
+    function checkUsername(array $datos, int $id_usuario): array {
         $errores = [];
-        if(!empty($datos['username'])){
-            if(!preg_match('/[0-9a-zA-Z_]{8,}/', $datos['pass'])){
-                $errores['username']='el username tiene que tener 8 caracteres minimo y solo puede estar formado por letras, numeros y  _';
+        $modelo = new \App\Models\SessionModel();
+        if (!empty($datos['user'])) {
+            if (!preg_match('/[0-9a-zA-Z_]{8,}/', $datos['user'])) {
+                $errores['username'] = 'el username tiene que tener 8 caracteres minimo y solo puede estar formado por letras, numeros y  _1';
             }
-        }else{
-            $errores['username']='introduce una contraseña';
+        } else {
+            $errores['user'] = 'introduce una contraseña';
         }
-        return $errores; 
-    }
-    
-    function checkPass(array $datos):array{
-        $errores = [];
-        if(!empty($datos['pass'])){
-            if(!preg_match('/[0-9a-zA-Z_]{8,}/', $datos['pass'])){
-                $errores['pass']='la contraseña tiene que tener 8 caracteres minimo y solo puede estar formado por letras, numeros y  _';
+        if (!empty($datos['user2'])) {
+            if (!preg_match('/[A-Za-z0-9_]{6,}/', $datos['user2'])) {
+                $errores['user2'] = 'el username tiene que tener 8 caracteres minimo y solo puede estar formado por letras, numeros y  _2';
             }
-        }else{
-            $errores['pass']='introduce una contraseña';
+        } else {
+            $errores['user2'] = 'introduce un nombre de usuario';
+        }
+        if ($datos['user'] != $datos['user2']) {
+            $errores['user'] = 'Ambos usernames tienen que coincidir';
+        }
+        if ($modelo->existeUsername($id_usuario, $datos['user'])) {
+            $errores['user'] = 'El username tiene que ser distinto al anterior';
         }
         return $errores;
     }
-    
+
+    function checkPass(array $datos, int $id_usuario): array {
+        $errores = [];
+        $modelo = new \App\Models\SessionModel();
+        if (!empty($datos['pass'])) {
+            if (!preg_match('/[0-9a-zA-Z_]{8,}/', $datos['pass'])) {
+                $errores['pass'] = 'la contraseña tiene que tener 8 caracteres minimo y solo puede estar formado por letras, numeros y  _';
+            }
+        } else {
+            $errores['pass'] = 'introduce una contraseña';
+        }
+        if (!empty($datos['pass2'])) {
+            if (!preg_match('/[0-9a-zA-Z_]{8,}/', $datos['pass2'])) {
+                $errores['pass2'] = 'la contraseña tiene que tener 8 caracteres minimo y solo puede estar formado por letras, numeros y  _';
+            }
+        } else {
+            $errores['pass2'] = 'introduce una contraseña';
+        }
+        if ($datos['pass'] != $datos['pass2']) {
+            $errores['pass'] = 'Ambas contraseñas tienen que ser iguales';
+        }
+        if ($modelo->existePass($id_usuario, $datos['pass'])) {
+            $errores['pass'] = 'La contraseña tiene que ser distinta a la anterior';
+        }
+        return $errores;
+    }
+
     function checkForm(array $datos, bool $edit = false, int $id = 0): array {
         $errores = [];
         $modelo = new \App\Models\HistorialPesoModel();
-        if ($edit==true) {
+        if ($edit == true) {
             if (empty($datos['fecha'])) {
                 $errores['fecha'] = 'para editar tiene que introducir una fecha';
             } else {
