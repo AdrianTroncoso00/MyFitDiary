@@ -9,5 +9,6 @@
         <p class='text-danger'><?php echo isset($errores['fecha']) ? $errores['fecha'] : '' ?></p>
         <input type="submit" target="_blank" name="submit" value="Get Meal Plan">
     </form>
+        <p><?php echo isset($error) ? $error : '' ?></p>
 </div>
 </div>

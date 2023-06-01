@@ -67,15 +67,10 @@ class ComidasModel extends \App\Core\BaseModel {
         $statement->execute([$id_usuario, $nombreComida, $label,$fechaFinal, $fecha]);
         return $statement->rowCount()>0;
     }
-    function getComidasSemana(int $id_usuario,string $nombreComida,string $fecha):?array{
-        $fechaInicio = date("Y-m-d", strtotime($fecha."-1 week"));
-        $fechaFinal = date("Y-m-d", strtotime($fecha."+1 week"));
-        $nombreComida = $nombreComida=='dinner' ? '%'.$nombreComida : $nombreComida.'%';
-        var_dump($nombreComida);
+    function getComidasSemana(int $id_usuario,string $nombreComida,string $diaInicioSemana, string $diaFinalSemana):?array{
+        $nombreComidaProcesada = $nombreComida=='dinner' ? '%'.$nombreComida : $nombreComida.'%';
         $statement = $this->pdo->prepare('SELECT * FROM comidas WHERE id_usuario=? AND mealType LIKE ? AND fecha_comida >= ? AND fecha_comida <=?');
-        var_dump($fechaFinal);
-        var_dump($fechaInicio);
-        $statement->execute([$id_usuario,$nombreComida,$fechaInicio, $fechaFinal]);
+        $statement->execute([$id_usuario,$nombreComidaProcesada,$diaInicioSemana, $diaFinalSemana]);
         return $statement->rowCount()>0 ? $statement->fetchAll() : null;
     }
     

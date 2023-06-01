@@ -5,12 +5,11 @@
         <div class="card-header row-cols-lg-12">
             <h4 class="title" style="text-align: center;">PLAN ALIMENTICIO</h4>
             <form class="form-card-header d-inline-flex align-items-start justify-content-between" method="post" action="/meal-plan">
-                <input type='date' name='fecha' id='fecha' value="<?php echo $fecha?>" placeholder="<?php echo $fecha?>">
+                <input type='date' name='fecha' id='fecha' value="<?php echo isset($fecha) ? $fecha :''?>" placeholder="<?php echo isset($fecha) ? $fecha : ''?>">
                 <input type="submit" target="_blank" name="submit" value="Get Meal Plan">
             </form>
         </div>
         <div class="content">
-            <?php if (isset($mealPlan)) { ?>
                 <?php foreach ($mealPlan as $nombre => $comida) { ?>
                     <div class="box">
                         <div class="box-header title d-flex flex-row align-items-start justify-content-between col-12">
@@ -123,7 +122,6 @@
 
                     </div>
                 <?php } ?>
-            <?php } ?>
         </div>
     </div>
 
