@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Controllers\EdamamController;
+
 class SearchRecipeController extends \App\Core\BaseController {
     
     const API_EDAMAM_BUSCADOR_ID = '9cb2882a';
@@ -11,37 +13,6 @@ class SearchRecipeController extends \App\Core\BaseController {
     const URL_CONSULTA_FIELD = '&field=label&field=image&field=url&field=yield&field=healthLabels&field=ingredientLines&field=calories&field=totalWeight&field=totalTime&field=mealType&field=totalNutrients';
     
     const MAX_RECETAS = 10;
-    
-    function getRequestCurlArray(string $parametros='', string $urlCompleta='') {
-        $curl = curl_init();
-        $options = array(
-            CURLOPT_URL => empty($urlCompleta) ? self::URL_CONSULTA_BUSCADOR .'&'.$parametros : $urlCompleta,
-            CURLOPT_RETURNTRANSFER => true, //Sin esta línea se haría un echo de la respuesta en vez de guardarse en una variable del tipo string
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 15,
-            CURLOPT_FOLLOWLOCATION => true, //Permite que si hay redirecciones las resuelva
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'GET',
-        );
-        
-        curl_setopt_array($curl, $options);
-
-        $response = curl_exec($curl);
-
-        //Si no hubo errores en la petición comprobamos que se devuelve el código 200 como status
-        if (!curl_errno($curl)) {
-            switch ($http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE)) {
-                case 200:  # OK                   
-                    $recetas = (json_decode($response, true));
-                    return $recetas;
-                    
-                default:
-                    echo 'Unexpected HTTP code: ', $http_code, "\n";
-                    
-            }
-        }
-        curl_close($curl);
-    }
     
     function showForm(){
         $modeloTipoComida = new \App\Models\TipoComidaModel();
@@ -61,12 +32,8 @@ class SearchRecipeController extends \App\Core\BaseController {
         
     }
     
-    function mostrarPaginaAnterior(){
-        
-    }
-    
     function mostrarPaginaSiguiente(){
-        $recetas= $this->getRequestCurlArray('', $_POST['nextPage']);
+        $recetas= EdamamController::getRequestCurlArray($_POST['nextPage']);
         if(count($recetas)>0){
             $recetasBuenas = $this->getAllNecesary($recetas);
             $data['recetas']= $recetasBuenas;
@@ -78,24 +45,13 @@ class SearchRecipeController extends \App\Core\BaseController {
         }
     }
     
-    function addBookmark(){
-        $modelo = new \App\Models\RecetasFavoritasModel();  
-        if($modelo->addRecetaFavorita($_SESSION['usuario']['id'], $_POST)){
-            return redirect()->to($_SERVER['HTTP_REFERER']);
-        }else{
-            $data['errorGuardar']='Ha ocurrido un error indeterminado al guardar, vuelve a intentarlo mas tarde';
-            return view('left-menu.view.php'). view('recipe-search-results.view.php',$data);            }
-    }
-    
     function showRecipes(){
-        var_dump($_GET);
         $resultados  = $this->generarStringBuscadorRecetas($_GET);
         $cadenaParametros= $resultados['result'];
         $errores= $resultados['errores'];
         if(count($errores)==0){
             var_dump($cadenaParametros);
-            $recetas = $this->getRequestCurlArray($cadenaParametros['cadenaTotal']);
-            var_dump($recetas);
+            $recetas = EdamamController::getRequestCurlArray($cadenaParametros);
             $recetasBuenas = $this->getAllNecesary($recetas);
             $data['recetas']= $recetasBuenas;
             $linkNextPage = isset($recetas['_links']['next']['href']) ? $recetas['_links']['next']['href'] : null;
@@ -103,8 +59,7 @@ class SearchRecipeController extends \App\Core\BaseController {
             return view('left-menu.view.php'). view('recipe-search-results.view.php',$data);      
         }else{
             $data['errores']=$errores;
-            return view('left-menu.view.php'). view('recipe-search-filtros.view.php',$data);      
-            
+            return view('left-menu.view.php'). view('recipe-search-filtros.view.php',$data);       
         }
     }
     
@@ -114,8 +69,8 @@ class SearchRecipeController extends \App\Core\BaseController {
         if(!empty($params)){
             if(is_array($params['ingredients']) && count($params['ingredients'])==1 && !empty($params['ingredients'][0])){
                 foreach ($params['ingredients'] as $ingrediente) {
-                    if(!preg_match('/[a-zA-Z ]{4, }/', $ingrediente)){
-                        $errores['ingredients'] ='Solo puede introducir letras y un minimo de 4 caracteres';
+                    if(!preg_match('/[a-zA-Z ]{1, }/', $ingrediente)){
+                        $errores['ingredients'] ='Solo puede introducir letras y un minimo de 1 caracter';
                     }else{
                         $result['ingredients']= 'q=' .str_replace(' ','%20',implode('&q=', $params['ingredients']));  
                     }
@@ -123,8 +78,8 @@ class SearchRecipeController extends \App\Core\BaseController {
             }
             if(is_array($params['excluded']) && count($params['excluded'])==1 &&!empty($params['excluded'][0])){
                 foreach ($params['excluded'] as $excluded) {
-                    if(!preg_match('/[a-zA-Z ]{4, }/', $excluded)){
-                        $errores['excluded'] ='Solo puede introducir letras y un minimo de 4 caracteres';
+                    if(!preg_match('/[a-zA-Z ]{1, }/', $excluded)){
+                        $errores['excluded'] ='Solo puede introducir letras y un minimo de 1 caracter';
                     }else{
                         $result['excluded']= 'excluded=' .str_replace(' ','%20',implode('&excluded=', $params['excluded']));
                     }
@@ -203,16 +158,17 @@ class SearchRecipeController extends \App\Core\BaseController {
         foreach ($result as $value) {
             $result['cadenaTotal'] .= '&'.$value;
         }
-        $result['cadenaTotal']=trim($result['cadenaTotal'], '&');
+        $cadenaParametros =trim($result['cadenaTotal'], '&');
+        $cadenaTotal = self::URL_CONSULTA_BUSCADOR.'&'.$cadenaParametros;
         return ([
-            'result'    =>$result,
+            'result'    =>$cadenaTotal,
             'errores'   =>$errores
         ]);
     }
     
     function getAllNecesary(array $recetas): array{
         $array = [];
-        foreach ($recetas['hits'] as $key=>$value) {   
+        foreach ($recetas as $key=>$value) {   
             $array[$key]['label'] =$value['recipe']['label'];
             $array[$key]['image'] =$value['recipe']['image'];
             $array[$key]['url'] =$value['recipe']['url'];

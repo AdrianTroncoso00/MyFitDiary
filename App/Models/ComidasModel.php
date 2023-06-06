@@ -55,14 +55,13 @@ class ComidasModel extends \App\Core\BaseModel {
     }
     
     function eliminarComidasPasadas(string $dia):bool{
-        $date = date("j-n-Y", strtotime($dia));
         $statement = $this->pdo->prepare('DELETE FROM comidas WHERE fecha_comida<?');
-        $statement->execute([$date]);
+        $statement->execute([$dia]);
         return $statement->rowCount()>0;
     }
     
     function existeComidaSemana(int $id_usuario, string $nombreComida, string $label, string $fecha):bool{
-        $fechaFinal = date("j-n-Y", strtotime($fecha."-1 week"));
+        $fechaFinal = date("Y-m-d", strtotime($fecha."-1 week"));
         $statement = $this->pdo->prepare('SELECT * FROM comidas WHERE id_usuario=? AND nombre_comida LIKE ? AND label =? AND fecha_comida >= ? AND fecha_comida <=?');
         $statement->execute([$id_usuario, $nombreComida, $label,$fechaFinal, $fecha]);
         return $statement->rowCount()>0;
@@ -82,7 +81,7 @@ class ComidasModel extends \App\Core\BaseModel {
     }
     
     function deleteComidasSemanaAnterior(int $id_usuario, string $fecha):bool{
-        $fechaEliminar = date("j-n-Y", strtotime($fecha."-1 week"));
+        $fechaEliminar = date("Y-m-d", strtotime($fecha."-1 week"));
         $statement = $this->pdo->prepare('DELETE FROM comidas WHERE id_usuario=? AND fecha_comida<?');
         $statement->execute([$id_usuario,$fechaEliminar]);
         return $statement->rowCount()>0;

@@ -16,6 +16,13 @@ class SessionModel extends \App\Core\BaseModel {
         $statement->execute([$elemento]);
         return ($statement->rowCount() > 0) ? true : false;
     }
+    
+    function getAlergenos(int $id_usuario):?array{
+        $statement = $this->pdo->prepare("SELECT nombre_alergeno FROM alergenos LEFT JOIN rel_alergenos ON alergenos.id_alergenos = rel_alergenos.alergeno WHERE id_usuario=?");
+        $statement->execute([$id_usuario]);
+        return ($statement->rowCount() > 0) ? $statement->fetchAll() : null;
+        
+    }
 
     function login(string $email, string $pass): ?array {
         $statement = $this->pdo->prepare(self::SELECT_USUARIOS_INFO_USUARIOS . self::LEFT_JOIN ." WHERE email=?");
@@ -81,6 +88,12 @@ class SessionModel extends \App\Core\BaseModel {
     function existeUsername(int $id_usuario,string $username):bool{
         $statement = $this->pdo->prepare('SELECT username FROM usuarios WHERE id=? AND username=?');
         $statement->execute([$id_usuario,$username]);
+        return $statement->rowCount()==1;
+    }
+    
+    function deleteUser(int $id_usuario):bool{
+        $statement = $this->pdo->prepare('DELETE FROM usuarios WHERE id=?');
+        $statement->execute([$id_usuario]);
         return $statement->rowCount()==1;
     }
 }

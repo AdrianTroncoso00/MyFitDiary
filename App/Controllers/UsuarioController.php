@@ -69,9 +69,10 @@ class UsuarioController extends \App\Core\BaseController {
         $modeloSesion = new \App\Models\SessionModel();
         $errores = $this->checkUsername($_POST, $_SESSION['usuario']['id']);
         if (count($errores) == 0) {
-            if (!$modeloSesion->changeUsername($_POST['username'], $_SESSION['usuario']['id'])) {
+            if (!$modeloSesion->changeUsername($_POST['user'], $_SESSION['usuario']['id'])) {
                 
             } else {
+                $_SESSION['usuario']['username']= $_POST['user'];
                 return redirect()->to('/account');
             }
         } else {
@@ -101,12 +102,23 @@ class UsuarioController extends \App\Core\BaseController {
             return view('left-menu.view.php') . view('settings.view.php', $data);
         }
     }
+    
+    function showMensajeBorrarUser(){
+        
+    }
+    
+    function deleteAccount(int $id_usuario){
+        $modelo = new \App\Models\SessionModel();
+        if($modelo->deleteUser($id_usuario)){
+            return redirect()->to('/login');
+        }
+    }
 
     function checkUsername(array $datos, int $id_usuario): array {
         $errores = [];
         $modelo = new \App\Models\SessionModel();
         if (!empty($datos['user'])) {
-            if (!preg_match('/[0-9a-zA-Z_]{8,}/', $datos['user'])) {
+            if (!preg_match('/[0-9a-zA-Z_]{4,}/', $datos['user'])) {
                 $errores['username'] = 'el username tiene que tener 8 caracteres minimo y solo puede estar formado por letras, numeros y  _1';
             }
         } else {

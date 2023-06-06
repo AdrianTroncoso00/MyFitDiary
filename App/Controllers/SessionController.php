@@ -2,9 +2,10 @@
 
 namespace App\Controllers;
 
+use App\Controllers\EdamamController;
+
 class SessionController extends \App\Core\BaseController {
-    
-    const NUM_COMIDAS_DIARIAS = [3,4,5];
+
     public function showLogIn() {
         return view('login.view.php');
     }
@@ -19,13 +20,15 @@ class SessionController extends \App\Core\BaseController {
 
     function LogInProcess() {
         $data = [];
-        $date = date("j-n-Y");
+        $semana = EdamamController::getSemanaActual();
         $modelo = new \App\Models\SessionModel();
         $modeloComidas = new \App\Models\ComidasModel();
         $usuario = $modelo->login($_POST['email'], $_POST['pass']);
         if (!is_null($usuario)) {
             $_SESSION['usuario'] = $usuario;
-            $modeloComidas->deleteComidasSemanaAnterior($_SESSION['usuario']['id'], $date);
+            $alergenos = $modelo->getAlergenos($_SESSION['usuario']['id']);
+            !is_null($alergenos) ? $_SESSION['usuario']['alergenos']= $this->getStringAlergenos($alergenos) : $_SESSION['usuario']['alergenos']=null;
+            $modeloComidas->deleteComidasSemanaAnterior($_SESSION['usuario']['id'], $semana[0]);
             $modelo->updateLastDate($_SESSION['usuario']['id']);
             return redirect()->to('/meal-plan');
         } else {
@@ -33,6 +36,14 @@ class SessionController extends \App\Core\BaseController {
             $data['error'] = 'Los datos introducidos no son correctos';
             return view('login.view.php', $data);
         }
+    }
+    
+    function getStringAlergenos(array $alergenos):array{
+        $string=[];
+        foreach ($alergenos as $alergeno) {
+            array_push($string,$alergeno['nombre_alergeno']);
+        }
+        return $string;
     }
 
     function signUp() {
@@ -61,16 +72,6 @@ class SessionController extends \App\Core\BaseController {
     function logOut() {
         session_destroy();
         return view('login.view.php');
-    }
-    
-    function changePass(){
-        $modelo = new \App\Models\SessionModel();
-        $id=$modelo->getIdByEmail($_POST['email']);
-        if($id>0){
-            if($modelo->changePass($_POST['pass'], $id)){
-                return view('login.view.php');
-            }
-        }
     }
 
     function checkForm(array $datos, bool $alta = false): array {

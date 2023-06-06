@@ -1,31 +1,36 @@
-<?php if (isset($errorGuardar)) { ?>
+<?php if (isset($_SESSION['error'])) { ?>
     <div class="card bg-danger">
         <div class="card-body">
-            <p><?php echo $errorGuardar ?></p>
+            <p><?php echo $_SESSION['error'] ?></p>
         </div>
     </div>
+    <?php unset($_SESSION['error'])?>
 <?php } ?>
 <!-- Result -->
-<div class="form col-12">
+<div class="card col-12">
     <!-- Handle error -->
-    <?php if (count($bookmarks) < 1) { ?>
+    <?php if (count($recetas) < 1) { ?>
         <div class="text-center">
             <div class="fs-1 fw-7 text-center mb-3">Nothing here!</div>
             <div class="fs-5">You haven't bookmarked any recipe so far.</div>
             <div class="fs-5 mb-5">Start browsing to have a list of your favorite recipes!</div>
-            <a href="/" class="fw-6 fs-4">Start now!</a>
+            <a href="/recipe-search" class="fw-6 fs-4">Start now!</a>
         </div>
     <?php } else { ?>
-    
         <div class="my-3 text-left">
             <h5>Bookmarked recipes:</h5>
         </div>
         <!-- Show result -->
         <div class="d-flex flex-wrap justify-content-evenly col-12">
-            <?php foreach ($recetas as $receta) { ?>
+        <?php if (session()->getFlashdata('msg')) { ?>
+            <div>
+                <p><?php echo session()->getFlashdata('msg') ?></p>
+            </div>
+        <?php } ?>
+            <?php foreach ($recetas as $key => $receta) { ?>
 
                 <!-- Cards -->
-                <div class="receta position-relative border-0 card col-3" data-toggle="modal" data-target="<?php echo '#recipe' . $receta['position'] ?>">
+                <div class="receta position-relative border-0 card col-3" data-toggle="modal" data-target="<?php echo '#recipe' . $key ?>">
                     <!-- Card Image -->
 
                     <img class="card-img-top" src="<?php echo $receta['image'] ?>" alt="<?php echo $receta['label'] ?>">
@@ -35,19 +40,19 @@
                         <div class="h5 lh-sm card-text text-capitalize mb-2"><?php echo $receta['label'] ?></div>
                         <!-- Input Label -->
                         <small class="lh-1 text-uppercase d-flex flex-wrap">
-
-
                             <?php foreach ($receta['dietLabels'] as $dietLabel) { ?>
                                 <small class="fw-4 p-2 mb-1 me-1 form"><?php echo $dietLabel ?></small>
                             <?php } ?>
-                            <?php foreach ($receta['cuisineType'] as $cuisine) { ?>
-                                <small class="fw-4 p-2 mb-1 me-1 form"><?php echo $cuisine ?></small>
-                            <?php } ?>
+                            <small class="fw-4 p-2 mb-1 me-1 form"><?php echo isset($receta['cuisinetype']) ? $receta['cuisinetype'] : '' ?></small>
                         </small>
+                    </div>
+                    <div class='card-footer d-flex align-items-center justify-content-center'>
+                        <a href="/eliminar-receta-fav/<?php echo $receta['id_receta_fav']; ?>"><i class='fas fa-trash-alt'></i></a>
+                        
                     </div>
                 </div>
                 <!-- Modal -->
-                <div class="modal" id="<?php echo 'recipe' . $receta['position'] ?>" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal" id="<?php echo 'recipe' . $key ?>" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                         <div class="modal-content">
                             <!-- Modal body -->
@@ -125,35 +130,12 @@
                                             <!-- Cuisine Tags -->
                                             <div class="mb-1">
                                                 <div class="lh-sm small text-muted">Cuisine Type:</div>
-                                                <small class="ps-2 lh-1 text-uppercase d-flex flex-wrap">
-                                                    <?php foreach ($receta['cuisineType'] as $cuisine) { ?>
-                                                        <small class="fw-4 p-2 mb-1 me-1 form"><?php echo $cuisine ?></small>
-                                                    <?php } ?>
-                                                </small>
+                                                <small class="fw-4 p-2 mb-1 me-1 form"><?php echo isset($receta['cuisineType']) ? $receta['cuisineType'] : '' ?></small>
+
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Bookmark -->
-                                <form action="/add" method="POST">
-                                    <div class="row center">
-                                        <div>
-                                            <input type="hidden" name="image" value="<?php echo $receta['image'] ?>">
-                                            <input type="hidden" name="label" value="<?php echo $receta['label'] ?>">
-                                            <input type="hidden" name="url" value="<?php echo $receta['url'] ?>">
-                                            <input type="hidden" name="dietLabels" value="<?php echo implode(',', $receta['dietLabels']) ?>">
-                                            <input type="hidden" name="ingredientLines" value="<?php echo implode(',', $receta['ingredientLines']) ?>">
-                                            <input type="hidden" name="calories" value="<?php echo $receta['calories'] ?>">
-                                            <input type="hidden" name="totalTime" value="<?php echo $receta['totalTime'] ?>">
-                                            <input type="hidden" name="cuisineType" value="<?php echo implode(',', $receta['cuisineType']) ?>">
-
-                                        </div>
-                                        <div class="col text-center">
-                                            <input type="submit" name="bookmark" id="bookmark" value="Bookmark" class="px-5 btn btn-primary">
-
-                                        </div>
-                                    </div>
-                                </form>
                             </div>
                         </div>
                     </div>
@@ -161,4 +143,5 @@
             <?php } ?>
         </div>
     <?php } ?>
+    <?php echo $pager->links()?>    
 </div>

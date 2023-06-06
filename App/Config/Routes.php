@@ -37,16 +37,18 @@ $routes->post('login', 'SessionController::LogInProcess');
 $routes->post('signup', 'SessionController::SignUp');
 $routes->get('imc', 'ImcController::showFormIMC');
 $routes->post('imc', 'ImcController::mostrarResForm');
-$routes->get('prueba', 'EdamamController::showMealPlanSemana');
+$routes->get('nutrientes-semana', 'EdamamController::showMealPlanSemana');
 $routes->get('meal-plan', 'EdamamController::getMealPlanDiario2');
 $routes->post('meal-plan', 'EdamamController::getMealPlanDiario');
 $routes->get('meal-prueba', 'EdamamController::getMealPlanSemanal');
 $routes->get('recipe-search', 'SearchRecipeController::showForm');
 $routes->get('recipes', 'SearchRecipeController::showRecipes');
-$routes->post('add', 'SearchRecipeController::addBookmark');
+$routes->post('add', 'BookmarksController::addBookmark');
+$routes->get('favoritos', 'BookmarksController::showBookmarks');
 $routes->get('cambiar-comida/(:any)/(:any)', 'EdamamController::regenerarComidaEntera/$1/$2');
 $routes->get('cambiar-comida-especifica/(:any)/(:any)/(:any)/(:any)', 'EdamamController::regenerarComidaEspecifica/$1/$2/$3/$4');
 $routes->get('eliminar-receta/(:num)', 'EdamamController::eliminarRecetaEspecifica/$1');
+$routes->get('eliminar-receta-fav/(:num)', 'BookmarksController::deleteBookmark/$1');
 $routes->get('pruebaSemanal', 'EdamamController::getMealPlanSemanal');
 $routes->post('next-page', 'SearchRecipeController::mostrarPaginaSiguiente');
 
@@ -60,6 +62,7 @@ $routes->post('account', 'UsuarioController::addPeso');
 $routes->get('change-pass', 'UsuarioController::showFormChangePass');
 $routes->post('change-pass', 'UsuarioController::changePassword');
 $routes->get('change-user', 'UsuarioController::showFormChangeUsername');
+$routes->get('delete-account/(:any)', 'UsuarioController::deleteAccount/$1');
 $routes->post('change-user', 'UsuarioController::changeUsername');
 /*
  * --------------------------------------------------------------------

@@ -13,13 +13,13 @@
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,200" rel="stylesheet" />
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
         <!-- CSS Files -->
-        
-        
+
+
         <link href="assets/css/prueba.css" rel="stylesheet" />
         <link href="assets/css/light-bootstrap-dashboard.css?v=2.0.0 " rel="stylesheet" />
         <script src="https://kit.fontawesome.com/4799b9b69b.js" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
-        
+
         <script src="assets/js/toggle.js"></script>
         <script src="assets/js/toTop.js"></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -64,9 +64,21 @@
                             </a>
                         </li>
                         <li>
+                            <a class="nav-link" href="/nutrientes-semana">
+                                <i class="fa-brands fa-nutritionix"></i>
+                                <p>Nutrientes Semanales</p>
+                            </a>
+                        </li>
+                        <li>
                             <a class="nav-link" href="/recipe-search">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                                 <p>Buscador de Recetas</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="/favoritos">
+                                <i class="fa-solid fa-star"></i>
+                                <p>Favoritos</p>
                             </a>
                         </li>
                         <li>
@@ -75,7 +87,7 @@
                                 <p>Configuracion dieta</p>
                             </a>
                         </li>
-                        
+
                         <li class="nav-item active active-pro">
                             <a class="nav-link active" href="upgrade.html">
                                 <i class="fa-sharp fa-solid fa-rocket"></i>
@@ -88,27 +100,41 @@
             <div class="main-panel">
                 <!-- Navbar -->
                 <nav class="navbar navbar-expand-lg " color-on-scroll="500">
-                    <div class="container-fluid">
-                        <a class="navbar-brand" href="#pablo"> Dashboard </a>
-                        <button href="" class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
-                            <span class="navbar-toggler-bar burger-lines"></span>
-                            <span class="navbar-toggler-bar burger-lines"></span>
-                            <span class="navbar-toggler-bar burger-lines"></span>
-                        </button>
-                        <div class="collapse navbar-collapse justify-content-end" id="navigation">
-                            <ul class="navbar-nav ml-auto">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/account">
-                                        <span class="no-icon">Account</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/logout">
-                                        <span class="no-icon">Log out</span>
-                                    </a>
-                                </li>
-                            </ul>
+                    <div class="container-fluid d-flex flex-row justify-content-end">
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Account
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="/account">Show Account</a>
+                                <a class="dropdown-item" href="/change-user">Change User</a>
+                                <a class="dropdown-item" href="/change-pass">Change Pass</a>
+                                <a class="dropdown-item text-danger" data-toggle="modal" data-target="#deleteAccountModal">Delete Account</a>
+                            </div>
+                            <div class="modal fade" id="deleteAccountModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLongTitle">Delete Account</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Esta seguro que quiere eliminar su cuenta permanentemente? Esta accion no se puede revocar.</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <a type="button" href="/delete-account/<?php echo $_SESSION['usuario']['id']?>">Delete Account</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
+                        <a class="nav-link" href="/logout">
+                            <span class="no-icon">Log out</span>
+                        </a>
                     </div>
                 </nav>
 
