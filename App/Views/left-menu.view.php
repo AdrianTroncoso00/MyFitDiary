@@ -21,6 +21,7 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
 
         <script src="assets/js/toggle.js"></script>
+        <script src="assets/js/send2forms.js"></script>
         <script src="assets/js/toTop.js"></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -52,7 +53,7 @@
                     </div>
                     <ul class="nav">
                         <li class="nav-item active">
-                            <a class="nav-link" href="dashboard.html">
+                            <a class="nav-link" href="/account">
                                 <i class="fa-solid fa-user"></i>
                                 <p><?php echo isset($_SESSION['usuario']['username']) ? $_SESSION['usuario']['username'] : 'usuario' ?></p>
                             </a>
@@ -66,7 +67,7 @@
                         <li>
                             <a class="nav-link" href="/nutrientes-semana">
                                 <i class="fa-brands fa-nutritionix"></i>
-                                <p>Nutrientes Semanales</p>
+                                <p>Nutrientes Semana</p>
                             </a>
                         </li>
                         <li>

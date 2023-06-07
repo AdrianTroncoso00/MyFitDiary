@@ -1,10 +1,16 @@
-<?php if (isset($_SESSION['error'])) { ?>
-    <div class="card bg-danger">
+<?php if (isset($_SESSION['good'])) { ?>
+    <div class="card bg-success">
         <div class="card-body">
-            <p><?php echo $_SESSION['error'] ?></p>
+            <p class="text-center"><?php echo $_SESSION['good'] ?></p>
         </div>
     </div>
-    <?php unset($_SESSION['error'])?>
+<?php } ?>
+<?php if (isset($_SESSION['bad'])) { ?>
+    <div class="card bg-danger">
+        <div class="card-body">
+            <p class="text-center"><?php echo $_SESSION['bad'] ?></p>
+        </div>
+    </div>
 <?php } ?>
 <!-- Result -->
 <div class="card col-12">
@@ -22,11 +28,6 @@
         </div>
         <!-- Show result -->
         <div class="d-flex flex-wrap justify-content-evenly col-12">
-        <?php if (session()->getFlashdata('msg')) { ?>
-            <div>
-                <p><?php echo session()->getFlashdata('msg') ?></p>
-            </div>
-        <?php } ?>
             <?php foreach ($recetas as $key => $receta) { ?>
 
                 <!-- Cards -->
@@ -142,6 +143,6 @@
                 </div>
             <?php } ?>
         </div>
-    <?php } ?>
     <?php echo $pager->links()?>    
+    <?php } ?>
 </div>

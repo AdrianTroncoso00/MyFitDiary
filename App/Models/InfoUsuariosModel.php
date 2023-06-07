@@ -42,8 +42,13 @@ class InfoUsuariosModel extends \App\Core\BaseModel {
     function changeConfiguracionDieta(array $datos, int $id_usuario):bool{
         $query = $this->getQuery($datos);
         $queryProcesada = implode(',', $query);
-        $statement = $this->pdo->prepare('UPDATE info_usuarios SET ('.$queryProcesada.') WHERE id_usuario=?');
-        
+        $statement = $this->pdo->prepare('UPDATE info_usuarios SET ('.$queryProcesada.') WHERE id_usuario=?');  
+    }
+    
+    function setPeso(int $id_usuario, int $peso):bool{
+        $statement = $this->pdo->prepare('UPDATE info_usuarios SET peso=? WHERE id_usuario=?');
+        $statement->execute([$peso, $id_usuario]);
+        return $statement->rowCount()==1;
     }
 }
 

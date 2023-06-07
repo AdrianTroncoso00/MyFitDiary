@@ -33,14 +33,14 @@ class SearchRecipeController extends \App\Core\BaseController {
     }
     
     function mostrarPaginaSiguiente(){
-        $recetas= EdamamController::getRequestCurlArray($_POST['nextPage']);
+        $recetas= EdamamController::getRequestCurlArray($_POST['nextPage'], true);
+        var_dump($recetas);
         if(count($recetas)>0){
             $recetasBuenas = $this->getAllNecesary($recetas);
             $data['recetas']= $recetasBuenas;
             $linkNextPage = isset($recetas['_links']['next']['href']) ? $recetas['_links']['next']['href'] : null;
-            $data['nextPage']= $linkNextPage;
-            $data['previousPage'] = $_SESSION['_ci_previous_url'];
-            var_dump($data['previousPage']);
+            $_SESSION['next_page']= $linkNextPage;
+            $_SESSION['previous_page'] = $_SESSION['_ci_previous_url'];
             return view('left-menu.view.php'). view('recipe-search-results.view.php',$data);   
         }
     }
@@ -50,12 +50,14 @@ class SearchRecipeController extends \App\Core\BaseController {
         $cadenaParametros= $resultados['result'];
         $errores= $resultados['errores'];
         if(count($errores)==0){
-            var_dump($cadenaParametros);
-            $recetas = EdamamController::getRequestCurlArray($cadenaParametros);
+            $_SESSION['first_page_consulta']=$cadenaParametros;
+            $recetas = EdamamController::getRequestCurlArray($cadenaParametros,true);
+            var_dump($recetas);
             $recetasBuenas = $this->getAllNecesary($recetas);
             $data['recetas']= $recetasBuenas;
             $linkNextPage = isset($recetas['_links']['next']['href']) ? $recetas['_links']['next']['href'] : null;
-            $data['nextPage']= $linkNextPage;
+            var_dump($linkNextPage);
+            $_SESSION['next_page']= $linkNextPage;
             return view('left-menu.view.php'). view('recipe-search-results.view.php',$data);      
         }else{
             $data['errores']=$errores;
@@ -168,7 +170,7 @@ class SearchRecipeController extends \App\Core\BaseController {
     
     function getAllNecesary(array $recetas): array{
         $array = [];
-        foreach ($recetas as $key=>$value) {   
+        foreach ($recetas['hits'] as $key=>$value) {   
             $array[$key]['label'] =$value['recipe']['label'];
             $array[$key]['image'] =$value['recipe']['image'];
             $array[$key]['url'] =$value['recipe']['url'];

@@ -32,7 +32,7 @@ class EdamamController extends \App\Core\BaseController {
         return $semana;
     }
 
-    function getRequestCurlArray(string $query) {
+    function getRequestCurlArray(string $query, bool $buscador=false) {
         $curl = curl_init();
 
         $options = array(
@@ -54,7 +54,7 @@ class EdamamController extends \App\Core\BaseController {
             switch ($http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE)) {
                 case 200:  # OK                   
                     $recetas = (json_decode($response, true));
-                    return $recetas['hits'];
+                    return $buscador ? $recetas : $recetas['hits'];
                 default:
                     echo 'Unexpected HTTP code: ', $http_code, "\n";
             }
@@ -62,35 +62,30 @@ class EdamamController extends \App\Core\BaseController {
         curl_close($curl);
     }
     
-    function getMealPlanSemanaConsumido():array{
+    function getNutrientesSemanaConsumido():?array{
         $modelo = new \App\Models\ComidasModel();
         $semana = $this->getSemanaActual();
-        $mealPlanSemana = [];
         $nutrientesDia =[];
         foreach ($semana as $dia) {
             $mealDiario = $modelo->getMealPlanDiaria($_SESSION['usuario']['id'], $dia);
             if (!is_null($mealDiario)) {
                 $mealDiarioModificado = $this->transformarArray($mealDiario);
-                $mealPlanSemana[$dia] = $mealDiarioModificado;
-                $nutrientesDia[$dia] = $this->getAllNutrientes2($mealPlanSemana[$dia]);
+                $nutrientesDia[$dia] = $this->getAllNutrientes2($mealDiarioModificado);
             }
         }
-        return array([
-            'mealSemanal'=> $mealPlanSemana,
-            'nutrientes'=>$nutrientesDia
-        ]);
+        return empty($nutrientesDia) ? null : $nutrientesDia;
     }
     
-    function showMealPlanSemana() {
-        $mealPlanAndNutrientes = $this->getMealPlanSemanaConsumido();
-        var_dump($mealPlanAndNutrientes);
-        $nutrientes = $mealPlanAndNutrientes[0]['nutrientes'];
-        $mealSemanal = $mealPlanAndNutrientes[0]['mealSemanal'];
-        $nutrientesSemana = $this->getAllNutrientesSemana($nutrientes);
-        $data = $this->getData($nutrientesSemana);
-        $data['nutrientesSemana'] = $nutrientesSemana;
-        $data['mealPlanSemanal'] = $mealSemanal;
-        return view('left-menu.view.php').view('meal-plan-semana.view.php', $data);
+    function showNutrientesSemana() {
+        $nutrientes = $this->getNutrientesSemanaConsumido();
+        if(!is_null($nutrientes)){
+            $nutrientesSemana = $this->getAllNutrientesSemana($nutrientes);
+            $data = $this->getData($nutrientesSemana);
+            return view('left-menu.view.php').view('nutrientes-semana.view.php', $data);
+        }else{
+            $data['nutrientesTotales']=[];
+            return view('left-menu.view.php').view('nutrientes-semana.view.php',$data);
+        }
         
     }
 
@@ -116,22 +111,16 @@ class EdamamController extends \App\Core\BaseController {
         return $array;
     }
 
-    function getMealPlanDiario2() {
+    function showMealPlanDiario() {
         $dia = date("Y-m-d");
         var_dump($_SESSION);
-        $data['fecha'] = $dia;
         $modelo = new \App\Models\ComidasModel();
         $mealPlanDia = $modelo->getMealPlanDiaria($_SESSION['usuario']['id'], $dia);
         if (!is_null($mealPlanDia)) {
-            $data['mealPlan'] = $this->transformarArray($mealPlanDia);
             $nutrientesTotales = $this->getAllNutrientes($mealPlanDia);
-            $data['nutrientesTotales'] = $nutrientesTotales;
-            $data['etiquetas'] = ['Proteinas', 'Grasas', 'Carbohidratos'];
-            $data['valores_etiquetas'] = [round($nutrientesTotales['Protein']['cantidadTotal'], 0), round($nutrientesTotales['Fat']['cantidadTotal'], 0), round($nutrientesTotales['Carbs']['cantidadTotal'], 0)];
-            $data['chart_colors'] = [
-                'rgb(255, 99, 132)',
-                'rgb(54, 162, 235)',
-                'rgb(255, 205, 86)'];
+            $data=$this->getData($nutrientesTotales);
+            $data['fecha'] = $dia;
+            $data['mealPlan'] = $this->transformarArray($mealPlanDia);
             $data['input']['fecha'] = date("d/m/Y", strtotime($dia));
             return view('left-menu.view.php') . view('meal-plan.view.php', $data);
         } else {
@@ -381,13 +370,12 @@ class EdamamController extends \App\Core\BaseController {
                 array_push($nutrientesTotales, $value['nutrientes']);
             }
         }
-        //var_dump($nutrientesTotales);
         foreach ($nutrientesTotales as $key => $nutriente) {
             if (is_array($nutriente)) {
                 foreach ($nutriente as $infoNutriente) {
-                    $nut[$infoNutriente['label']]['cantidad'][$key] = $infoNutriente['quantity'];
+                    $nut[$infoNutriente['label']]['cantidad'][$key] = round($infoNutriente['quantity'],0);
                     $nut[$infoNutriente['label']]['unidad'] = $infoNutriente['unit'];
-                    $nut[$infoNutriente['label']]['cantidadTotal'] = array_sum($nut[$infoNutriente['label']]['cantidad']);
+                    $nut[$infoNutriente['label']]['cantidadTotal'] = round(array_sum($nut[$infoNutriente['label']]['cantidad']),0);
                 }
             } else {
                 unset($nutriente);
@@ -400,16 +388,16 @@ class EdamamController extends \App\Core\BaseController {
         $nutrientesSemana = [];
         foreach ($mealPlanSemana as $mealPlan) {
             foreach ($mealPlan as $nombre => $nutriente) {
-                $nutrientesSemana[$nombre]['cantidad'][] = $nutriente['cantidadTotal'];
+                $nutrientesSemana[$nombre]['cantidad'][] = round($nutriente['cantidadTotal'],0);
                 $nutrientesSemana[$nombre]['unidad'] = $nutriente['unidad'];
-                $nutrientesSemana[$nombre]['cantidadTotal'] = array_sum($nutrientesSemana[$nombre]['cantidad']);
+                $nutrientesSemana[$nombre]['cantidadTotal'] = round(array_sum($nutrientesSemana[$nombre]['cantidad']),0);
             }
         }
         return $nutrientesSemana;
     }
     
     function getData(array $nutrientesTotales):array{
-        $data=[];
+        $data['nutrientesTotales']=$nutrientesTotales;
         $data['etiquetas'] = ['Proteinas', 'Grasas', 'Carbohidratos'];
         $data['valores_etiquetas'] = [round($nutrientesTotales['Protein']['cantidadTotal'], 0), round($nutrientesTotales['Fat']['cantidadTotal'], 0), round($nutrientesTotales['Carbs']['cantidadTotal'], 0)];
         $data['chart_colors'] = [

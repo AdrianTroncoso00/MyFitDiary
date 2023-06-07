@@ -4,142 +4,69 @@
         <meta charset="UTF-8">
         <title>MyFitDiary</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f2f2f2;
-            }
-            .content{
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                width: 100%
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
-            }
-            h1 {
-                text-align: center;
-                margin-top: 30px;
-                color: #4CAF50;
-            }
-            form {
-                width: 40%;
-                min-width: 300px;
-                margin: 0 auto;
-                background-color: #fff;
-                border-radius: 10px;
-                padding: 20px;
-                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-                display: flex;
-                flex-direction: column;
-
-            }
-            .field {
-                margin: 10px 0;
-                display: flex;
-                flex-direction: column;
-            }
-            label {
-                font-size: 18px;
-                margin-bottom: 5px;
-            }
-            input[type="text"], input[type="number"], select {
-                padding: 10px;
-                border-radius: 5px;
-                border: none;
-                border: 2px solid #ccc;
-                width: 80%;
-                font-size: 16px;
-                color: #333;
-            }
-            input[type="submit"] {
-                padding: 10px 20px;
-                margin-top: 20px;
-                border-radius: 5px;
-                border: none;
-                background-color: #4CAF50;
-                color: white;
-                font-size: 18px;
-                cursor: pointer;
-                align-self: center;
-            }
-            .result {
-                text-align: center;
-                font-size: 20px;
-                margin-top: 30px;
-                color: #4CAF50;
-            }
-            textarea{
-                height: 100px;
-            }
-            /* Estilos para pantallas pequeñas */
-            @media screen and (max-width: 480px) {
-                form {
-                    width: 90%;
-                    margin: 0;
-                    padding: 10px;
-                    box-shadow: none;
-                }
-                input[type="submit"] {
-                    margin-top: 10px;
-                }
-            }
-        </style>
     </head>
     <body>
-        <div class="content">
-            <form action="/imc" method="post">
+        <div class="content d-flex align-items-center justify-content-center">
+            <form action="/imc" method="post" id="datosPersonales" class="form col-10 d-flex flex-row align-items-center justify-content-around">
+                <div class="card col-6">
+                    <h1>DATOS PERSONALES</h1>
+                    <div class="form-group">
+                        <label for="nombre">Nombre completo</label>
+                        <input class="form-control" type="text" id="nombre" name="nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="genero">Género</label>
+                        <select class="form-select" id="genero" name="genero" value="<?php echo isset($input['genero']) ? $input['genero'] : ''; ?>" required>
+                            <option value="" disabled selected>-</option>
+                            <option value="masculino">Masculino</option>
+                            <option value="femenino">Femenino</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edad">Edad</label>
+                        <input class="form-control" type="number" id="edad" name="edad" min="1" max="120" value="<?php echo isset($input['edad']) ? $input['edad'] : ''; ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="peso">Peso (kg)</label>
+                        <input class="form-control" type="number" id="peso" name="peso" min="20" max="500" value="<?php echo isset($input['peso']) ? $input['peso'] : ''; ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="altura">Altura (cm)</label>
+                        <input class="form-control" type="number" id="altura" name="altura" min="20" max="500" value="<?php echo isset($input['altura']) ? $input['altura'] : ''; ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="actividad">Nivel de Actividad Fisica</label>
+                        <select class="form-select" id="actividad" name="actividad" value="<?php echo isset($input['actividad']) ? $input['actividad'] : ''; ?>" required>
+                            <option value="" disabled selected>-</option>
+                            <?php foreach ($actFis as $act) { ?>
+                                <option value="<?php echo $act['id_actividad'] ?>"><?php echo $act['descripcion_actividad'] ?></option>
+                                <?php
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="meta">Meta</label>
+                        <select class="form-select" id="meta" name="meta" value="<?php echo isset($input['meta']) ? $input['meta'] : ''; ?>" required>
+                            <option value="" disabled selected>-</option>
+                            <option value="Perder Peso">Perder Peso</option>
+                            <option value="Mantener Peso">Mantener Peso</option>
+                            <option value="Aumentar Masa Muscular">Aumentar Masa Muscular</option>
+                        </select>
+                    </div>
+                </div>
 
-                <h1>DATOS PERSONALES</h1>
-                <div class="field">
-                    <label for="nombre">Nombre completo</label>
-                    <input type="text" id="nombre" name="nombre" required>
-                </div>
-                <div class="field">
-                    <label for="genero">Género</label>
-                    <select id="genero" name="genero" value="<?php echo isset($input['genero']) ? $input['genero'] : ''; ?>" required>
-                        <option value="" disabled selected>-</option>
-                        <option value="masculino">Masculino</option>
-                        <option value="femenino">Femenino</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="edad">Edad</label>
-                    <input type="number" id="edad" name="edad" min="1" max="120" value="<?php echo isset($input['edad']) ? $input['edad'] : ''; ?>" required>
-                </div>
-                <div class="field">
-                    <label for="peso">Peso (kg)</label>
-                    <input type="number" id="peso" name="peso" min="20" max="500" value="<?php echo isset($input['peso']) ? $input['peso'] : ''; ?>" required>
-                </div>
-                <div class="field">
-                    <label for="altura">Altura (cm)</label>
-                    <input type="number" id="altura" name="altura" min="20" max="500" value="<?php echo isset($input['altura']) ? $input['altura'] : ''; ?>" required>
-                </div>
-                <div class="field">
-                    <label for="actividad">Nivel de Actividad Fisica</label>
-                    <select id="actividad" name="actividad" value="<?php echo isset($input['actividad']) ? $input['actividad'] : ''; ?>" required>
-                        <option value="" disabled selected>-</option>
-                        <?php foreach ($actFis as $act) { ?>
-                            <option value="<?php echo $act['id_actividad'] ?>"><?php echo $act['descripcion_actividad'] ?></option>
-                            <?php
-                        }
-                        ?>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="meta">Meta</label>
-                    <select id="meta" name="meta" value="<?php echo isset($input['meta']) ? $input['meta'] : ''; ?>" required>
-                        <option value="" disabled selected>-</option>
-                        <option value="Perder Peso">Perder Peso</option>
-                        <option value="Mantener Peso">Mantener Peso</option>
-                        <option value="Aumentar Masa Muscular">Aumentar Masa Muscular</option>
-                    </select>
-                </div>
+                <div class="card col-6 d-flex">
+                    <h1>CONFIGURACIÓN DIETA</h1>
 
-                <h1>CONFIGURACIÓN DIETA</h1>
-                <form action="/imc" method="post">
-                    <div class="field">
+                    <div class="form-group">
                         <label for="num_comidas">Numero de comidas(diarias)</label>
-                        <select id="num_comidas" name="num_comidas" value="<?php echo isset($input['num_comidas']) ? $input['num_comidas'] : ''; ?>" required>
+                        <select class="form-select" id="num_comidas" name="num_comidas" value="<?php echo isset($input['num_comidas']) ? $input['num_comidas'] : ''; ?>" required>
                             <option value="" disabled selected>-</option>
                             <?php foreach ($num_comidas as $comida) { ?>
                                 <option value="<?php echo $comida ?>"><?php echo $comida ?></option>
@@ -148,7 +75,7 @@
                             ?>
                         </select>
                     </div>
-                    <div class="field">
+                    <div class="form-group">
                         <label for="dietas">Dieta a seguir</label>
                         <select class="form-select" aria-label=".form-select" id="dieta" name="dietas" value="<?php echo isset($input['dieta']) ? $input['dieta'] : ''; ?>" required>
                             <option value="" disabled selected>-</option>
@@ -159,45 +86,46 @@
                             ?>
                         </select>
                     </div>
-                    <div class="field">
+                    <div class="form-group">
                         <label for="alergenos">Alergenos</label>
                         <select class="form-select" multiple aria-label=".form-select" id="alergenos" name="alergenos[]" value="<?php echo isset($input['alergenos']) ? $input['alergenos'] : ''; ?>" required>
                             <option value="" disabled selected>-</option>
                             <?php foreach ($alergenos as $alergeno) { ?>
-                                <option value="<?php echo $alergeno['id_alergenos']?>"><?php echo $alergeno['nombre_alergeno']?></option>
+                                <option value="<?php echo $alergeno['id_alergenos'] ?>"><?php echo $alergeno['nombre_alergeno'] ?></option>
                                 <?php
                             }
                             ?>
                         </select>
                     </div>
-                    <div class="field">
+                    <div class="form-group">
                         <label for="porcent_breakfast">Porcentaje Desayuno(%)</label>
-                        <input type="number" id="porcent_breakfast" name="porcent_breakfast" min="1" max="100" value="<?php echo isset($input['porcent_breakfast']) ? $input['porcent_breakfast'] : 0; ?>" required>
-                        <p><?php echo isset($errores['porcent_breakfast']) ? $errores['pòrcent_breakfast'] : ''?></p>
+                        <input class="form-control" type="number" id="porcent_breakfast" name="porcent_breakfast" min="1" max="100" value="<?php echo isset($input['porcent_breakfast']) ? $input['porcent_breakfast'] : 0; ?>" required>
+                        <p><?php echo isset($errores['porcent_breakfast']) ? $errores['pòrcent_breakfast'] : '' ?></p>
                     </div>
-                    <div class="field">
+                    <div class="form-group">
                         <label for="porcent_brunch">Porcentaje Brunch(%)</label>
-                        <input type="number" id="porcent_brunch" name="porcent_brunch" min="0" max="100" value="<?php echo isset($input['porcent_brunch']) ? $input['porcent_brunch'] : 0; ?>">
-                        <p><?php echo isset($errores['porcent_brunch']) ? $errores['pòrcent_brunch'] : ''?></p>
+                        <input class="form-control" type="number" id="porcent_brunch" name="porcent_brunch" min="0" max="100" value="<?php echo isset($input['porcent_brunch']) ? $input['porcent_brunch'] : 0; ?>">
+                        <p><?php echo isset($errores['porcent_brunch']) ? $errores['pòrcent_brunch'] : '' ?></p>
                     </div>
-                    <div class="field">
+                    <div class="form-group">
                         <label for="porcent_lunch">Porcentaje Comida(%)</label>
-                        <input type="number" id="porcent_lunch" name="porcent_lunch" min="1" max="100" value="<?php echo isset($input['porcent_lunch']) ? $input['porcent_lunch'] : 0; ?>" required>
-                        <p><?php echo isset($errores['porcent_lunch']) ? $errores['pòrcent_lunch'] : ''?></p>
+                        <input class="form-control" type="number" id="porcent_lunch" name="porcent_lunch" min="1" max="100" value="<?php echo isset($input['porcent_lunch']) ? $input['porcent_lunch'] : 0; ?>" required>
+                        <p><?php echo isset($errores['porcent_lunch']) ? $errores['pòrcent_lunch'] : '' ?></p>
                     </div>
-                    <div class="field">
+                    <div class="form-group">
                         <label for="porcent_snack">Porcentaje Snack(%)</label>
-                        <input type="number" id="porcent_snack" name="porcent_snack" min="0" max="100" value="<?php echo isset($input['porcent_snack']) ? $input['porcent_snack'] : 0; ?>">
-                        <p><?php echo isset($errores['porcent_snack']) ? $errores['pòrcent_snack'] : ''?></p>
+                        <input class="form-control" type="number" id="porcent_snack" name="porcent_snack" min="0" max="100" value="<?php echo isset($input['porcent_snack']) ? $input['porcent_snack'] : 0; ?>">
+                        <p><?php echo isset($errores['porcent_snack']) ? $errores['pòrcent_snack'] : '' ?></p>
                     </div>
-                    <div class="field">
+                    <div class="form-group">
                         <label for="porcent_dinner">Porcentaje Cena(%)</label>
-                        <input type="number" id="porcent_cena" name="porcent_dinner" min="1" max="100" value="<?php echo isset($input['porcent_dinner']) ? $input['porcent_dinner'] : 0; ?>" required>
-                        <p><?php echo isset($errores['porcent_dinner']) ? $errores['pòrcent_dinner'] : ''?></p>
+                        <input class="form-control" type="number" id="porcent_cena" name="porcent_dinner" min="1" max="100" value="<?php echo isset($input['porcent_dinner']) ? $input['porcent_dinner'] : 0; ?>" required>
+                        <p><?php echo isset($errores['porcent_dinner']) ? $errores['pòrcent_dinner'] : '' ?></p>
                     </div>
-                    
-                    <input type="submit" value="ENVIAR">
-                </form>
+
+                </div>
+                <input type="submit" value="ENVIAR">
+            </form>
         </div>
     </body>
 </html>

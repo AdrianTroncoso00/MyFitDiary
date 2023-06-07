@@ -6,14 +6,15 @@ class BookmarksController extends \App\Core\BaseController {
     
     function showBookmarks(){
         $modelo = new \App\Models\BookmarksModel();
-        var_dump($_SESSION);
-        $bookmarks =$modelo->getAllBookmarks($_SESSION['usuario']['id']);
-        if(!is_null($bookmarks)){
+        $bookmarks = $modelo->getAllBookmarks($_SESSION['usuario']['id']);
+        var_dump($bookmarks);
+        if(!empty($bookmarks)){
             $data['recetas'] = $this->modifyBookmarksArray($modelo->paginate(8));
             $data['pager']=$modelo->pager;
             return view('left-menu.view.php').view('bookmark.view.php',$data);
         }else{
-            return redirect()->to('/favoritos');
+            $data['recetas']=[];
+            return view('left-menu.view.php').view('bookmark.view.php',$data);
         }
     }
     
@@ -31,13 +32,9 @@ class BookmarksController extends \App\Core\BaseController {
                 'cuisinetype' => $_POST['cuisineType'],
                 'ingredietnlines' => $_POST['ingredientLines'] 
             ];
-            $modelo->save($data);
-            session()->setFlashdata('alert', 'alert-success');
-            session()->setFlashdata('msg', 'Receta guardada correctamente');
-            return redirect()->to('/favoritos'); 
+            return $modelo->save($data) ? redirect()->to('/favoritos')->with('good', 'Receta guardada correctamente') : redirect()->to('/favoritos')->with('bad', 'No se ha podido guardar la receta a favoritos');
         }else{
-            $_SESSION['status']='Esta receta ya se encuentra en favoritos';
-            return redirect()->to('/favoritos'); 
+            return redirect()->to('/favoritos')->with('bad', 'La receta ya se encuentra en favoritos'); 
         }
     }
 //    function addBookmark(){

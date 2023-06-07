@@ -87,9 +87,9 @@ class ComidasModel extends \App\Core\BaseModel {
         return $statement->rowCount()>0;
     }
     
-    function getMealPlanSemana(int $id_usuario, string $fecha):?array{
-        $statement = $this->pdo->prepare('SELECT * FROM comidas WHERE id_usuario=? AND fecha_comida=?');
-        $statement->execute([$id_usuario,$fecha]);
+    function getMealPlanSemana(int $id_usuario, array $semana):?array{
+        $statement = $this->pdo->prepare('SELECT * FROM comidas WHERE id_usuario=? AND fecha_comida>=? AND fecha_comida<=?');
+        $statement->execute([$id_usuario,$semana[0], $semana[6]]);
         return $statement->rowCount()>0 ? $statement->fetchAll() : null;
         
     }

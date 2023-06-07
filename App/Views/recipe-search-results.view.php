@@ -13,7 +13,7 @@
         <div class="alert-danger">
             <p><?php echo $error ?></p>
         </div>
-    <?php unset($_SESSION['status'])?>
+        <?php unset($_SESSION['status']) ?>
     <?php } ?>
     <!-- Handle error -->
     <?php if (isset($recetas)) { ?>
@@ -175,15 +175,18 @@
     <?php } ?>
 
 </div>
-<?php if (isset($previousPage)) { ?>
-    <form method="post" action="previous-page" class="d-flex d-flex align-items-center justify-content-center">
-        <input type="hidden" name="previousPage" value="<?php echo $previousPage ?>">
-        <input type="submit" target="_blank" name="submit" value="Previous Page">
-    </form>
+<?php if (isset($_SESSION['first_page_consulta'])) { ?>
+<a href="<?php echo $_SESSION['first_page_consulta']?>">First Page</a>
 <?php } ?>
-<?php if (isset($nextPage)) { ?>
+<?php if (isset($_SESSION['previous_page'])) { ?>
     <form method="post" action="next-page" class="d-flex d-flex align-items-center justify-content-center">
-        <input type="hidden" name="nextPage" value="<?php echo $nextPage ?>">
+        <input type="hidden" name="nextPage" value="<?php echo $_SESSION['previous_page'] ?>">
+        <input type="submit" target="_blank" name="submit" value="Next Page">
+    <?php } ?>
+</form>
+<?php if (isset($_SESSION['next_page'])) { ?>
+    <form method="post" action="next-page" class="d-flex d-flex align-items-center justify-content-center">
+        <input type="hidden" name="nextPage" value="<?php echo $_SESSION['next_page'] ?>">
         <input type="submit" target="_blank" name="submit" value="Next Page">
     <?php } ?>
 </form>

@@ -25,9 +25,9 @@ class SessionController extends \App\Core\BaseController {
         $modeloComidas = new \App\Models\ComidasModel();
         $usuario = $modelo->login($_POST['email'], $_POST['pass']);
         if (!is_null($usuario)) {
-            $_SESSION['usuario'] = $usuario;
+            $this->session->set('usuario',$usuario);
             $alergenos = $modelo->getAlergenos($_SESSION['usuario']['id']);
-            !is_null($alergenos) ? $_SESSION['usuario']['alergenos']= $this->getStringAlergenos($alergenos) : $_SESSION['usuario']['alergenos']=null;
+            !is_null($alergenos) ? $this->session->set('alergenos', $this->getStringAlergenos($alergenos)) : $this->session->set('alergenos',null);
             $modeloComidas->deleteComidasSemanaAnterior($_SESSION['usuario']['id'], $semana[0]);
             $modelo->updateLastDate($_SESSION['usuario']['id']);
             return redirect()->to('/meal-plan');
@@ -55,7 +55,8 @@ class SessionController extends \App\Core\BaseController {
             $exito = $modelo->signUp($_POST);
             if ($exito) {
                 $id = $modelo->getIdByEmail($_POST['email']);
-                $_SESSION['usuario']['id']=$id;
+                $data=['id'=>$id];
+                $this->session->set('usuario', $data);
                 return redirect()->to('/imc');
             } else {
                 $data['input'] = $input;

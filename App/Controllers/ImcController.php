@@ -72,11 +72,11 @@ class ImcController extends \App\Core\BaseController {
             $calorias = $this->getTMB($_POST);
             $data['forma_fisica'] = $this->formaFisica($imc, $_POST['edad']);
             $modelo = new \App\Models\InfoUsuariosModel();
-            $alergenos =$_POST['alergenos'];
+            $alergenos = empty($_POST['alergenos']) ? '' : $_POST['alergenos'];
             $modeloRelAlergenos = new \App\Models\RelAlergenosModel();
             if ($modelo->addInfoUsuario($_POST, $_SESSION['usuario']['id'], $imc, $calorias)) {
                 $infoUsuario = $modeloSesion->getInfoById($_SESSION['usuario']['id']);
-                $_SESSION['usuario']= $infoUsuario;
+                $this->session->set('usuario', $infoUsuario);
                 if(!empty($alergenos) && is_array($alergenos)){
                     foreach ($alergenos as $alergeno) {
                         $modeloRelAlergenos->addAlergenoUser($alergeno, $_SESSION['usuario']['id']);

@@ -3,7 +3,6 @@
 namespace Config;
 
 // Create a new instance of our RouteCollection class.
-session_start();
 $routes = Services::routes();
 
 /*
@@ -37,8 +36,8 @@ $routes->post('login', 'SessionController::LogInProcess');
 $routes->post('signup', 'SessionController::SignUp');
 $routes->get('imc', 'ImcController::showFormIMC');
 $routes->post('imc', 'ImcController::mostrarResForm');
-$routes->get('nutrientes-semana', 'EdamamController::showMealPlanSemana');
-$routes->get('meal-plan', 'EdamamController::getMealPlanDiario2');
+$routes->get('nutrientes-semana', 'EdamamController::showNutrientesSemana');
+$routes->get('meal-plan', 'EdamamController::showMealPlanDiario');
 $routes->post('meal-plan', 'EdamamController::getMealPlanDiario');
 $routes->get('meal-prueba', 'EdamamController::getMealPlanSemanal');
 $routes->get('recipe-search', 'SearchRecipeController::showForm');

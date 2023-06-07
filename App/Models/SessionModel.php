@@ -20,8 +20,7 @@ class SessionModel extends \App\Core\BaseModel {
     function getAlergenos(int $id_usuario):?array{
         $statement = $this->pdo->prepare("SELECT nombre_alergeno FROM alergenos LEFT JOIN rel_alergenos ON alergenos.id_alergenos = rel_alergenos.alergeno WHERE id_usuario=?");
         $statement->execute([$id_usuario]);
-        return ($statement->rowCount() > 0) ? $statement->fetchAll() : null;
-        
+        return ($statement->rowCount() > 0) ? $statement->fetchAll() : null;  
     }
 
     function login(string $email, string $pass): ?array {
@@ -82,12 +81,11 @@ class SessionModel extends \App\Core\BaseModel {
         $statement = $this->pdo->prepare('SELECT pass FROM usuarios WHERE id=?');
         $statement->execute([$id_usuario]);
         $password = $statement->fetch();
-        var_dump($password);
         return password_verify($pass, $password['pass']);
     }
-    function existeUsername(int $id_usuario,string $username):bool{
-        $statement = $this->pdo->prepare('SELECT username FROM usuarios WHERE id=? AND username=?');
-        $statement->execute([$id_usuario,$username]);
+    function existeUsername(string $username):bool{
+        $statement = $this->pdo->prepare('SELECT username FROM usuarios WHERE username=?');
+        $statement->execute([$username]);
         return $statement->rowCount()==1;
     }
     
