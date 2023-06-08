@@ -2,18 +2,22 @@
 
 namespace App\Models;
 
-class AlergenosModel extends \App\Core\BaseModel {
+class AlergenosModel extends \CodeIgniter\Model {
     
-    function getAll():array{
-        $statement = $this->pdo->query('SELECT * FROM alergenos');
-        return $statement->fetchAll();
+    protected $table = 'alergenos';
+    protected $primaryKey = 'id_alergenos';
+    protected $allowedFields = ['id_alergenos', 'nombre_alergeno'];
+    function getAll():?array{
+        return $this->asArray()->findAll();
     }
     
-    function getAllIdAlergenos():array{
-        $statement = $this->pdo->query('SELECT id_alergenos FROM alergenos');
-        return $statement->fetchAll();
+    function getAlergenosUser(int $id_usuario): ?array{
+        return $this->asArray()->select('nombre_alergeno')->join('rel_alergenos', 'alergenos.id_alergenos = rel_alergenos.alergeno','left')->where(['id_usuario'=>$id_usuario])->findAll();
     }
     
+    function getAllIdAlergenos():?array{
+       return $this->asArray()->findColumn('id_alergenos');
+    }
     
 }
 

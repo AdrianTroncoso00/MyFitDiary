@@ -12,12 +12,11 @@ class EdamamController extends \App\Core\BaseController {
     const PORCENTAJE_COMIDA2 = 50;
     const COMIDAS = ['Breakfast', 'Snack', 'Lunch', 'Merienda', 'Dia final', 'Dinner'];
 
-    function generarQuery(string $dieta, string $mealType, array $alergenos, array $tiempoCocina=[]): string {
+    function generarQuery(string $dieta, string $mealType, array $alergenos=[]): string {
         $stringAlergenos = !empty($alergenos) ? '&healt='.implode('&healt=', $alergenos) : '';
-        $stringTiempoCocina = !empty($tiempoCocina) ? '&time='.implode('&time=', $tiempoCocina) : '';
-        return self::URL_CONSULTA_BUSCADOR . '&diet=' . $dieta . '&mealType=' . $mealType . $stringAlergenos.$stringTiempoCocina.'&health=alcohol-free&rand=true' . self::URL_CONSULTA_FIELD;
+        return self::URL_CONSULTA_BUSCADOR . '&diet=' . $dieta . '&mealType=' . $mealType . $stringAlergenos.'&health=alcohol-free&rand=true' . self::URL_CONSULTA_FIELD;
     }
-
+    
     public function getSemanaActual(): array {
         $diaSemana = date("w");
         $tiempoDeInicioDeSemana = strtotime("-" . ($diaSemana - 1) . " days"); # Restamos -X days
@@ -131,6 +130,7 @@ class EdamamController extends \App\Core\BaseController {
     function getMealPlanDiario() {
         $semana = $this->getSemanaActual();
         var_dump($semana);
+        var_dump($_SESSION['usuario']);
         $dia = date("Y-m-d", strtotime($_POST['fecha']));
         $diaActual = date("Y-m-d");
         if(in_array($dia, $semana)){
@@ -197,12 +197,20 @@ class EdamamController extends \App\Core\BaseController {
             return view('left-menu.view.php') . view('meal-plan.view.php', $data);
         }
     }
-
+    
+    function prueba(){
+        $modelo = new \App\Models\SessionModel();
+        var_dump($modelo->getAllUsuario($_SESSION['usuario']['id']));
+    }
+    
     function getComida(string $dieta, string $mealType, int $calorias, string $dia): ?array {
         $diaActual=date("Y-m-d", strtotime($dia));
         $semana = $this->getSemanaActual();
         $modelo = new \App\Models\ComidasModel();
-        $query = $this->generarQuery($dieta, $mealType, $_SESSION['usuario']['alergenos']);
+        $modeloRelAlergenos = new \App\Models\RelAlergenosModel();
+        $alergenos = !is_null($_SESSION['usuario']['alergenos']) ?  $_SESSION['usuario']['alergenos']: [];
+        $query = $this->generarQuery($dieta, $mealType, $alergenos);
+        var_dump($query);
         $recetas = $this->getRequestCurlArray($query);
         $numComidas = $calorias < 450 ? 1 : 2;
         if ($calorias <= 450) {

@@ -1,0 +1,33 @@
+#porcentDesayuno{
+    display: none;
+}
+#porcentBrunch{
+    display: none;
+}
+#porcentComida{
+    display: none;
+}
+#porcentSnack{
+    display: none;
+}
+#porcentCena{
+    display: none;
+}
+
+.content{
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+.form-info{
+    margin-top: 50px;
+    margin-bottom: 50px
+}
+
+h1{
+    padding-top: 10px;
+    padding-bottom: 30px;
+}
+
+.form{
+    background-image: url("public/assets/images/comida.jpg");
+}

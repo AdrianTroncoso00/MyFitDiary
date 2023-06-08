@@ -4,12 +4,17 @@ namespace App\Models;
 
 use \PDOException;
 
-class SessionModel extends \App\Core\BaseModel {
+class SessionModel extends \CodeIgniter\Model {
     
-    const SELECT_USUARIOS_INFO_USUARIOS = 'SELECT usuarios.*, info_usuarios.genero, info_usuarios.objetivo, info_usuarios.edad, info_usuarios.imc, info_usuarios.metabolismo_basal, info_usuarios.calorias_mantenimiento,'
-            . 'info_usuarios.calorias_objetivo, info_usuarios.peso, info_usuarios.estatura, info_usuarios.nombre_completo, info_usuarios.num_comidas, act_fisica.descripcion_actividad, dietas.nombre_dieta, info_usuarios.porcent_breakfast, info_usuarios.porcent_snack, info_usuarios.porcent_lunch, info_usuarios.porcent_brunch, info_usuarios.porcent_dinner';
+    protected $table = 'usuarios';
+    protected $primaryKey = 'id';
+    protected $allowedFields = ['email', 'username', 'pass', 'last_login'];
     
-    const LEFT_JOIN =' FROM usuarios LEFT JOIN info_usuarios ON usuarios.id = info_usuarios.id_usuario LEFT JOIN act_fisica ON info_usuarios.actividad_fisica = act_fisica.id_actividad LEFT JOIN dietas ON info_usuarios.dieta = dietas.id_dieta' ;
+    function getAllUsuario(int $id_usuario):?array{
+        $user= $this->asArray()->select('*')->join('info_usuarios', 'usuarios.id = info_usuarios.id_usuario', 'left')->join('act_fisica', 'info_usuarios.actividad_fisica = act_fisica.id_actividad', 'left')->join('dietas', 'info_usuarios.dieta = dietas.id_dieta')->where(['id_usuario'=>$id_usuario])->findAll()[0];
+        unset($user['pass']);
+        return $user;
+    }
     
     function existeParametro(string $param, string $elemento): bool {
         $statement = $this->pdo->prepare("SELECT * FROM usuarios WHERE $param=?");
@@ -23,15 +28,23 @@ class SessionModel extends \App\Core\BaseModel {
         return ($statement->rowCount() > 0) ? $statement->fetchAll() : null;  
     }
 
+//    function login(string $email, string $pass): ?array {
+//        $statement = $this->pdo->prepare(self::SELECT_USUARIOS_INFO_USUARIOS . self::LEFT_JOIN ." WHERE email=?");
+//        $statement->execute([$email]);
+//        if ($statement->rowCount() > 0) {
+//            $usuario = $statement->fetchAll()[0];
+//            if (password_verify($pass, $usuario['pass'])) {
+//                unset($usuario['pass']);
+//                return $usuario;
+//            }
+//        }
+//        return null;
+//    }
     function login(string $email, string $pass): ?array {
-        $statement = $this->pdo->prepare(self::SELECT_USUARIOS_INFO_USUARIOS . self::LEFT_JOIN ." WHERE email=?");
-        $statement->execute([$email]);
-        if ($statement->rowCount() > 0) {
-            $usuario = $statement->fetchAll()[0];
-            if (password_verify($pass, $usuario['pass'])) {
-                unset($usuario['pass']);
-                return $usuario;
-            }
+        $user= $this->asArray()->select('*')->join('info_usuarios', 'usuarios.id = info_usuarios.id_usuario', 'left')->join('act_fisica', 'info_usuarios.actividad_fisica = act_fisica.id_actividad', 'left')->join('dietas', 'info_usuarios.dieta = dietas.id_dieta')->where(['email'=>$email])->findAll()[0];
+        if(password_verify($pass, $user['pass'])){
+            unset($user['pass']);
+            return $user;
         }
         return null;
     }

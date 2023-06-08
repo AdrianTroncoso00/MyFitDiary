@@ -22,14 +22,15 @@ class SessionController extends \App\Core\BaseController {
         $data = [];
         $semana = EdamamController::getSemanaActual();
         $modelo = new \App\Models\SessionModel();
+        $modeloAlergenos= new \App\Models\AlergenosModel();
         $modeloComidas = new \App\Models\ComidasModel();
         $usuario = $modelo->login($_POST['email'], $_POST['pass']);
         if (!is_null($usuario)) {
             $this->session->set('usuario',$usuario);
-            $alergenos = $modelo->getAlergenos($_SESSION['usuario']['id']);
-            !is_null($alergenos) ? $this->session->set('alergenos', $this->getStringAlergenos($alergenos)) : $this->session->set('alergenos',null);
+            $alergenos = $modeloAlergenos->getAlergenosUser($_SESSION['usuario']['id']);
+            !is_null($alergenos) ? $_SESSION['usuario']['alergenos']= $this->getStringAlergenos($alergenos) : $_SESSION['usuario']['alergenos']=null;
             $modeloComidas->deleteComidasSemanaAnterior($_SESSION['usuario']['id'], $semana[0]);
-            $modelo->updateLastDate($_SESSION['usuario']['id']);
+            $modelo->save(['id'=>$_SESSION['usuario']['id'], 'last_login'=>date("Y-m-d")]);
             return redirect()->to('/meal-plan');
         } else {
             $data['input'] = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);

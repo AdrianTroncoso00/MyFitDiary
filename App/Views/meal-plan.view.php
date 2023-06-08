@@ -1,4 +1,17 @@
-
+<?php if (isset($_SESSION['exito'])) { ?>
+    <div class="card bg-success">
+        <div class="card-body">
+            <p class="text-center"><?php echo $_SESSION['exito'] ?></p>
+        </div>
+    </div>
+<?php } ?>
+<?php if (isset($_SESSION['error'])) { ?>
+    <div class="card bg-danger">
+        <div class="card-body">
+            <p class="text-center"><?php echo $_SESSION['error'] ?></p>
+        </div>
+    </div>
+<?php } ?>
 
 <div class="content-body col-12 d-flex justify-content-around">
     <div class="card row-cols-lg-6 col-lg-6 col-md-6 d-flex align-items-center">

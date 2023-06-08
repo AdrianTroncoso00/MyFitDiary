@@ -2,16 +2,18 @@
 
 namespace App\Models;
 
-class DietasModel extends \App\Core\BaseModel {
-    
-    function getAllDietas():?array{
-        $statement= $this->pdo->query('SELECT * FROM dietas');
-        return $statement->fetchAll();
-    }
-    
-    function getAllIdDietas():array{
-        $statement= $this->pdo->query('SELECT id_dieta FROM dietas');
-        return $statement->fetchAll();
-    }
-}
+class DietasModel extends \CodeIgniter\Model {
 
+    protected $table = 'dietas';
+    protected $primaryKey = 'id_dieta';
+    protected $allowedFields = ['id_dieta', 'nombre_dieta'];
+
+    function getAllDietas(): ?array {
+        return $this->asArray()->findAll();
+    }
+
+    function getAllIdDietas():array{
+        return $this->asArray()->findColumn('id_dieta');
+    }
+
+}

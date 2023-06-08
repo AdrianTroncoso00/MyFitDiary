@@ -45,6 +45,7 @@ class UsuarioController extends \App\Core\BaseController {
 
     function addPeso() {
         $errores = $this->checkForm($_POST);
+        var_dump($_POST);
         $modeloInfoUsuarios= new \App\Models\InfoUsuariosModel();
         if (count($errores) == 0) {
             $modelo = new \App\Models\HistorialPesoModel();
@@ -178,11 +179,20 @@ class UsuarioController extends \App\Core\BaseController {
 
     function checkForm(array $datos, bool $edit = false, int $id = 0): array {
         $errores = [];
+        $actual = date("Y-m-d");
         $modelo = new \App\Models\HistorialPesoModel();
         if ($edit == true) {
             if (empty($datos['fecha'])) {
                 $errores['fecha'] = 'para editar tiene que introducir una fecha';
             } else {
+                $fecha = explode('-', $datos['fecha']);
+                if(!checkdate($fecha[1], $fecha[2], $fecha[0])){
+                    $errores['fecha'] = 'Tiene que introducir una fecha correcta'; 
+                }
+                if($datos['fecha']>$actual){
+                    $errores['fecha'] = 'Tiene que introducir una fecha menor o igual a la actual'; 
+                    
+                }
                 if ($modelo->existePesoDiaEdit($_SESSION['usuario']['id'], $id, $datos['fecha'])) {
                     $errores['fecha'] = 'no puede modificar a esa fecha, porque ya esta ocupada por otro peso';
                 }

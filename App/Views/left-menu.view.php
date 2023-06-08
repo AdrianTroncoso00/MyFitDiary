@@ -83,7 +83,7 @@
                             </a>
                         </li>
                         <li>
-                            <a class="nav-link" href="/imc">
+                            <a class="nav-link" href="/imc-edit">
                                 <i class="fa-solid fa-gear"></i>
                                 <p>Configuracion dieta</p>
                             </a>

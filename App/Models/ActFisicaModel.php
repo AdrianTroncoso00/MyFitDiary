@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
-class ActFisicaModel extends \App\Core\BaseModel{
+class ActFisicaModel extends \CodeIgniter\Model{
     
-    function getAllActFisica():array{
-        $statement = $this->pdo->query('SELECT * FROM act_fisica');
-        return $statement->fetchAll();
+    protected $table = 'act_fisica';
+    protected $primaryKey = 'id_actividad';
+    protected $allowedFields = ['id_actividad', 'descripcion_actividad'];
+
+    function getAllActFisica(): ?array {
+        return $this->asArray()->findAll();
     }
-    function getAllId():array{
-        $statement = $this->pdo->query('SELECT id_actividad FROM act_fisica');
-        return $statement->fetchAll();
+
+    function getAllIdActFisica():array{
+        return $this->asArray()->findColumn('id_actividad');
     }
 }

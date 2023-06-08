@@ -7,7 +7,6 @@ class BookmarksController extends \App\Core\BaseController {
     function showBookmarks(){
         $modelo = new \App\Models\BookmarksModel();
         $bookmarks = $modelo->getAllBookmarks($_SESSION['usuario']['id']);
-        var_dump($bookmarks);
         if(!empty($bookmarks)){
             $data['recetas'] = $this->modifyBookmarksArray($modelo->paginate(8));
             $data['pager']=$modelo->pager;
@@ -37,38 +36,10 @@ class BookmarksController extends \App\Core\BaseController {
             return redirect()->to('/favoritos')->with('bad', 'La receta ya se encuentra en favoritos'); 
         }
     }
-//    function addBookmark(){
-//        $modelo = new \App\Models\BookmarksModel();  
-//        var_dump($_POST);
-//        if(!$modelo->existeBookmark($_POST['label'], $_SESSION['usuario']['id'])){
-//            if($modelo->addRecetaFavorita($_SESSION['usuario']['id'], $_POST)){
-//                return redirect()->to($_SERVER['HTTP_REFERER']);
-//            }else{
-//                $data['error']='Ha ocurrido un error indeterminado al guardar, vuelve a intentarlo mas tarde';
-//                return view('left-menu.view.php'). view('recipe-search-results.view.php',$data); 
-//            }
-//        }else{
-//            $_SESSION['error']='La receta ya se encuentra en favoritos';
-//            return redirect()->to($_SERVER['HTTP_REFERER']);
-//            
-//        }
-//    }
-    
-    
-//    function deleteBookmark(int $id_receta){
-//        $modelo = new \App\Models\BookmarksModel();  
-//        if($modelo->deleteRecetaFavorita($id_receta)){
-//            return redirect()->to('/favoritos');
-//        }else{
-//            $data=[];
-//            return view('left-menu.view.php'). view('recipe-search-results.view.php',$data); 
-//        }
-//    }
+
     function deleteBookmark(int $id_receta){
         $modelo = new \App\Models\BookmarksModel();  
-        if($modelo->delete($id_receta)){
-            return redirect()->to('favoritos');
-        }
+        return $modelo->delete($id_receta) ? redirect()->to('favoritos')->with('good', 'Receta eliminada correctamente') : redirect()->to('favoritos')->with('bad', 'No se ha podido borrar la receta');
     }
     
     function modifyBookmarksArray(array $bookmarks):array{
