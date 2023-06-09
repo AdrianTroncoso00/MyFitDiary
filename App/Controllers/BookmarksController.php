@@ -10,10 +10,10 @@ class BookmarksController extends \App\Core\BaseController {
         if(!empty($bookmarks)){
             $data['recetas'] = $this->modifyBookmarksArray($modelo->paginate(8));
             $data['pager']=$modelo->pager;
-            return view('left-menu.view.php').view('bookmark.view.php',$data);
+            return view('templates/left-menu.view.php').view('bookmark.view.php',$data).view('templates/footer.view.php');
         }else{
             $data['recetas']=[];
-            return view('left-menu.view.php').view('bookmark.view.php',$data);
+            return view('templates/left-menu.view.php').view('bookmark.view.php',$data).view('templates/footer.view.php');
         }
     }
     

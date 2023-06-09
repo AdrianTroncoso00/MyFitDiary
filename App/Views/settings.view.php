@@ -26,13 +26,13 @@
                         <p class="text-danger"><?php echo isset($errores['passVerify']) ? $errores['passVerify'] : '' ?></p> 
                     </div>
 
-                    <input type="<?php echo strtolower($label) != 'password' ? 'text' : 'password' ?>" class="input-lg form-control" name="<?php echo $name ?>" placeholder="New <?php echo $label ?>" value="<?php echo $name != 'pass' && isset($input['user']) ? $input['user'] : '' ?>" autocomplete="off">
+                    <input type="<?php echo strtolower($label) != 'password' ? 'text' : 'password' ?>" class="input-lg form-control" name="<?php echo $name ?>" placeholder="New <?php echo $label ?>" value="<?php echo $name != 'pass' && isset($input[$name]) ? $input[$name] : '' ?>" autocomplete="off">
                     <div class="col-sm-12">
                         <p class="text-danger"><?php echo isset($errores[$name]) ? $errores[$name] : '' ?></p>
                     </div>
-                    <input type="<?php echo strtolower($label) != 'password' ? 'text' : 'password' ?>" class="input-lg form-control" name="<?php echo $name ?>2" placeholder="Repeat <?php echo $label ?>" autocomplete="off">
+                    <input type="<?php echo strtolower($label) != 'password' ? 'text' : 'password' ?>" class="input-lg form-control" name="<?php echo $name ?>2" placeholder="Repeat <?php echo $label ?>" value="<?php echo $name != 'pass' && isset($input[$name.'2']) ? $input[$name.'2'] : '' ?>" autocomplete="off">
                     <div class="col-sm-12">
-                        <p class="text-danger"><?php echo isset($errores[$name . '2']) ? $errores[$name . '2'] : '' ?></p> 
+                        <p class="text-danger"><?php echo isset($errores[$name.'2']) ? $errores[$name.'2'] : '' ?></p> 
                     </div>
                     <input type="submit" class="col-xs-12 btn btn-primary btn-load btn-lg" data-loading-text="Changing <?php echo $label ?>..." value="Change <?php echo $label ?>">
                 </form>

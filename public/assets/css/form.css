@@ -13,21 +13,11 @@
 #porcentCena{
     display: none;
 }
-
-.content{
+.form{
     margin-top: 50px;
     margin-bottom: 50px;
 }
-.form-info{
-    margin-top: 50px;
-    margin-bottom: 50px
-}
-
-h1{
-    padding-top: 10px;
+.titulo-form{
+    padding-top: 30px;
     padding-bottom: 30px;
-}
-
-.form{
-    background-image: url("public/assets/images/comida.jpg");
 }

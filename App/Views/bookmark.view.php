@@ -31,21 +31,22 @@
             <?php foreach ($recetas as $key => $receta) { ?>
 
                 <!-- Cards -->
-                <div class="receta position-relative border-0 card col-3" data-toggle="modal" data-target="<?php echo '#recipe' . $key ?>">
+                <div class="receta position-relative border-0 card col-3">
                     <!-- Card Image -->
-
-                    <img class="card-img-top" src="<?php echo $receta['image'] ?>" alt="<?php echo $receta['label'] ?>">
-                    <!-- Card Body -->
-                    <div class="card-body" style="text-align: left!important;">
-                        <!-- Title -->
-                        <div class="h5 lh-sm card-text text-capitalize mb-2"><?php echo $receta['label'] ?></div>
-                        <!-- Input Label -->
-                        <small class="lh-1 text-uppercase d-flex flex-wrap">
-                            <?php foreach ($receta['dietLabels'] as $dietLabel) { ?>
-                                <small class="fw-4 p-2 mb-1 me-1 form"><?php echo $dietLabel ?></small>
-                            <?php } ?>
-                            <small class="fw-4 p-2 mb-1 me-1 form"><?php echo isset($receta['cuisinetype']) ? $receta['cuisinetype'] : '' ?></small>
-                        </small>
+                    <div class="card-body" data-toggle="modal" data-target="<?php echo '#recipe' . $key ?>">
+                        <img class="card-img-top" src="<?php echo $receta['image'] ?>" alt="<?php echo $receta['label'] ?>">
+                        <!-- Card Body -->
+                        <div class="card-info" style="text-align: left!important;">
+                            <!-- Title -->
+                            <div class="h5 lh-sm card-text text-capitalize mb-2"><?php echo $receta['label'] ?></div>
+                            <!-- Input Label -->
+                            <small class="lh-1 text-uppercase d-flex flex-wrap">
+                                <?php foreach ($receta['dietLabels'] as $dietLabel) { ?>
+                                    <small class="fw-4 p-2 mb-1 me-1 form"><?php echo $dietLabel ?></small>
+                                <?php } ?>
+                                <small class="fw-4 p-2 mb-1 me-1 form"><?php echo isset($receta['cuisinetype']) ? $receta['cuisinetype'] : '' ?></small>
+                            </small>
+                        </div>
                     </div>
                     <div class='card-footer d-flex align-items-center justify-content-center'>
                         <a href="/eliminar-receta-fav/<?php echo $receta['id_receta_fav']; ?>"><i class='fas fa-trash-alt'></i></a>

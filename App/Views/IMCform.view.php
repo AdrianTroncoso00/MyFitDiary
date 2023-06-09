@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<?php if(!$editar) {?>
 <html>
     <head>
         <meta charset="UTF-8">
@@ -14,11 +15,13 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
         
     </head>
-    <body class="d-flex align-items-center justify-content-center">
-        <div class="content col-8 d-flex align-items-center justify-content-center">
-            <form action="<?php echo isset($editar) ? '/imc-edit' : '/imc' ?>" method="post" id="datosPersonales" class="card col-8 d-flex flex-column align-items-center justify-content-around">
+    <body>
+<?php } ?>
+        <div class="d-flex align-items-center justify-content-center">
+        <div class="card col-8 d-flex align-items-center justify-content-center">
+            <form action="<?php echo isset($editar) && $editar==true ? '/imc-edit' : '/imc' ?>" method="post" id="datosPersonales" class="form d-flex flex-column align-items-center justify-content-around">
                 <div class="form-info">
-                    <h1>DATOS PERSONALES</h1>
+                    <h2 class="titulo-form">DATOS PERSONALES</h2>
                     <div class="form-group">
                         <label for="nombre_completo">Nombre completo</label>
                         <input class="form-control" type="text" id="nombre_completo" name="nombre_completo" value="<?php echo isset($input['nombre_completo']) ? $input['nombre_completo'] : ''; ?>" required>
@@ -76,7 +79,7 @@
                         <p class="text-danger"><?php echo isset($errores['objetivo']) ? $errores['objetivo'] : '' ?></p>
                     </div>
 
-                    <h1>CONFIGURACIÓN DIETA</h1>
+                    <h2 class="titulo-form">CONFIGURACIÓN DIETA</h2>
 
                     <div class="form-group">
                         <label for="num_comidas">Numero de comidas(diarias)</label>
@@ -133,7 +136,7 @@
                     <div class="form-group"  id="porcentBrunch">
                         <label for="porcent_brunch">Porcentaje Brunch(%)</label>
                         <input class="form-control" type="number" id="porcent_brunch" name="porcent_brunch" min="0" max="100" value="<?php echo isset($input['porcent_brunch']) ? $input['porcent_brunch'] : 0; ?>">
-                        <p><?php echo isset($errores['porcent_brunch']) ? $errores['pòrcent_brunch'] : '' ?></p>
+                        <p><?php echo isset($errores['porcent_brunch']) ? $errores['porcent_brunch'] : '' ?></p>
                     </div>
                     <div class="form-group"  id="porcentComida">
                         <label for="porcent_lunch">Porcentaje Comida(%)</label>
@@ -151,15 +154,18 @@
                         <p><?php echo isset($errores['porcent_dinner']) ? $errores['pòrcent_dinner'] : '' ?></p>
                     </div>
                     <div class="d-flex justify-content-center">
-                        <input class="btn btn-success" type="submit" value="<?php echo isset($editar) ? 'EDITAR' : 'ENVIAR'?>">
+                        <input class="btn btn-success" type="submit" value="<?php echo isset($editar) && $editar==true ? 'EDITAR' : 'ENVIAR'?>">
                     </div>
                 </div>
             </form>
         </div>
+        </div>
+<?php if(!$editar){?>
     </body>
     <script src="assets/js/send2forms.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
 </html>
+<?php } ?>
 
 

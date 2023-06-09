@@ -14,10 +14,6 @@ class SessionController extends \App\Core\BaseController {
         return view('signup.view.php');
     }
 
-    public function showRecCont() {
-        return view('recuperarContrasena.view.php');
-    }
-
     function LogInProcess() {
         $data = [];
         $semana = EdamamController::getSemanaActual();
@@ -53,16 +49,19 @@ class SessionController extends \App\Core\BaseController {
         $input = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
         if (count($errores) == 0) {
             $modelo = new \App\Models\SessionModel();
-            $exito = $modelo->signUp($_POST);
+            $addUsuario=([
+                'username'=>$_POST['username'],
+                'email'=>$_POST['email'],
+                'pass'=> password_hash($_POST['pass'], PASSWORD_DEFAULT),
+                'rol'=>'standart'
+            ]);
+            $exito = $modelo->save($addUsuario);
             if ($exito) {
-                $id = $modelo->getIdByEmail($_POST['email']);
-                $data=['id'=>$id];
-                $this->session->set('usuario', $data);
+                $user = $modelo->getUser($_POST['email']);
+                $this->session->set('usuario', $user);
                 return redirect()->to('/imc');
             } else {
-                $data['input'] = $input;
-                $data['errores']['error'] = 'error indeterminado al guardar';
-                return view('signup.view.php', $data);
+                return redirect()->to('/signup')->with('error','No se ha podido añadir el usuario');
             }
         } else {
             $data['input'] = $input;
@@ -94,7 +93,7 @@ class SessionController extends \App\Core\BaseController {
                     $errores['email'] = 'introduzca un email valido';
                 } else {
 
-                    if ($modelo->existeParametro('email', $datos['email'])) {
+                    if ($modelo->existeParam('email',$datos['email'])) {
                         $errores['email'] = 'este email ya se encuentra en uso';
                     }
                 }
@@ -113,7 +112,7 @@ class SessionController extends \App\Core\BaseController {
                     $errores['username'] = 'la contraseña tiene solo puede estar formada por letras, numeros y guiones bajos y minimo'
                             . '8 caracteres';
                 }
-                if ($modelo->existeParametro('username', $datos['username'])) {
+                if ($modelo->existeParam('username', $datos['username'])) {
                     $errores['username'] = 'el nombre de usuario ya se encuentra en uso';
                 }
             }

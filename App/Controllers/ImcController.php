@@ -52,11 +52,13 @@ class ImcController extends \App\Core\BaseController {
     const METAS = ['Perder Peso', 'Mantener Peso', 'Aumentar Masa Muscular'];
 
     function showFormIMC() {
+        var_dump($_SESSION);
         $modeloDietas = new \App\Models\DietasModel();
         $modeloActFis = new \App\Models\ActFisicaModel();
         $modeloAlergenos = new \App\Models\AlergenosModel();
         $data['metas'] = self::METAS;
         $data['generos'] = self::GENEROS;
+        $data['editar']=false;
         $data['dietas'] = $modeloDietas->getAllDietas();
         $data['actFis'] = $modeloActFis->getAllActFisica();
         $data['num_comidas'] = self::NUMERO_COMIDAS_DIARIAS;
@@ -67,31 +69,38 @@ class ImcController extends \App\Core\BaseController {
     function mostrarResForm() {
         $data = [];
         $modeloSesion = new \App\Models\SessionModel();
+        $modeloInfoUsuarios = new \App\Models\InfoUsuariosModel();
         $errores = $this->checkForm($_POST);
         var_dump($_POST);
         var_dump($errores);
         $input = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
         if (count($errores) == 0) {
-            $imc = $this->calcularImc($_POST['peso'], $_POST['altura']);
+            $imc = $this->calcularImc($_POST['peso'], $_POST['estatura']);
             $calorias = $this->getTMB($_POST);
             $data['forma_fisica'] = $this->formaFisica($imc, $_POST['edad']);
-            $modelo = new \App\Models\InfoUsuariosModel();
             $alergenos = empty($_POST['alergenos']) ? '' : $_POST['alergenos'];
+            var_dump($_SESSION);
+            unset($_POST['alergenos']);
             $modeloRelAlergenos = new \App\Models\RelAlergenosModel();
-            if ($modelo->addInfoUsuario($_POST, $_SESSION['usuario']['id'], $imc, $calorias)) {
-                $infoUsuario = $modeloSesion->getInfoById($_SESSION['usuario']['id']);
+            $add = array_merge($_POST,$calorias);
+            $add['imc']=$imc;
+            $add['id_usuario']=$_SESSION['usuario']['id'];
+            $addReverse= array_reverse($add);
+            var_dump($addReverse);
+            if ($modeloInfoUsuarios->save($addReverse)) {
+                var_dump('hola');
+                $infoUsuario = $modeloSesion->getAllUsuario($_SESSION['usuario']['id']);
+                var_dump($infoUsuario);
                 $this->session->set('usuario', $infoUsuario);
+                var_dump($_SESSION);
                 if (!empty($alergenos) && is_array($alergenos)) {
                     foreach ($alergenos as $alergeno) {
-                        $modeloRelAlergenos->addAlergenoUser($alergeno, $_SESSION['usuario']['id']);
+                        $modeloRelAlergenos->save(['id_usuario'=>$_SESSION['usuario']['id'],'alergeno'=>$alergeno]);
                     }
                 }
                 return redirect()->to('/meal-plan');
             }
-            $data['input'] = $input;
-            $data['errores'] = $errores;
-            $data['input'] = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
-            return view('IMCform.view.php', $data);
+            return redirect()->to('/imc')->with('error', 'Ha ocurrido un error al guardar los datos del formulario');
         } else {
             $data['errores'] = $errores;
             $data['input'] = $input;
@@ -116,7 +125,7 @@ class ImcController extends \App\Core\BaseController {
         $data['actFis'] = $modeloActFis->getAllActFisica();
         $data['num_comidas'] = self::NUMERO_COMIDAS_DIARIAS;
         $data['alergenos'] = $modeloAlergenos->getAll();
-        return view('IMCform.view.php', $data);
+        return view('templates/left-menu.view.php').view('IMCform.view.php', $data).view('templates/footer.view.php');
     }
 
     function formEditResResult() {
@@ -191,9 +200,9 @@ class ImcController extends \App\Core\BaseController {
         }
     }
 
-    function calcularImc(float $peso, float $altura): float {
+    function calcularImc(float $peso, float $altura): int {
         $alturaM = $altura / 100;
-        return round(($peso / (pow($alturaM, 2))), 2);
+        return round(($peso / (pow($alturaM, 2))), 0);
     }
 
     function getTMB(array $datos): array {

@@ -28,53 +28,55 @@ class UsuarioController extends \App\Core\BaseController {
         $data['titulo'] = 'Change Pass';
         $data['label'] = 'Password';
         $data['name'] = 'pass';
-        return view('left-menu.view.php') . view('settings.view.php', $data);
+        return view('templates/left-menu.view.php') . view('settings.view.php', $data) . view('templates/footer.view.php');
     }
 
     function showFormChangeUsername() {
         $data['titulo'] = 'Change Username';
         $data['label'] = 'Username';
         $data['name'] = 'user';
-        return view('left-menu.view.php') . view('settings.view.php', $data);
+        return view('templates/left-menu.view.php') . view('settings.view.php', $data) . view('templates/footer.view.php');
     }
 
     function showAccount() {
         $data = $this->showData();
-        return view('left-menu.view.php') . view('account-details.view.php', $data);
+        return view('templates/left-menu.view.php') . view('account-details.view.php', $data) . view('templates/footer.view.php');
     }
 
     function addPeso() {
         $errores = $this->checkForm($_POST);
         var_dump($_POST);
-        $modeloInfoUsuarios= new \App\Models\InfoUsuariosModel();
+        $modeloInfoUsuarios = new \App\Models\InfoUsuariosModel();
         if (count($errores) == 0) {
             $modelo = new \App\Models\HistorialPesoModel();
-            if ($modelo->addNewPeso($_SESSION['usuario']['id'], $_POST['peso'], $_POST['fecha'])) {
-                return $modeloInfoUsuarios->setPeso($_SESSION['usuario']['id'], $_POST['peso']) ? redirect()->to('/account')->with('exito', 'Peso añadido correctamente') : redirect()->to('/account')->with('error', 'No se ha podido añadir el peso');
+            if ($modelo->save(['id_usuario' => $_SESSION['usuario']['id'], 'peso' => $_POST['peso'], 'fecha' => $_POST['fecha']])) {
+                return $modeloInfoUsuarios->save(['id_usuario' => $_SESSION['usuario']['id'], 'peso' => $_POST['peso']]) ? redirect()->to('/account')->with('exito', 'Peso añadido correctamente') : redirect()->to('/account')->with('error', 'No se ha podido añadir el peso');
             }
+            return redirect()->to('/account')->with('error', 'No se ha podido añadir el peso');
         } else {
             $data = $this->showData();
             $data['errores'] = $errores;
-            $data['input']= filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
-            return view('left-menu.view.php') . view('account-details.view.php', $data);
+            $data['input'] = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
+            return view('templates/left-menu.view.php') . view('account-details.view.php', $data) . view('templates/footer.view.php');
         }
     }
 
     function deletePeso(int $id) {
         $modelo = new \App\Models\HistorialPesoModel();
-        if (!$modelo->deletePeso($id)) {
-            $data['error'] = 'no se ha podido eliminar el peso, intentelo de nuevo';
+        if (!$modelo->delete($id)) {
+            return redirect()->to('/account')->with('error', 'no se ha podido eliminar el peso, intentelo de nuevo');
         }
-        return redirect()->to('/account');
+        return redirect()->to('/account')->with('exito', 'Peso eliminado con exito');
     }
 
     function changeUsername() {
         $modeloSesion = new \App\Models\SessionModel();
         $errores = $this->checkUsername($_POST, $_SESSION['usuario']['id']);
         if (count($errores) == 0) {
-            if (!$modeloSesion->changeUsername($_POST['user'], $_SESSION['usuario']['id'])) {
+            if (!$modeloSesion->save(['id' => $_SESSION['usuario']['id'], 'username' => $_POST['user']])) {
                 return redirect()->to('/account')->with('error', 'Error al cambiar el username');
             } else {
+                $_SESSION['usuario']['username']= $_POST['user'];
                 return redirect()->to('/account')->with('exito', 'Username cambiado correctamente');
             }
         } else {
@@ -82,8 +84,10 @@ class UsuarioController extends \App\Core\BaseController {
             $data['titulo'] = 'Change Username';
             $data['label'] = 'Username';
             $data['name'] = 'user';
-            $data['input']['user']= filter_var($_POST['user'], FILTER_SANITIZE_SPECIAL_CHARS);
-            return view('left-menu.view.php') . view('settings.view.php', $data);
+            unset($_POST['passVerify']);
+            $data['input'] = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
+            var_dump($data['input']);
+            return view('templates/left-menu.view.php') . view('settings.view.php', $data) . view('templates/footer.view.php');
         }
     }
 
@@ -91,7 +95,8 @@ class UsuarioController extends \App\Core\BaseController {
         $modeloSesion = new \App\Models\SessionModel();
         $errores = $this->checkPass($_POST, $_SESSION['usuario']['id']);
         if (count($errores) == 0) {
-            if (!$modeloSesion->changePass($_POST['pass'], $_SESSION['usuario']['id'])) {
+            $passCodificada = password_hash($_POST['pass'], PASSWORD_DEFAULT);
+            if (!$modeloSesion->save(['id' => $_SESSION['usuario']['id'], 'pass' => $passCodificada])) {
                 return redirect()->to('/account')->with('error', 'Error al cambiar la contraseña');
             } else {
                 return redirect()->to('/account')->with('exito', 'Contraseña cambiada con exito');
@@ -101,39 +106,41 @@ class UsuarioController extends \App\Core\BaseController {
             $data['titulo'] = 'Change Pass';
             $data['label'] = 'Password';
             $data['name'] = 'pass';
-            return view('left-menu.view.php') . view('settings.view.php', $data);
+            return view('templates/left-menu.view.php') . view('settings.view.php', $data) . view('templates/footer.view.php');
         }
     }
-    function deleteAccount(int $id_usuario){
+
+    function deleteAccount(int $id_usuario) {
         $modelo = new \App\Models\SessionModel();
-        if($modelo->deleteUser($id_usuario)){
+        if ($modelo->delete($id_usuario)) {
             return redirect()->to('/login');
         }
+        return redirect()->to('/account')->with('error', 'Error al eliminar la cuenta');
     }
 
     function checkUsername(array $datos): array {
         $errores = [];
         $modelo = new \App\Models\SessionModel();
-        if(!empty($datos['passVerify'])){
-            if(!$modelo->existePass($_SESSION['usuario']['id'], $datos['passVerify'])){
-                $errores['passVerify'] = 'La contraseña introducida no es correcta'; 
+        if (!empty($datos['passVerify'])) {
+            if (!$modelo->existePass($_SESSION['usuario']['id'], $datos['passVerify'])) {
+                $errores['passVerify'] = 'La contraseña introducida no es correcta';
             }
-        }else{
-                $errores['passVerify'] = 'Introduce su contraseña'; 
+        } else {
+            $errores['passVerify'] = 'Introduce su contraseña';
         }
         if (!empty($datos['user'])) {
             if ($modelo->existeUsername($datos['user'])) {
                 $errores['user'] = 'El username ya esta en uso';
             }
             if (!preg_match('/[0-9a-zA-Z_]{4,}/', $datos['user'])) {
-                $errores['username'] = 'el username tiene que tener 8 caracteres minimo y solo puede estar formado por letras, numeros y  _1';
+                $errores['username'] = 'el username tiene que tener 4 caracteres minimo y solo puede estar formado por letras, numeros y  _';
             }
         } else {
             $errores['user'] = 'introduce un nombre de usuario';
         }
         if (!empty($datos['user2'])) {
             if (!preg_match('/[A-Za-z0-9_]{4,}/', $datos['user2'])) {
-                $errores['user2'] = 'el username tiene que tener 8 caracteres minimo y solo puede estar formado por letras, numeros y  _2';
+                $errores['user2'] = 'el username tiene que tener 4 caracteres minimo y solo puede estar formado por letras, numeros y  _';
             }
         } else {
             $errores['user2'] = 'introduce un nombre de usuario';
@@ -147,12 +154,12 @@ class UsuarioController extends \App\Core\BaseController {
     function checkPass(array $datos): array {
         $errores = [];
         $modelo = new \App\Models\SessionModel();
-        if(!empty($datos['passVerify'])){
-            if(!$modelo->existePass($_SESSION['usuario']['id'], $datos['passVerify'])){
-                $errores['passVerify'] = 'La contraseña introducida no es correcta'; 
+        if (!empty($datos['passVerify'])) {
+            if (!$modelo->existePass($_SESSION['usuario']['id'], $datos['passVerify'])) {
+                $errores['passVerify'] = 'La contraseña introducida no es correcta';
             }
-        }else{
-                $errores['passVerify'] = 'Introduce su contraseña'; 
+        } else {
+            $errores['passVerify'] = 'Introduce su contraseña';
         }
         if (!empty($datos['pass'])) {
             if (!preg_match('/[0-9a-zA-Z_]{8,}/', $datos['pass'])) {
@@ -177,49 +184,33 @@ class UsuarioController extends \App\Core\BaseController {
         return $errores;
     }
 
-    function checkForm(array $datos, bool $edit = false, int $id = 0): array {
+    function checkForm(array $datos, int $id = 0): array {
         $errores = [];
         $actual = date("Y-m-d");
         $modelo = new \App\Models\HistorialPesoModel();
-        if ($edit == true) {
-            if (empty($datos['fecha'])) {
-                $errores['fecha'] = 'para editar tiene que introducir una fecha';
-            } else {
-                $fecha = explode('-', $datos['fecha']);
-                if(!checkdate($fecha[1], $fecha[2], $fecha[0])){
-                    $errores['fecha'] = 'Tiene que introducir una fecha correcta'; 
-                }
-                if($datos['fecha']>$actual){
-                    $errores['fecha'] = 'Tiene que introducir una fecha menor o igual a la actual'; 
-                    
-                }
-                if ($modelo->existePesoDiaEdit($_SESSION['usuario']['id'], $id, $datos['fecha'])) {
-                    $errores['fecha'] = 'no puede modificar a esa fecha, porque ya esta ocupada por otro peso';
-                }
-                if (empty($datos['peso'])) {
-                    $errores['peso'] = 'tiene que introducir un peso en kg';
-                } else {
-                    if (!is_numeric($datos['peso']) || $datos['peso'] < 10) {
-                        $errores['peso'] = 'el peso tiene que ser un numero mayor que 10';
-                    }
-                }
-            }
+
+        if (empty($datos['fecha'])) {
+            $errores['fecha'] = 'para editar tiene que introducir una fecha';
         } else {
-            if (empty($datos['fecha'])) {
-                $errores['fecha'] = 'tiene que introducir una fecha';
-            } else {
-                if ($modelo->existePesoDia($_SESSION['usuario']['id'], $datos['fecha'])) {
-                    $errores['fecha'] = 'no puede introducir 2 pesos el mismo dia';
-                }
+            $fecha = explode('-', $datos['fecha']);
+            if (!checkdate($fecha[1], $fecha[2], $fecha[0])) {
+                $errores['fecha'] = 'Tiene que introducir una fecha correcta';
+            }
+            if ($datos['fecha'] > $actual) {
+                $errores['fecha'] = 'Tiene que introducir una fecha menor o igual a la actual';
+            }
+            if ($modelo->existePesoDia($_SESSION['usuario']['id'], $datos['fecha'])) {
+                $errores['fecha'] = 'no puede añadir esa fecha, porque ya esta ocupada por otro peso';
             }
             if (empty($datos['peso'])) {
                 $errores['peso'] = 'tiene que introducir un peso en kg';
             } else {
-                if (!is_numeric($datos['peso']) || $datos['peso'] < 11) {
+                if (!is_numeric($datos['peso']) || $datos['peso'] < 10) {
                     $errores['peso'] = 'el peso tiene que ser un numero mayor que 10';
                 }
             }
         }
+
         return $errores;
     }
 

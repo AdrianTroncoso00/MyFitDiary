@@ -28,7 +28,7 @@ class SearchRecipeController extends \App\Core\BaseController {
         $data['dietas']= array_chunk($dietas, 6);
         $alergenos = $modeloAlergenos->getAll();
         $data['alergenos'] = array_chunk($alergenos, 8);
-        return view('left-menu.view.php'). view('recipe-search-filtros.view.php',$data);
+        return view('recipe-search-filtros.view.php',$data);
         
     }
     
@@ -41,7 +41,7 @@ class SearchRecipeController extends \App\Core\BaseController {
             $linkNextPage = isset($recetas['_links']['next']['href']) ? $recetas['_links']['next']['href'] : null;
             $_SESSION['next_page']= $linkNextPage;
             $_SESSION['previous_page'] = $_SESSION['_ci_previous_url'];
-            return view('left-menu.view.php'). view('recipe-search-results.view.php',$data);   
+            return view('templates/left-menu.view.php'). view('recipe-search-results.view.php',$data).view('templates/footer.view.php');   
         }
     }
     
@@ -58,10 +58,10 @@ class SearchRecipeController extends \App\Core\BaseController {
             $linkNextPage = isset($recetas['_links']['next']['href']) ? $recetas['_links']['next']['href'] : null;
             var_dump($linkNextPage);
             $_SESSION['next_page']= $linkNextPage;
-            return view('left-menu.view.php'). view('recipe-search-results.view.php',$data);      
+            return view('templates/left-menu.view.php'). view('recipe-search-results.view.php',$data).view('templates/footer.view.php');      
         }else{
             $data['errores']=$errores;
-            return view('left-menu.view.php'). view('recipe-search-filtros.view.php',$data);       
+            return view('templates/left-menu.view.php'). view('recipe-search-filtros.view.php',$data).view('templates/footer.view.php');       
         }
     }
     

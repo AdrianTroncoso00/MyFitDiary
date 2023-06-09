@@ -80,10 +80,10 @@ class EdamamController extends \App\Core\BaseController {
         if(!is_null($nutrientes)){
             $nutrientesSemana = $this->getAllNutrientesSemana($nutrientes);
             $data = $this->getData($nutrientesSemana);
-            return view('left-menu.view.php').view('nutrientes-semana.view.php', $data);
+            return view('templates/left-menu.view.php').view('nutrientes-semana.view.php', $data).view('templates/footer.view.php');
         }else{
             $data['nutrientesTotales']=[];
-            return view('left-menu.view.php').view('nutrientes-semana.view.php',$data);
+            return view('templates/left-menu.view.php').view('nutrientes-semana.view.php',$data).view('templates/footer.view.php');
         }
         
     }
@@ -121,9 +121,9 @@ class EdamamController extends \App\Core\BaseController {
             $data['fecha'] = $dia;
             $data['mealPlan'] = $this->transformarArray($mealPlanDia);
             $data['input']['fecha'] = date("d/m/Y", strtotime($dia));
-            return view('left-menu.view.php') . view('meal-plan.view.php', $data);
+            return view('templates/left-menu.view.php') . view('meal-plan.view.php', $data).view('templates/footer.view.php');
         } else {
-            return view('left-menu.view.php') . view('p.view.php');
+            return view('templates/left-menu.view.php') . view('p.view.php').view('templates/footer.view.php');
         }
     }
 
@@ -153,10 +153,10 @@ class EdamamController extends \App\Core\BaseController {
             $data['fecha'] = $dia;
             $data['mealPlan'] = $mealPlan;
             $data['nutrientesTotales'] = $nutrientesTotales;
-            return view('left-menu.view.php') . view('meal-plan.view.php', $data);
+            return view('templates/left-menu.view.php') . view('meal-plan.view.php', $data).view('templates/footer.view.php');
         }else{
             $data['error'] = 'Solo puede generar el meal plan en la semana actual';
-            return view('left-menu.view.php') . view('p.view.php', $data);
+            return view('templates/left-menu.view.php') . view('p.view.php', $data).view('templates/footer.view.php');
         }
     }
 
@@ -182,9 +182,7 @@ class EdamamController extends \App\Core\BaseController {
         if ($modeloComida->modificarRecetaEspecifica($id_receta, $receta[0])) {
             return redirect()->to('/meal-plan');
         } else {
-            $_SESSION['usuario']['error'] = 'Ha ocurrido un error al regenerar la comida';
-            redirect()->to('/meal-plan');
-            unset($_SESSION['usuario']['error']);
+            redirect()->to('/meal-plan')->with('error', 'Ha ocurrido un error al regenerar la comida');
         }
     }
 
@@ -193,8 +191,8 @@ class EdamamController extends \App\Core\BaseController {
         if ($modelo->deleteComidaEspecifica($id_comida)) {
             return redirect()->to('/meal-plan');
         } else {
-            $data['error'] = 'Ha ocurrido un error al eliminar la comida';
-            return view('left-menu.view.php') . view('meal-plan.view.php', $data);
+            redirect()->to('/meal-plan')->with('error', 'Ha ocurrido un error al eliminar la comida');
+            
         }
     }
     
