@@ -1,12 +1,9 @@
-
 const desayuno = document.getElementById('porcentDesayuno');
 const brunch = document.getElementById('porcentBrunch');
 const comida = document.getElementById('porcentComida');
 const snack = document.getElementById('porcentSnack');
 const cena = document.getElementById('porcentCena');
 const numComidas = document.getElementById('num_comidas');
-console.log('peruano');
-
 
 numComidas.addEventListener('input', () => {
     var valor = numComidas.value;
@@ -26,7 +23,7 @@ numComidas.addEventListener('input', () => {
     }
     if (valor == 5) {
         desayuno.style.display = 'block';
-        snack.style.display = 'block';
+        brunch.style.display = 'block';
         comida.style.display = 'block';
         snack.style.display = 'block';
         cena.style.display = 'block';
@@ -34,7 +31,7 @@ numComidas.addEventListener('input', () => {
 
 });
 
-window.onload= function (){
+window.addEventListener('load', function () {
     var valor = numComidas.value;
     if (valor == 3) {
         desayuno.style.display = 'block';
@@ -52,9 +49,10 @@ window.onload= function (){
     }
     if (valor == 5) {
         desayuno.style.display = 'block';
-        snack.style.display = 'block';
+        brunch.style.display = 'block';
         comida.style.display = 'block';
         snack.style.display = 'block';
         cena.style.display = 'block';
     }
-};
+});
+
