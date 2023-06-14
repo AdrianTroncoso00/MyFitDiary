@@ -10,8 +10,8 @@ $routes = Services::routes();
  * --------------------------------------------------------------------
  */
 $routes->setDefaultNamespace('App\Controllers');
-$routes->setDefaultController('Home');
-$routes->setDefaultMethod('index');
+$routes->setDefaultController('SessionController');
+$routes->setDefaultMethod('showLogin');
 $routes->setTranslateURIDashes(true);
 $routes->set404Override();
 // The Auto Routing (Legacy) is very dangerous. It is easy to create vulnerable apps
@@ -28,12 +28,14 @@ $routes->set404Override();
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
-$routes->get('/', 'Home::index');
+
 if(!isset($_SESSION['usuario'])){
     $routes->get('/login', 'SessionController::showLogIn');
     $routes->get('/signup', 'SessionController::showSignUp');
     $routes->post('login', 'SessionController::LogInProcess');
     $routes->post('signup', 'SessionController::SignUp');
+    $routes->set404Override('App\Controllers\SessionController::showLogin');
+
 }else{
     $routes->get('imc', 'ImcController::showFormIMC');
     $routes->post('imc', 'ImcController::mostrarResForm');

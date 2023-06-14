@@ -12,8 +12,8 @@ class EdamamController extends \App\Core\BaseController {
     const PORCENTAJE_COMIDA2 = 50;
     const COMIDAS = ['Breakfast', 'Brunch', 'Lunch','Snack' ,'Dinner'];
 
-    function generarQuery(string $dieta, string $mealType, array $alergenos=[]): string {
-        $stringAlergenos = !empty($alergenos) ? '&healt='.implode('&healt=', $alergenos) : '';
+    function generarQuery(string $dieta, string $mealType, array $alergenos=null): string {
+        $stringAlergenos = !is_null($alergenos) ? '&healt='.implode('&healt=', $alergenos) : '';
         return self::URL_CONSULTA_BUSCADOR . '&diet=' . $dieta . '&mealType=' . $mealType . $stringAlergenos.'&health=alcohol-free&rand=true' . self::URL_CONSULTA_FIELD;
     }
     
@@ -187,7 +187,7 @@ class EdamamController extends \App\Core\BaseController {
         $semana = $this->getSemanaActual();
         $modelo = new \App\Models\ComidasModel();
         $modeloRelAlergenos = new \App\Models\RelAlergenosModel();
-        $alergenos = !is_null($_SESSION['usuario']['alergenos']) ?  $_SESSION['usuario']['alergenos']: [];
+        $alergenos = isset($_SESSION['usuario']['alergenos'])&&!is_null($_SESSION['usuario']['alergenos']) ?  $_SESSION['usuario']['alergenos']: null;
         $query = $this->generarQuery($dieta, $mealType, $alergenos);
         $recetas = $this->getRequestCurlArray($query);
         $numComidas = $calorias < 450 ? 1 : 2;
