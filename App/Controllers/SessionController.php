@@ -13,7 +13,10 @@ class SessionController extends \App\Core\BaseController {
     public function showSignUp() {
         return view('signup.view.php');
     }
-
+    
+    function pruebaVista(){
+        return view('templates/left-menu.view.php');
+    }
     function LogInProcess() {
         $data = [];
         $semana = EdamamController::getSemanaActual();
@@ -23,6 +26,7 @@ class SessionController extends \App\Core\BaseController {
         $usuario = $modelo->login($_POST['email'], $_POST['pass']);
         if (!is_null($usuario)) {
             $this->session->set('usuario',$usuario);
+            var_dump($_SESSION);
             $alergenos = $modeloAlergenos->getAlergenosUser($_SESSION['usuario']['id']);
             !is_null($alergenos) ? $_SESSION['usuario']['alergenos']= $this->getStringAlergenos($alergenos) : $_SESSION['usuario']['alergenos']=null;
             $modeloComidas->deleteComidasSemanaAnterior($_SESSION['usuario']['id'], $semana[0]);
@@ -30,7 +34,7 @@ class SessionController extends \App\Core\BaseController {
             return redirect()->to('/meal-plan');
         } else {
             $data['input'] = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
-            $data['error'] = 'Los datos introducidos no son correctos';
+            $data['error'] = 'The entered data is incorrect.';
             return view('login.view.php', $data);
         }
     }
@@ -61,7 +65,7 @@ class SessionController extends \App\Core\BaseController {
                 $this->session->set('usuario', $user);
                 return redirect()->to('/imc');
             } else {
-                return redirect()->to('/signup')->with('error','No se ha podido añadir el usuario');
+                return redirect()->to('/signup')->with('error','The user could not be added.');
             }
         } else {
             $data['input'] = $input;
@@ -72,55 +76,54 @@ class SessionController extends \App\Core\BaseController {
 
     function logOut() {
         session_destroy();
-        return view('login.view.php');
+        return redirect()->to('/login');
     }
 
     function checkForm(array $datos, bool $alta = false): array {
         $errores = [];
         $modelo = new \App\Models\SessionModel();
         if (empty($datos['email'])) {
-            $errores['email'] = 'Introduzca un email';
+            $errores['email'] = 'Please enter an email.';
         } else {
             if (!filter_var($datos['email'], FILTER_VALIDATE_EMAIL)) {
-                $errores['email'] = 'introduzca un email valido';
+                $errores['email'] = 'Please enter an email valid.';
             }
         }
         if ($alta || !empty($datos['pass2'])) {
             if (empty($datos['email'])) {
-                $errores['email'] = 'Introduzca un email';
+                $errores['email'] = 'Please enter an email.';
             } else {
                 if (!filter_var($datos['email'], FILTER_VALIDATE_EMAIL)) {
-                    $errores['email'] = 'introduzca un email valido';
+                    $errores['email'] = 'Please enter an email valid.';
                 } else {
 
                     if ($modelo->existeParam('email',$datos['email'])) {
-                        $errores['email'] = 'este email ya se encuentra en uso';
+                        $errores['email'] = 'This email is already in use.';
                     }
                 }
             }
             if (empty($datos['username'])) {
-                $errores ['username'] = 'introduzca un nombre de usuario';
+                $errores ['username'] = 'Please enter a username.';
             } else {
                 if (!preg_match('/[0-9a-zA-Z_]{1,}/', $datos['username'])) {
-                    $errores['username'] = 'el nombre de usuariosolo puede estar formado por letras, numeros y guiones bajos';
+                    $errores['username'] = 'The username can only consist of letters, numbers, and underscores.';
                 }
             }
             if (empty($datos['pass'])) {
-                $errores['pass'] = 'La contraseña es obligatoria';
+                $errores['pass'] = 'The password is required';
             } else {
                 if (!preg_match('/[0-9a-zA-Z_]{8,}/', $datos['pass'])) {
-                    $errores['username'] = 'la contraseña tiene solo puede estar formada por letras, numeros y guiones bajos y minimo'
-                            . '8 caracteres';
+                    $errores['username'] = 'The password can only consist of letters, numbers, and underscores, and must be a minimum of 8 characters.';
                 }
                 if ($modelo->existeParam('username', $datos['username'])) {
-                    $errores['username'] = 'el nombre de usuario ya se encuentra en uso';
+                    $errores['username'] = 'The username is already in use.';
                 }
             }
             if ($datos['pass'] !== $datos['pass2']) {
-                $errores['pass'] = 'las contraseñas tienen que ser iguales';
+                $errores['pass'] = 'The passwords must be the same.';
             }
             if (empty($datos['pass']) || empty($datos['pass2'])) {
-                $errores['pass'] = 'tienes que introducir las 2 contraseñas';
+                $errores['pass'] = 'You need to enter both passwords.';
             }
         }
         return $errores;

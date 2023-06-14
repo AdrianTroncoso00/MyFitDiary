@@ -24,14 +24,14 @@
         </div>
     <?php } else { ?>
         <div class="my-3 text-left">
-            <h5>Bookmarked recipes:</h5>
+            <h2>Bookmarked recipes:</h2>
         </div>
         <!-- Show result -->
         <div class="d-flex flex-wrap justify-content-evenly col-12">
             <?php foreach ($recetas as $key => $receta) { ?>
 
                 <!-- Cards -->
-                <div class="receta position-relative border-0 card col-3">
+                <div class="receta position-relative border-0 card col-lg-3 col-md-3 col-sm-4 col-xs-4">
                     <!-- Card Image -->
                     <div class="card-body" data-toggle="modal" data-target="<?php echo '#recipe' . $key ?>">
                         <img class="card-img-top" src="<?php echo $receta['image'] ?>" alt="<?php echo $receta['label'] ?>">
@@ -49,7 +49,7 @@
                         </div>
                     </div>
                     <div class='card-footer d-flex align-items-center justify-content-center'>
-                        <a href="/eliminar-receta-fav/<?php echo $receta['id_receta_fav']; ?>"><i class='fas fa-trash-alt'></i></a>
+                        <a href="/eliminar-receta-fav/<?php echo $receta['id_receta_fav']; ?>"><i class='fas fa-trash-alt text-secondary'></i></a>
                         
                     </div>
                 </div>
@@ -144,6 +144,9 @@
                 </div>
             <?php } ?>
         </div>
-    <?php echo $pager->links()?>    
+        <div class="card-footer">
+            <?php echo $pager->links()?>    
+            
+        </div>    
     <?php } ?>
 </div>

@@ -6,7 +6,8 @@
         <title>MyFitDiary</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-        <link href="assets/css/form.css" rel="stylesheet" />
+        <link href="<?php echo base_url('assets/css/form.css')?>" rel="stylesheet" />
+        <link id="pagestyle" href="<?php echo base_url('assets/css/material-dashboard.css') ?>" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -18,17 +19,17 @@
     <body>
 <?php } ?>
         <div class="d-flex align-items-center justify-content-center">
-        <div class="card col-8 d-flex align-items-center justify-content-center">
-            <form action="<?php echo isset($editar) && $editar==true ? '/imc-edit' : '/imc' ?>" method="post" id="datosPersonales" class="form d-flex flex-column align-items-center justify-content-around">
-                <div class="form-info">
-                    <h2 class="titulo-form">DATOS PERSONALES</h2>
+        <div class="card col-10 col-sm-10 col-xs-12 d-flex align-items-center justify-content-center">
+            <form action="<?php echo isset($editar) && $editar==true ? '/imc-edit' : '/imc' ?>" method="post" id="datosPersonales" class="form col-12 d-flex flex-column align-items-center justify-content-around">
+                <div class="form-info col-lg-8">
+                    <h2 class="titulo-form">PERSONAL DATA</h2>
                     <div class="form-group">
-                        <label for="nombre_completo">Nombre completo</label>
+                        <label for="nombre_completo">Full Name</label>
                         <input class="form-control" type="text" id="nombre_completo" name="nombre_completo" value="<?php echo isset($input['nombre_completo']) ? $input['nombre_completo'] : ''; ?>" required>
                         <p class="text-danger"><?php echo isset($errores['nombre_completo']) ? $errores['nombre_completo'] : '' ?></p>
                     </div>
                     <div class="form-group">
-                        <label for="genero">Género</label>
+                        <label for="genero">Gender</label>
                         <select class="form-select" id="genero" name="genero" value="<?php echo isset($input['genero']) ? $input['genero'] : ''; ?>" required>
                             <option value="" disabled selected>Choose One</option>
                             <?php foreach ($generos as $genero) { ?>
@@ -40,22 +41,22 @@
                         <p class="text-danger"><?php echo isset($errores['genero']) ? $errores['genero'] : '' ?></p>
                     </div>
                     <div class="form-group">
-                        <label for="edad">Edad</label>
+                        <label for="edad">Age</label>
                         <input class="form-control" type="number" id="edad" name="edad" min="1" max="120" value="<?php echo isset($input['edad']) ? $input['edad'] : ''; ?>" required>
                         <p class="text-danger"><?php echo isset($errores['edad']) ? $errores['edad'] : '' ?></p>
                     </div>
                     <div class="form-group">
-                        <label for="peso">Peso (kg)</label>
+                        <label for="peso">Weight (kg)</label>
                         <input class="form-control" type="number" id="peso" name="peso" min="20" max="500" value="<?php echo isset($input['peso']) ? $input['peso'] : ''; ?>" required>
                         <p class="text-danger"><?php echo isset($errores['peso']) ? $errores['peso'] : '' ?></p>
                     </div>
                     <div class="form-group">
-                        <label for="estatura">Altura (cm)</label>
+                        <label for="estatura">Heigth (cm)</label>
                         <input class="form-control" type="number" id="estatura" name="estatura" min="20" max="500" value="<?php echo isset($input['estatura']) ? $input['estatura'] : ''; ?>" required>
                         <p class="text-danger"><?php echo isset($errores['estatura']) ? $errores['estatura'] : '' ?></p>
                     </div>
                     <div class="form-group">
-                        <label for="actividad_fisica">Nivel de Actividad Fisica</label>
+                        <label for="actividad_fisica">Level of physical activity</label>
                         <select class="form-select" id="actividad" name="actividad_fisica" value="<?php echo isset($input['actividad_fisica']) ? $input['actividad_fisica'] : ''; ?>" required>
                             <option value="" disabled selected>Choose One</option>
                             <?php foreach ($actFis as $act) { ?>
@@ -67,7 +68,7 @@
                         <p class="text-danger"><?php echo isset($errores['actividad_fisica']) ? $errores['actividad_fisica'] : '' ?></p>
                     </div>
                     <div class="form-group">
-                        <label for="objetivo">Meta</label>
+                        <label for="objetivo">Goal</label>
                         <select class="form-select" id="meta" name="objetivo" value="<?php echo isset($input['objetivo']) ? $input['objetivo'] : ''; ?>" required>
                             <option value="" disabled selected>Choose One</option>
                             <?php foreach ($metas as $meta) { ?>
@@ -79,10 +80,10 @@
                         <p class="text-danger"><?php echo isset($errores['objetivo']) ? $errores['objetivo'] : '' ?></p>
                     </div>
 
-                    <h2 class="titulo-form">CONFIGURACIÓN DIETA</h2>
+                    <h2 class="titulo-form">DIET CONFIGURATION</h2>
 
                     <div class="form-group">
-                        <label for="num_comidas">Numero de comidas(diarias)</label>
+                        <label for="num_comidas">Number of Meals(day)</label>
                         <select class="form-select" id="num_comidas" name="num_comidas" value="<?php echo isset($input['num_comidas']) ? $input['num_comidas'] : ''; ?>" required>
                             <option value="" disabled selected>Choose One</option>
                             <?php foreach ($num_comidas as $comida) { ?>
@@ -94,7 +95,7 @@
                         <p class="text-danger"><?php echo isset($errores['num_comidas']) ? $errores['num_comidas'] : '' ?></p>
                     </div>
                     <div class="form-group">
-                        <label for="dieta">Dieta a seguir</label>
+                        <label for="dieta">Recommended diet</label>
                         <select class="form-select" aria-label=".form-select" id="dieta" name="dieta" value="<?php echo isset($input['dieta']) ? $input['dieta'] : ''; ?>" required>
                             <option value="" disabled selected>Choose One</option>
                             <?php foreach ($dietas as $dieta) { ?>
@@ -106,7 +107,7 @@
                         <p class="text-danger"><?php echo isset($errores['dieta']) ? $errores['dieta'] : '' ?></p>
                     </div>
                     <div class="form-group">
-                        <label for="alergenos">Alergenos</label>
+                        <label for="alergenos">Alergens</label>
                         <select class="form-control selectpicker" multiple data-live-search="true" id="alergenos" name="alergenos[]"  required>
                             <option value="" disabled selected>Choose One</option>
                             <?php if(isset($input['alergenos'])){?>
@@ -129,37 +130,38 @@
                         <p class="text-danger"><?php echo isset($errores['alergenos']) ? $errores['alergenos'] : '' ?></p>
                     </div>
                     <div class="form-group"  id="porcentDesayuno">
-                        <label for="porcent_breakfast">Porcentaje Desayuno(%)</label>
+                        <label for="porcent_breakfast">Breakfast percentage(%)</label>
                         <input class="form-control" type="number" id="porcent_breakfast" name="porcent_breakfast" min="1" max="100" value="<?php echo isset($input['porcent_breakfast']) ? $input['porcent_breakfast'] : 0; ?>" required>
                         <p><?php echo isset($errores['porcent_breakfast']) ? $errores['pòrcent_breakfast'] : '' ?></p>
                     </div>
                     <div class="form-group"  id="porcentBrunch">
-                        <label for="porcent_brunch">Porcentaje Brunch(%)</label>
+                        <label for="porcent_brunch">Brunch porcentage(%)</label>
                         <input class="form-control" type="number" id="porcent_brunch" name="porcent_brunch" min="0" max="100" value="<?php echo isset($input['porcent_brunch']) ? $input['porcent_brunch'] : 0; ?>">
                         <p><?php echo isset($errores['porcent_brunch']) ? $errores['porcent_brunch'] : '' ?></p>
                     </div>
                     <div class="form-group"  id="porcentComida">
-                        <label for="porcent_lunch">Porcentaje Comida(%)</label>
+                        <label for="porcent_lunch">Lunch porcentage(%)</label>
                         <input class="form-control" type="number" id="porcent_lunch" name="porcent_lunch" min="1" max="100" value="<?php echo isset($input['porcent_lunch']) ? $input['porcent_lunch'] : 0; ?>" required>
                         <p><?php echo isset($errores['porcent_lunch']) ? $errores['pòrcent_lunch'] : '' ?></p>
                     </div>
                     <div class="form-group" id="porcentSnack">
-                        <label for="porcent_snack">Porcentaje Snack(%)</label>
+                        <label for="porcent_snack">Snack porcentage(%)</label>
                         <input class="form-control" type="number" id="porcent_snack" name="porcent_snack" min="0" max="100" value="<?php echo isset($input['porcent_snack']) ? $input['porcent_snack'] : 0; ?>">
                         <p><?php echo isset($errores['porcent_snack']) ? $errores['pòrcent_snack'] : '' ?></p>
                     </div>
                     <div class="form-group"  id="porcentCena">
-                        <label for="porcent_dinner">Porcentaje Cena(%)</label>
+                        <label for="porcent_dinner">Dinner porcentage(%)</label>
                         <input class="form-control" type="number" id="porcent_cena" name="porcent_dinner" min="1" max="100" value="<?php echo isset($input['porcent_dinner']) ? $input['porcent_dinner'] : 0; ?>" required>
-                        <p><?php echo isset($errores['porcent_dinner']) ? $errores['pòrcent_dinner'] : '' ?></p>
+                        <p><?php echo isset($errores['porcent_dinner']) ? $errores['porcent_dinner'] : '' ?></p>
                     </div>
                     <div class="d-flex justify-content-center">
-                        <input class="btn btn-success" type="submit" value="<?php echo isset($editar) && $editar==true ? 'EDITAR' : 'ENVIAR'?>">
+                        <input class="btn btn-danger" type="submit" value="<?php echo isset($editar) && $editar==true ? 'EDITAR' : 'ENVIAR'?>">
                     </div>
                 </div>
             </form>
         </div>
         </div>
+        
 <?php if(!$editar){?>
     </body>
     <script src="assets/js/send2forms.js"></script>

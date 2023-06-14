@@ -8,7 +8,7 @@
                 <a href="/recipe-search" class="fw-6 fs-4">Start now!</a>
             </div>
         <?php } else { ?>
-            <div class="card-header"> 
+            <div class="card-header bg-white"> 
                 <h4 class="title" style="text-align: center;">NUTRIENTES SEMANA</h4>
             </div>
             <div class="content">

@@ -12,7 +12,6 @@ class SessionModel extends \CodeIgniter\Model {
     
     function getAllUsuario(int $id_usuario):?array{
         $user= $this->asArray()->select('*')->join('info_usuarios', 'usuarios.id = info_usuarios.id_usuario', 'left')->join('act_fisica', 'info_usuarios.actividad_fisica = act_fisica.id_actividad', 'left')->join('dietas', 'info_usuarios.dieta = dietas.id_dieta')->where(['id_usuario'=>$id_usuario])->findAll()[0];
-        var_dump($user);
         unset($user['pass']);
         return $user;
     }
@@ -24,12 +23,18 @@ class SessionModel extends \CodeIgniter\Model {
     }
 
     function login(string $email, string $pass): ?array {
-        $user= $this->asArray()->select('*')->join('info_usuarios', 'usuarios.id = info_usuarios.id_usuario', 'left')->join('act_fisica', 'info_usuarios.actividad_fisica = act_fisica.id_actividad', 'left')->join('dietas', 'info_usuarios.dieta = dietas.id_dieta')->where(['email'=>$email])->findAll()[0];
-        if(password_verify($pass, $user['pass'])){
-            unset($user['pass']);
-            return $user;
+        $user= $this->asArray()->select('*')->join('info_usuarios', 'usuarios.id = info_usuarios.id_usuario', 'left')->join('act_fisica', 'info_usuarios.actividad_fisica = act_fisica.id_actividad', 'left')->join('dietas', 'info_usuarios.dieta = dietas.id_dieta')->where(['email'=>$email])->findAll();
+        if(!empty($user)){    
+            if(password_verify($pass, $user[0]['pass'])){
+                unset($user['pass']);
+                return $user[0];
+            }else{
+                return null;
+            }
+        }else{
+            return null;
+            
         }
-        return null;
     }
 
     function signUp(array $datos): bool {

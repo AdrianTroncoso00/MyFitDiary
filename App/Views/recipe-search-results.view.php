@@ -1,4 +1,17 @@
-
+<?php if (isset($_SESSION['good'])) { ?>
+    <div class="card bg-success">
+        <div class="card-body">
+            <p class="text-center"><?php echo $_SESSION['good'] ?></p>
+        </div>
+    </div>
+<?php } ?>
+<?php if (isset($_SESSION['bad'])) { ?>
+    <div class="card bg-danger">
+        <div class="card-body">
+            <p class="text-center"><?php echo $_SESSION['bad'] ?></p>
+        </div>
+    </div>
+<?php } ?>
 <?php if (isset($_SESSION['error'])) { ?>
     <div class="card bg-danger">
         <div class="card-body">
@@ -8,7 +21,7 @@
     <?php unset($_SESSION['error']) ?>
 <?php } ?>
 <!-- Result -->
-<div class="form col-12">
+<div class="col-12 d-flex justify-content-center align-items-center">
     <?php if (isset($error)) { ?>
         <div class="alert-danger">
             <p><?php echo $error ?></p>
@@ -32,11 +45,11 @@
                 </div>
             <?php } ?>
             <!-- Show result -->
-            <div class="d-flex flex-wrap justify-content-evenly col-12">
+            <div class="d-flex flex-wrap justify-content-center col-12 col-md-10 col-sm-10 col-xs-10">
                 <?php foreach ($recetas as $receta) { ?>
 
                     <!-- Cards -->
-                    <div class="receta position-relative border-0 card col-3" data-toggle="modal" data-target="<?php echo '#recipe' . $receta['position'] ?>">
+                    <div class="card col-lg-3 col-md-3 col-sm-4 col-xs-4 ml-3 mr-3 receta position-relative border-0" data-toggle="modal" data-target="<?php echo '#recipe' . $receta['position'] ?>">
                         <!-- Card Image -->
 
                         <img class="card-img-top" src="<?php echo $receta['image'] ?>" alt="<?php echo $receta['label'] ?>">
@@ -175,19 +188,25 @@
     <?php } ?>
 
 </div>
-<?php if (isset($_SESSION['first_page_consulta'])) { ?>
-<a href="<?php echo $_SESSION['first_page_consulta']?>">First Page</a>
-<?php } ?>
-<?php if (isset($_SESSION['previous_page'])) { ?>
-    <form method="post" action="next-page" class="d-flex d-flex align-items-center justify-content-center">
-        <input type="hidden" name="nextPage" value="<?php echo $_SESSION['previous_page'] ?>">
-        <input type="submit" target="_blank" name="submit" value="Next Page">
-    <?php } ?>
-</form>
-<?php if (isset($_SESSION['next_page'])) { ?>
-    <form method="post" action="next-page" class="d-flex d-flex align-items-center justify-content-center">
-        <input type="hidden" name="nextPage" value="<?php echo $_SESSION['next_page'] ?>">
-        <input type="submit" target="_blank" name="submit" value="Next Page">
-    <?php } ?>
-</form>
-
+<div class=" d-flex justify-content-center">
+    <div class="butons d-flex flex-row justify-content-around align-items-center">
+        <?php if (isset($_SESSION['firstPage']) && !is_null($_SESSION['firstPage'])) { ?>
+            <form method="post" action="next-page" class="d-flex d-flex align-items-center justify-content-center">
+                <input type="hidden" name="nextPage" value="<?php echo $_SESSION['firstPage'] ?>">
+                <input class="btn btn-danger" type="submit" target="_blank" name="submit" value="First Page">
+            </form>
+        <?php } ?>
+        <?php if (isset($_SESSION['previusPage']) && !is_null($_SESSION['previusPage'])) { ?>
+            <form method="post" action="next-page" class="d-flex d-flex align-items-center justify-content-center">
+                <input type="hidden" name="nextPage" value="<?php echo $_SESSION['previusPage'] ?>">
+                <input class="btn btn-danger" type="submit" target="_blank" name="submit" value="Previus Page">
+            </form>
+        <?php } ?>
+        <?php if (isset($_SESSION['nextPage'])) { ?>
+            <form method="post" action="next-page" class="d-flex d-flex align-items-center justify-content-center">
+                <input type="hidden" name="nextPage" value="<?php echo $_SESSION['nextPage'] ?>">
+                <input class="btn btn-danger" type="submit" target="_blank" name="submit" value="Next Page">
+            </form>
+        <?php } ?>
+    </div>
+</div>

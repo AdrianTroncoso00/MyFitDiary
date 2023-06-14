@@ -4,23 +4,15 @@
 	<title>MyFitDiary</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-<!--===============================================================================================-->	
-	<link rel="icon" type="image/png" href="assets/images/icons/favicon.ico"/>
-<!--===============================================================================================-->
+	<link rel="icon" type="image/png" href="assets/images/Myfitdiary.png"/>
 	<link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
-<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css">
-<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="assets/css/animate.css">
-<!--===============================================================================================-->	
 	<link rel="stylesheet" type="text/css" href="assets/css/hamburgers.min.css">
-<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="assets/css/select2.min.css">
-<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="assets/css/util.css">
 	<link rel="stylesheet" type="text/css" href="assets/css/main.css">
 	<script src="https://kit.fontawesome.com/4799b9b69b.js" crossorigin="anonymous"></script>
-<!--===============================================================================================-->
 </head>
 <body>
 	

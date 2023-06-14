@@ -43,10 +43,10 @@
             </div>
         </div>
 
-        <div class='card mb-3'>
+        <div class='card mb-3 mt-4'>
 
             <div class='card-header'>
-                <h4>Añadir peso</h4>
+                <h4>Add Weigth</h4>
 
             </div>
             <div class='card-body'>
@@ -84,9 +84,9 @@
             </div>
         </div>
         <?php if ($pesos != null) { ?>
-            <div class='card mb-3'>
+            <div class='card mt-4 mb-4'>
                 <div class='card-header'>
-                    <h4>Registros de Pesos</h4>
+                    <h4>Weigth Records</h4>
                 </div>
                 <div class='card-body col-12'>
                     <?php
@@ -131,7 +131,7 @@
     <div class='col-md-6 mt-4'>
         <div class='card mb-3'>
             <div class='card-header'>
-                <h4>Historial de Pesos</h4>
+                <h4>Weigth History</h4>
             </div>
             <div class='card-body justify-content-center'>
                 <div class='chart-bar'>
@@ -142,8 +142,7 @@
     </div>
 
 </div>
-</div>
-</div>
+
 
 <script type="text/javascript">
     // Obtener una referencia al elemento canvas del DOM
@@ -151,23 +150,19 @@
     // Pasaamos las etiquetas desde PHP
     const etiquetas = <?php echo json_encode($fechas) ?>;
     // Podemos tener varios conjuntos de datos. Comencemos con uno
-    const datosPeso = {
-        label: "Progresion peso",
-        // Pasar los datos igualmente desde PHP
-        data: <?php echo json_encode($pesos_chart) ?>,
-        backgroundColor: 'rgba(54, 162, 235, 0.2)', // Color de fondo
-        borderColor: 'rgba(54, 162, 235, 1)', // Color del borde
-        borderWidth: 1, // Ancho del borde
+    const data = {
+        labels:<?php echo json_encode($fechas) ?>,
+        datasets: [{
+                label: 'Progresion peso',
+                data: <?php echo json_encode($pesos_chart) ?>,
+                backgroundColor:'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+            }]
     };
     new Chart($grafica, {
         type: 'line', // Tipo de gráfica
-        data: {
-            labels: etiquetas,
-            datasets: [
-                datosPeso,
-                        // Aquí más datos...
-            ]
-        },
+        data: data,
         options: {
             scales: {
                 yAxes: [{

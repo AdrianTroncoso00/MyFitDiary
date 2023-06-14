@@ -3,23 +3,15 @@
     <head>
         <title>MyFitDiary</title>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!--===============================================================================================-->	
-        <link rel="icon" type="image/png" href="assets/images/icons/favicon.ico"/>
-        <!--===============================================================================================-->
+        <meta name="viewport" content="width=device-width, initial-scale=1">	
+        <link rel="icon" type="image/png" href="assets/images/Myfitdiary.png"/>
         <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
-        <!--===============================================================================================-->
         <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css">
-        <!--===============================================================================================-->
-        <link rel="stylesheet" type="text/css" href="assets/css/animate.css">
-        <!--===============================================================================================-->	
+        <link rel="stylesheet" type="text/css" href="assets/css/animate.css">	
         <link rel="stylesheet" type="text/css" href="assets/css/hamburgers.min.css">
-        <!--===============================================================================================-->
         <link rel="stylesheet" type="text/css" href="assets/css/select2.min.css">
-        <!--===============================================================================================-->
         <link rel="stylesheet" type="text/css" href="assets/css/util.css">
         <link rel="stylesheet" type="text/css" href="assets/css/main.css">
-        <!--===============================================================================================-->
         <script src="https://kit.fontawesome.com/4799b9b69b.js" crossorigin="anonymous"></script>
     </head>
     <body>
@@ -62,14 +54,6 @@
                             </button>
                         </div>
 
-                        <div class="text-center p-t-12">
-                            <span class="txt1">
-                                Forgot
-                            </span>
-                            <a class="txt2" href="recuperarContrasena">
-                                Password?
-                            </a>
-                        </div>
 
                         <div class="text-center p-t-136">
                             <a class="txt2" href="signup">
@@ -85,21 +69,16 @@
 
 
 
-        <!--===============================================================================================-->	
         <script src="assets/js/jquery-3.2.1.min.js"></script>
-        <!--===============================================================================================-->
         <script src="assets/js/popper.js"></script>
         <script src="assets/js/bootstrap.min.js"></script>
-        <!--===============================================================================================-->
         <script src="assets/js/select2.min.js"></script>
-        <!--===============================================================================================-->
         <script src="assets/js/tilt.jquery.min.js"></script>
         <script >
             $('.js-tilt').tilt({
                 scale: 1.1
             })
         </script>
-        <!--===============================================================================================-->
         <script src="assets/js/main.js"></script>
 
     </body>

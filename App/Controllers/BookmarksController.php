@@ -29,17 +29,17 @@ class BookmarksController extends \App\Core\BaseController {
                 'totalTime' => $_POST['totalTime'],
                 'dietlabels' => $_POST['dietLabels'],
                 'cuisinetype' => $_POST['cuisineType'],
-                'ingredietnlines' => $_POST['ingredientLines'] 
+                'ingredientlines' => $_POST['ingredientLines'] 
             ];
-            return $modelo->save($data) ? redirect()->to('/favoritos')->with('good', 'Receta guardada correctamente') : redirect()->to('/favoritos')->with('bad', 'No se ha podido guardar la receta a favoritos');
+            return $modelo->save($data) ? redirect()->to('/favoritos')->with('good', 'Recipe saved successfully.') : redirect()->to('/favoritos')->with('bad', 'The recipe could not be saved to favorites.');
         }else{
-            return redirect()->to('/favoritos')->with('bad', 'La receta ya se encuentra en favoritos'); 
+            return redirect()->to('/favoritos')->with('bad', 'The recipe is already in favorites.'); 
         }
     }
 
     function deleteBookmark(int $id_receta){
         $modelo = new \App\Models\BookmarksModel();  
-        return $modelo->delete($id_receta) ? redirect()->to('favoritos')->with('good', 'Receta eliminada correctamente') : redirect()->to('favoritos')->with('bad', 'No se ha podido borrar la receta');
+        return $modelo->delete($id_receta) ? redirect()->to('favoritos')->with('good', 'Recipe deleted successfully.') : redirect()->to('favoritos')->with('bad', 'The recipe could not be deleted.');
     }
     
     function modifyBookmarksArray(array $bookmarks):array{

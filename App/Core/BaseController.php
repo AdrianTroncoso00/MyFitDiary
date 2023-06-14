@@ -55,4 +55,7 @@ abstract class BaseController extends Controller
 
         $this->session = \Config\Services::session();
     }
+    public function getSession(){
+        return $this->session;
+    }
 }
